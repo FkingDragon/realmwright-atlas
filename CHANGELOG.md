@@ -6,6 +6,14 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-10 — Tidy repository layout
+*By: project owner (prepared with Claude)*
+
+- Moved every file out of the `realmwright-atlas/` sub-folder to the top level, so GitHub Pages finds `index.html`
+- Removed the uploaded `realmwright-atlas.zip` (its contents are already here)
+- Replaced the starter README with the project README, now linking to the live site
+- Added the hidden files the web upload skipped: `.github/` issue forms, `.nojekyll`, `.gitignore`
+
 ## 2026-10-10 — First release on GitHub
 *By: project owner (prepared with Claude)*
 
