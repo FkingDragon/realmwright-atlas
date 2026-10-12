@@ -1,0 +1,1064 @@
+<title>Tilewright Battle Maps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap">
+<style>
+/* Layout: tool rail on the left, the endless map table fills the rest; stacks map-over-rail on phones. */
+:root{
+  --bg:#171a1f;        /* the table */
+  --panel:#20252c;     /* tool rail */
+  --line:#353c46;
+  --fg:#e8e3d4;        /* parchment text */
+  --muted:#99a0a8;
+  --accent:#d6a548;    /* brass */
+  --accent-ink:#1b1f24;
+  --stage:#0f1215;
+  --display:"Pixelify Sans", "Courier New", monospace;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:14px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.app{display:grid;grid-template-columns:288px minmax(0,1fr);gap:16px;height:100%;padding-inline:16px;padding-block:16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.brand h1{font-family:var(--display);font-weight:700;font-size:28px;margin:0;letter-spacing:.02em;color:var(--accent);line-height:1}
+.brand p{margin:6px 0 0;color:var(--muted);font-size:12.5px}
+section{display:flex;flex-direction:column;gap:10px}
+h2{font-family:var(--display);font-weight:500;font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin:0;color:var(--muted)}
+.swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.sw{position:relative;aspect-ratio:1;max-width:100%;padding:0;border:2px solid transparent;border-radius:6px;background:var(--stage);cursor:pointer;overflow:hidden}
+.sw canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.sw .k{position:absolute;right:2px;bottom:1px;font-family:var(--display);font-size:10px;color:#fff;text-shadow:0 0 2px #000,0 0 2px #000}
+.sw[aria-pressed="true"]{border-color:var(--accent)}
+.sw:focus-visible,.seg button:focus-visible,.btn:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.selname{font-size:12.5px;color:var(--fg);min-height:1.2em}
+.seg{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{flex:1;background:transparent;color:var(--fg);border:0;border-right:1px solid var(--line);padding:7px 2px;font:inherit;font-size:12.5px;cursor:pointer;min-width:0}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.row .seg{flex:0 0 60%}
+.slider{display:flex;flex-direction:column;gap:4px}
+.slider span{display:flex;justify-content:space-between;color:var(--muted);font-size:12.5px}
+.slider output{color:var(--fg);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=number]{width:64px;background:var(--stage);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:5px 6px;font:inherit;font-size:13px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.check input{accent-color:var(--accent);width:16px;height:16px}
+select{background:var(--stage);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;font:inherit;font-size:13px}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.btn{background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:7px;padding:8px;font:inherit;font-size:13px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:700}
+.btn.danger:hover{border-color:#e0604a;color:#f0a090}
+.objcard{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);border-radius:8px;padding:10px}
+.objname{font-weight:700}
+.muted{color:var(--muted);font-size:12.5px;margin:0}
+.keys{color:var(--muted);font-size:12px;line-height:1.55;margin:0}
+.keys b{color:var(--fg);font-weight:700}
+.stage{position:relative;background:var(--stage);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0;touch-action:none}
+#view{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+.status{position:absolute;left:10px;bottom:10px;max-width:calc(100% - 140px);background:rgba(15,18,21,.85);border:1px solid var(--line);border-radius:6px;padding:5px 9px;font-size:12.5px;font-variant-numeric:tabular-nums;pointer-events:none;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zoombox{position:absolute;right:10px;bottom:10px;display:flex;gap:4px}
+.zoombox .btn{background:rgba(15,18,21,.85);padding:4px 10px;min-width:34px}
+.editbar{position:absolute;left:10px;top:10px;display:flex;align-items:center;gap:10px;background:rgba(15,18,21,.9);border:1px solid var(--accent);border-radius:8px;padding:6px 6px 6px 12px;font-size:13px}
+.editbar .btn{padding:5px 12px}
+.modetag{position:absolute;right:10px;top:10px;font-family:var(--display);font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:rgba(15,18,21,.85);border:1px solid var(--line);border-radius:6px;padding:4px 8px;pointer-events:none}
+@media (max-width:760px){
+  .app{grid-template-columns:minmax(0,1fr);height:auto}
+  .stage{order:-1;height:62vh}
+  .panel{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <aside class="panel">
+    <div class="brand">
+      <h1>Tilewright</h1>
+      <p>Endless pixel battle maps · one square is 5 ft · zoom out for the region map</p>
+    </div>
+
+    <section>
+      <h2>Terrain</h2>
+      <div class="swatches" id="terrainList"></div>
+    </section>
+
+    <section>
+      <h2>Props</h2>
+      <div class="swatches" id="propList"></div>
+    </section>
+
+    <section>
+      <h2>Edge walls</h2>
+      <div class="swatches" id="edgeList"></div>
+      <div class="selname" id="selName"></div>
+    </section>
+
+    <section>
+      <h2>Tool</h2>
+      <div class="seg" id="toolSeg">
+        <button data-v="paint">Paint</button><button data-v="fill">Fill</button><button data-v="objects">Objects</button><button data-v="measure">Measure</button><button data-v="pan">Pan</button>
+      </div>
+      <div class="row"><span>Brush</span>
+        <div class="seg" id="brushSeg"><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="5">5</button></div>
+      </div>
+      <div class="row"><label for="diag">Diagonals</label>
+        <select id="diag"><option value="5">5 ft each</option><option value="10">5-10-5</option></select>
+      </div>
+    </section>
+
+    <section>
+      <h2>Objects</h2>
+      <div class="btns">
+        <button class="btn" id="addBuilding">Add building</button>
+        <button class="btn" id="addSprite">Add sprite</button>
+      </div>
+      <label class="check"><input type="checkbox" id="snap"> Snap moved objects to the grid</label>
+      <div class="objcard" id="objCard" hidden>
+        <div class="objname" id="objName"></div>
+        <div class="slider"><span><label for="oscale">Scale</label><output id="oscaleOut"></output></span>
+          <input type="range" id="oscale" min="0.25" max="4" step="0.05" value="1"></div>
+        <div class="row" id="dimRow"><label for="ow">Columns</label><input type="number" id="ow" min="1" max="24"><label for="oh">Rows</label><input type="number" id="oh" min="1" max="24"></div>
+        <div class="btns">
+          <button class="btn primary" id="editTiles">Edit tiles</button>
+          <button class="btn" id="rotBtn">Rotate 90°</button>
+          <button class="btn" id="dupBtn">Duplicate</button>
+          <button class="btn" id="frontBtn">Bring to front</button>
+          <button class="btn" id="backBtn">Send to back</button>
+          <button class="btn danger" id="delBtn">Delete</button>
+        </div>
+      </div>
+      <p class="muted" id="objHint">With the Objects tool, drag to move, drag the corner handle to scale, double-click a building to edit its tiles.</p>
+    </section>
+
+    <section>
+      <h2>Blending</h2>
+      <div class="seg" id="modeSeg"><button data-v="0">Off</button><button data-v="1">Smooth</button><button data-v="2">Dither</button></div>
+      <div class="slider"><span><label for="reach">Reach</label><output id="reachOut"></output></span>
+        <input type="range" id="reach" min="0.2" max="0.9" step="0.05" value="0.5"></div>
+      <div class="slider"><span><label for="rough">Roughness</label><output id="roughOut"></output></span>
+        <input type="range" id="rough" min="0" max="0.6" step="0.05" value="0.25"></div>
+      <label class="check"><input type="checkbox" id="edges" checked> Shorelines and edge shading</label>
+      <label class="check"><input type="checkbox" id="walls" checked> Wall faces and shadows</label>
+      <label class="check"><input type="checkbox" id="grid" checked> 5 ft grid</label>
+    </section>
+
+    <section>
+      <h2>World</h2>
+      <div class="row"><span>Seed</span><input type="number" id="seed" style="width:130px"></div>
+      <div class="btns">
+        <button class="btn primary" id="newWorld">New world</button>
+        <button class="btn" id="homeBtn">Go home</button>
+        <button class="btn" id="undoBtn">Undo</button>
+        <button class="btn danger" id="resetBtn">Reset edits</button>
+      </div>
+    </section>
+
+    <p class="keys"><b>Left</b> paint · <b>Right-drag</b> pan · <b>Wheel</b> zoom<br>
+      <b>1–0</b> terrain · <b>W D V E</b> wall, door, fence, erase<br>
+      <b>B F O M H</b> tools · <b>[ ]</b> brush · <b>G</b> grid<br>
+      <b>R</b> rotate · <b>Del</b> delete · <b>Esc</b> leave edit · <b>Ctrl+Z</b> undo</p>
+  </aside>
+
+  <main class="stage" id="stage">
+    <canvas id="view"></canvas>
+    <div class="editbar" id="editBar" hidden><span id="editLabel">Editing building tiles</span><button class="btn primary" id="doneEdit">Done</button></div>
+    <div class="modetag" id="modeTag">Battle map</div>
+    <div class="status" id="status">—</div>
+    <div class="zoombox"><button class="btn" id="zOut" aria-label="Zoom out">−</button><button class="btn" id="zIn" aria-label="Zoom in">+</button></div>
+  </main>
+</div>
+
+<script>
+(() => {
+const TW = window.TW = window.TW || {};
+const TS = 16, S = 64, CS = 32, AP = 3, RS = 56, EMPTY = 255;
+const TILE_LO = .3, TILE_HI = .5, ZMIN = .07, ZMAX = 12;
+const $ = id => document.getElementById(id);
+
+/* ---------- noise + colour helpers ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hash2(x,y,s){let h=(Math.imul(x|0,374761393)+Math.imul(y|0,668265263)+Math.imul(s|0,1442695041))|0;h=Math.imul(h^(h>>>13),1274126177);h^=h>>>16;return(h>>>0)/4294967296}
+const hashInt = (x,y,s) => (hash2(x,y,s)*4294967296)>>>0;
+const sm = t => t*t*(3-2*t);
+function vn(x,y,s){const ix=Math.floor(x),iy=Math.floor(y),tx=sm(x-ix),ty=sm(y-iy);
+  const a=hash2(ix,iy,s),b=hash2(ix+1,iy,s),c=hash2(ix,iy+1,s),d=hash2(ix+1,iy+1,s);
+  return a+(b-a)*tx+(c-a)*ty+(a-b-c+d)*tx*ty}
+function tvn(x,y,cell,s){const L=S/cell,fx=x/cell,fy=y/cell,ix=Math.floor(fx),iy=Math.floor(fy),tx=sm(fx-ix),ty=sm(fy-iy),m=v=>((v%L)+L)%L;
+  const a=hash2(m(ix),m(iy),s),b=hash2(m(ix+1),m(iy),s),c=hash2(m(ix),m(iy+1),s),d=hash2(m(ix+1),m(iy+1),s);
+  return a+(b-a)*tx+(c-a)*ty+(a-b-c+d)*tx*ty}
+const fbm = (x,y,s) => vn(x,y,s)*.55 + vn(x*2,y*2,s+1)*.3 + vn(x*4,y*4,s+2)*.15;
+function hex(h){const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]}
+const sh = (c,f) => [c[0]*f,c[1]*f,c[2]*f];
+const clamp = (v,a,b) => v<a?a:v>b?b:v;
+
+/* ---------- 64×64 tiling pixel textures ---------- */
+const newTex = () => new Uint8ClampedArray(S*S*3);
+function put(t,x,y,c){x=((x%S)+S)%S;y=((y%S)+S)%S;const i=(y*S+x)*3;t[i]=c[0];t[i+1]=c[1];t[i+2]=c[2]}
+function quant(t,cols,cell,seed,jit){const R=mulberry32(seed);cols=cols.map(hex);
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){let n=tvn(x,y,cell,seed)*.65+tvn(x,y,cell/2,seed+7)*.35;
+    n=(n-.5)*2.2+.5+(R()-.5)*jit;let k=Math.floor(n*cols.length);k=k<0?0:k>=cols.length?cols.length-1:k;put(t,x,y,cols[k])}}
+function sprinkle(t,seed,p,col,fn){const R=mulberry32(seed);const c=hex(col);
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++)if(R()<p){fn?fn(x,y,c):put(t,x,y,c)}}
+function waves(t,seed,n,c1,c2){const R=mulberry32(seed),a=hex(c1),b=hex(c2);
+  for(let i=0;i<n;i++){const x=R()*S|0,y=R()*S|0;put(t,x,y+1,a);put(t,x+1,y,b);put(t,x+2,y,a);put(t,x+3,y+1,a)}}
+
+function texDeep(){const t=newTex();quant(t,['#162d55','#1a3663','#1f3f70'],16,11,.25);waves(t,12,12,'#3b66a1','#5a86bf');return t}
+function texShallow(){const t=newTex();quant(t,['#2b7893','#3086a2','#3994af'],16,21,.25);waves(t,22,11,'#7cc2d2','#a9e0e8');return t}
+function texSand(){const t=newTex();quant(t,['#c4a466','#d0b375','#dbc085'],8,31,.35);sprinkle(t,32,.06,'#ad8c52');sprinkle(t,33,.025,'#ead49c');return t}
+function texGrass(){const t=newTex();quant(t,['#447c33','#4d8a3a','#579742'],8,41,.4);
+  sprinkle(t,42,.07,'#3a6b2b',(x,y,c)=>{put(t,x,y,c);put(t,x,y-1,c)});sprinkle(t,43,.03,'#70ad52');return t}
+function texForest(){const t=newTex();quant(t,['#1c3d1c','#214621'],8,51,.3);
+  const R=mulberry32(52),cs=[];for(let n=0;n<18;n++)cs.push({x:R()*S|0,y:R()*S|0,r:4.5+R()*3.5});
+  const shd=hex('#142e15'),rim=hex('#1d3f1d'),hi=hex('#5c9a45'),mid=hex('#47823a'),dk=hex('#356a2f');
+  for(const c of cs){const r=Math.ceil(c.r)+2;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)
+    if((dx-1)*(dx-1)+(dy-2)*(dy-2)<=c.r*c.r)put(t,c.x+dx,c.y+dy,shd)}
+  for(const c of cs){const r=Math.ceil(c.r);for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){
+    const d=Math.hypot(dx,dy);if(d>c.r)continue;
+    const l=1-Math.hypot(dx+c.r*.35,dy+c.r*.35)/(c.r*1.5)+(R()-.5)*.18;
+    put(t,c.x+dx,c.y+dy,d>c.r-1?rim:l>.6?hi:l>.38?mid:dk)}}
+  return t}
+function texDirt(){const t=newTex();quant(t,['#6c4c2f','#785636','#83613d'],8,61,.4);
+  sprinkle(t,62,.025,'#9a7a54',(x,y,c)=>{put(t,x,y,c);put(t,x,y+1,hex('#4c3520'))});return t}
+function texFlag(){const t=newTex(),R=mulberry32(65),tones=['#7f7c76','#8a8780','#94918a'].map(hex),mortar=hex('#4d4a46');
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){let c;
+    if((x&7)===0||(y&7)===0)c=mortar;else{c=tones[hash2(x>>3,y>>3,3)*3|0];
+      if((y&7)===1)c=sh(c,1.08);if((x&7)===7||(y&7)===7)c=sh(c,.9);if(R()<.04)c=sh(c,.88)}
+    put(t,x,y,c)}
+  const ck=hex('#5a5751');for(let n=0;n<7;n++){const x=(R()*8|0)*8+2+(R()*3|0),y=(R()*8|0)*8+2;
+    put(t,x,y,ck);put(t,x+1,y+1,ck);put(t,x+1,y+2,ck);put(t,x+2,y+3,ck)}
+  return t}
+function texWall(){const t=newTex(),R=mulberry32(91),tones=['#615b53','#6b655c','#757066'].map(hex),mortar=hex('#2e2b28');
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){const r=y>>2,off=(r&1)*4;let c;
+    if((y&3)===0||((x+off)&7)===0)c=mortar;else{c=tones[hash2(((x+off)>>3)&7,r,5)*3|0];
+      if((y&3)===1)c=sh(c,1.12);if((y&3)===3)c=sh(c,.88);if(R()<.05)c=sh(c,.9)}
+    put(t,x,y,c)}
+  return t}
+function texLava(){const t=newTex(),R=mulberry32(73);const c1=hex('#ffd84a'),c2=hex('#ff8a1f'),h1=hex('#a42c0e'),h2=hex('#b8340f'),l1=hex('#4f150a'),l2=hex('#5e1a0b');
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){const n=tvn(x,y,16,71)*.6+tvn(x,y,8,72)*.4,e=Math.abs(n-.5),j=R()<.5;
+    put(t,x,y,e<.018?c1:e<.04?c2:n>.5?(j?h1:h2):(j?l1:l2))}
+  return t}
+function texSnow(){const t=newTex();quant(t,['#c9d6e4','#d8e2ed','#e6eef6'],8,81,.35);sprinkle(t,82,.02,'#ffffff');sprinkle(t,83,.03,'#aebfd3');return t}
+function texPlanks(){const t=newTex(),tones=['#8a6034','#946838','#7f5830'].map(hex),seam=hex('#3e2914'),nail=hex('#c9b28a');
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){const r=y>>2,off=(r*5)&15,bx=((x+off)>>4)&3;let c;
+    if((y&3)===0||((x+off)&15)===0)c=seam;
+    else{c=tones[hash2(bx,r,9)*3|0];if((y&3)===1)c=sh(c,1.1);if((y&3)===3)c=sh(c,.86);if(hash2(x,y,4)<.04)c=sh(c,.9);
+      if(((x+off)&15)===2&&(y&3)===2)c=nail}
+    put(t,x,y,c)}
+  return t}
+function texRock(){const t=newTex();quant(t,['#6e6a63','#7b766e','#88837a'],8,101,.45);
+  sprinkle(t,102,.04,'#55514b',(x,y,c)=>{put(t,x,y,c);put(t,x+1,y,c);put(t,x,y-1,hex('#9d978c'))});sprinkle(t,103,.02,'#a6a095');return t}
+function texMarsh(){const t=newTex();quant(t,['#4a5a32','#53643a','#5d6d40'],8,111,.4);
+  const w1=hex('#3d5f5a'),w2=hex('#4b7069');
+  for(let y=0;y<S;y++)for(let x=0;x<S;x++){const n=tvn(x,y,16,113)*.7+tvn(x,y,8,114)*.3;if(n>.6)put(t,x,y,n>.66?w1:w2)}
+  sprinkle(t,115,.05,'#7a8a48',(x,y,c)=>{put(t,x,y,c);put(t,x,y-1,c)});return t}
+
+/* ---------- terrain table ----------
+   z = layer height. Lower layers draw the edge treatment where they meet higher ones.
+   soft = takes part in blending. Hard tiles (built surfaces) keep crisp cell edges.
+   atl = the ink-and-wash colour the region map uses. */
+const TER = [
+  {name:'Deep water', z:0, soft:1, tex:texDeep,    edge:['tint','#4f7fbf',.55], atl:'#6e9bb5'},
+  {name:'Shallows',   z:1, soft:1, tex:texShallow, edge:['tint','#d6f1f3',.75], atl:'#9cc3cc'},
+  {name:'Sand',       z:2, soft:1, tex:texSand,    edge:['dark',.8],  atl:'#e6d3a0'},
+  {name:'Grass',      z:4, soft:1, tex:texGrass,   edge:['dark',.75], atl:'#cdd59a'},
+  {name:'Forest',     z:6, soft:1, tex:texForest,  edge:['dark',.7],  atl:'#b2c184'},
+  {name:'Dirt road',  z:3, soft:1, tex:texDirt,    edge:['dark',.75], atl:'#d2b386'},
+  {name:'Flagstone',  z:3, soft:0, tex:texFlag,    edge:['dark',.7],  atl:'#bdb6a6'},
+  {name:'Stone wall', z:9, soft:0, tex:texWall,    edge:null,         atl:'#8a8273'},
+  {name:'Lava',       z:1, soft:1, tex:texLava,    edge:['tint','#ffcf4a',.8], atl:'#d9663c'},
+  {name:'Snow',       z:5, soft:1, tex:texSnow,    edge:['dark',.85], atl:'#f1efe6'},
+  {name:'Planks',     z:3, soft:0, tex:texPlanks,  edge:['dark',.7],  atl:'#b48d5e'},
+  {name:'Rock',       z:7, soft:1, tex:texRock,    edge:['dark',.78], atl:'#c6baa3'},
+  {name:'Marsh',      z:2, soft:1, tex:texMarsh,   edge:['dark',.8],  atl:'#b4bd93'},
+];
+const NT = TER.length, DEEP=0, SHAL=1, SAND=2, GRASS=3, FOREST=4, ROAD=5, FLAG=6, WALL=7, LAVA=8, SNOW=9, PLANKS=10, ROCK=11, MARSH=12;
+const TEX = TER.map(t => t.tex());
+TER.forEach(t => { if (t.edge && t.edge[0]==='tint') t.edge[1] = hex(t.edge[1]); t.atlc = hex(t.atl); });
+const ORDER = [...TER.keys()].sort((a,b)=>TER[a].z-TER[b].z);
+const SOFT = new Uint8Array(256), ZOF = new Int16Array(256).fill(-1);
+TER.forEach((t,i)=>{SOFT[i]=t.soft;ZOF[i]=t.z});
+
+/* ---------- props (16×16 sprites, 's' = cast shadow) ---------- */
+function sprite(rows,pal){const pix=new Array(256).fill(null);
+  for(let y=0;y<16;y++){const row=(rows[y]||'').padEnd(16,'.').slice(0,16);
+    for(let x=0;x<16;x++){const ch=row[x];if(ch==='.')continue;if(ch==='s'){pix[y*16+x]='s';continue}if(pal[ch])pix[y*16+x]=hex(pal[ch])}}
+  return pix}
+function stairs(){const pix=new Array(256).fill(null),stone=hex('#9a958b'),k=hex('#2b2824'),side=hex('#4a4640');
+  for(let y=0;y<16;y++)for(let x=0;x<16;x++){let c;
+    if(x===0||x===15||y===0||y===15)c=k;else if(x===1||x===14)c=side;
+    else{const st=Math.floor((y-1)/3),r=(y-1)%3;c=sh(stone,(r===0?1.15:r===1?1:.72)*(1-st*.15))}
+    pix[y*16+x]=c}
+  return pix}
+const PROPS = [
+  {name:'Tree', pix:sprite([
+    "................","......kkkk......","....kkGGGhkk....","...kgGGhhGGgk...","..kggGGGGGGggk..","..kdgggGGGgggk..",
+    ".kddgggggggggdk.",".kdddgggggggddk.",".kdddddggggdddk.","..kdddddddddkk..","...kkdddddkk....",
+    ".....kkbBkk.....","......kbBk......","....sskbBkss....","...ssssssssss...","................"],
+    {k:'#16240f',d:'#2d5a26',g:'#3f7a32',G:'#5c9e44',h:'#7cc05a',b:'#6a4527',B:'#3d2716'})},
+  {name:'Boulder', pix:sprite([
+    "................","................","................","................",".....kkkkk......","...kkLLLLlkk....",
+    "..kLLLlllllldk..","..kLlllllllddk..",".kllllllllldddk.",".klllllllldddk..",".kdlllllddddddk.",
+    "..kddddddddddk..","...kkkkkkkkkk...","..ssssssssssss..","................","................"],
+    {L:'#a9a498',l:'#8a857b',d:'#66625a',k:'#2d2a26'})},
+  {name:'Chest', pix:sprite([
+    "................","................","................","...kkkkkkkkkk...","..kWWWWWWWWWWk..","..kwwwwwwwwwwk..",
+    "..kGwwwwwwwwGk..","..kGGGGyyGGGGk..","..kGwwwyywwwGk..","..kxxxxxxxxxxk..","..kGxxxxxxxxGk..",
+    "..kxxxxxxxxxxk..","..kkkkkkkkkkkk..","..ssssssssssss..","................","................"],
+    {k:'#2a1a0c',W:'#b7834a',w:'#8e5f30',x:'#6a4321',G:'#8d8f94',y:'#f0c64a'})},
+  {name:'Barrel', pix:sprite([
+    "................","................",".....kkkkkk.....","....kttttttk....","...ktWttttWtk...","...kkttttttkk...",
+    "...kGGGGGGGGk...","...kwWwwwwxwk...","...kwWwwwwxwk...","...kGGGGGGGGk...","...kwWwwwwxwk...",
+    "...kwWwwwwxwk...","....kkkkkkkk....","...ssssssssss...","................","................"],
+    {k:'#241608',t:'#c79257',W:'#a8763f',w:'#87592c',x:'#66421f',G:'#6f7378'})},
+  {name:'Campfire', pix:sprite([
+    "................","......y.........",".......y........","......yoy.......",".....yooy.y.....",".....orooy......",
+    "....yorrroy.....","....orrRrro.....","...gorRRRrog....","..gbbBRRRBbbg...","..gkbbBBBbbkg...",
+    "...gggkkkggg....","..ssssssssss....","................","................","................"],
+    {y:'#ffe066',o:'#ff9a1f',r:'#e2481a',R:'#b02a10',b:'#6b4423',B:'#4a2d16',g:'#8a8a85',k:'#241608'})},
+  {name:'Stairs down', pix:stairs()},
+  {name:'Tent', pix:sprite([
+    "................","................","................",".......k........","......kWk.......",".....kWWwk......",
+    "....kWWWwwk.....","...kWWWkwwwk....","..kWWWkdkwwwk...",".kWWWWkddkwwwk..","kWWWWWkddkwwwwk.",
+    "kkkkkkkddkkkkkk.",".ssssssssssssss.","................","................","................"],
+    {k:'#3b2f20',W:'#d8c9a3',w:'#b3a27a',d:'#3a2e1f'})},
+];
+const PROP_CV = PROPS.map(p=>{const c=document.createElement('canvas');c.width=c.height=16;const x=c.getContext('2d'),im=x.createImageData(16,16);
+  for(let i=0;i<256;i++){const q=p.pix[i];if(!q)continue;if(q==='s'){im.data[i*4+3]=100}else{im.data[i*4]=q[0];im.data[i*4+1]=q[1];im.data[i*4+2]=q[2];im.data[i*4+3]=255}}
+  x.putImageData(im,0,0);return c});
+
+/* ---------- settings ---------- */
+const state = { sel:{kind:'t',i:GRASS}, tool:'paint', brush:1, mode:1, reach:.5, rough:.25,
+  edges:true, walls:true, grid:true, diag:'5', snap:false };
+let renderVer = 1;
+
+/* ---------- pixel renderer ----------
+   renderRect draws cells [X0,X1)×[Y0,Y1) of any source (the endless world, or one
+   building's own grid) into an ImageData. It computes a one-cell ring around the
+   rect so blending, shorelines, wall faces and shadows match across seams. */
+const sc = new Float32Array(NT);
+const BAYER = [0,8,2,10,12,4,14,6,3,11,1,9,15,7,13,5];
+function pick(nb,px,py,wx,wy){
+  const u=(px+.5)/TS, v=(py+.5)/TS, reach=state.reach; sc.fill(0); let present=0;
+  for(let k=0;k<9;k++){const t=nb[k];if(!SOFT[t])continue;
+    const dx=k%3-1, dy=(k/3|0)-1;
+    const ex=u<dx?dx-u:(u>dx+1?u-dx-1:0), ey=v<dy?dy-v:(v>dy+1?v-dy-1:0);
+    const d=Math.sqrt(ex*ex+ey*ey); if(d>=reach)continue;
+    let w=1-d/reach; w=w*w*(3-2*w); sc[t]+=w; present|=1<<t}
+  if(state.mode===2){
+    let sum=0; for(const t of ORDER) if(present>>t&1){sc[t]*=sc[t];sum+=sc[t]}
+    const thr=(BAYER[(py&3)*4+(px&3)]+.5)/16*sum; let acc=0, last=nb[4];
+    for(const t of ORDER) if(present>>t&1){acc+=sc[t];last=t;if(acc>=thr)return t}
+    return last}
+  let best=nb[4], bs=-1e9; const amp=state.rough;
+  for(let t=0;t<NT;t++) if(present>>t&1){
+    const n=amp?(vn(wx*.2,wy*.2,t*101+7)*.65+vn(wx*.5,wy*.5,t*101+9)*.35)*2-1:0;
+    const s=sc[t]+amp*n+ZOF[t]*.002; if(s>bs){bs=s;best=t}}
+  return best}
+
+let sBase=new Uint8ClampedArray(0), sIds=new Uint8Array(0);
+function renderRect(src,X0,Y0,X1,Y1){
+  const w=X1-X0,h=Y1-Y0,SW=(w+2)*TS,SH=(h+2)*TS,CW=w+4,CH=h+4;
+  if(sIds.length<SW*SH){sBase=new Uint8ClampedArray(SW*SH*3);sIds=new Uint8Array(SW*SH)}
+  const tc=new Uint8Array(CW*CH);
+  for(let j=0;j<CH;j++)for(let i=0;i<CW;i++)tc[j*CW+i]=src.getT(X0-2+i,Y0-2+j);
+  const nb=new Array(9);
+  for(let j=1;j<CH-1;j++)for(let i=1;i<CW-1;i++){
+    const own=tc[j*CW+i], cx=X0-2+i, cy=Y0-2+j, sx0=(i-1)*TS, sy0=(j-1)*TS;
+    if(own===EMPTY){for(let py=0;py<TS;py++)sIds.fill(EMPTY,(sy0+py)*SW+sx0,(sy0+py)*SW+sx0+TS);continue}
+    let mixed=false;
+    for(let k=0;k<9;k++){let t=tc[(j+(k/3|0)-1)*CW+i+k%3-1];if(t===EMPTY)t=own;nb[k]=t;if(t!==own&&SOFT[t])mixed=true}
+    const plain=state.mode===0||!SOFT[own]||!mixed;
+    for(let py=0;py<TS;py++){const wy=cy*TS+py;
+      for(let px=0;px<TS;px++){const wx=cx*TS+px;
+        const t=plain?own:pick(nb,px,py,wx,wy), tx=TEX[t], ti=((wy&63)*S+(wx&63))*3, si=(sy0+py)*SW+sx0+px;
+        sBase[si*3]=tx[ti];sBase[si*3+1]=tx[ti+1];sBase[si*3+2]=tx[ti+2];sIds[si]=t}}}
+  const OW=w*TS, OH=h*TS, out=new ImageData(OW,OH), d=out.data;
+  for(let y=0;y<OH;y++)for(let x=0;x<OW;x++){
+    const si=(y+TS)*SW+x+TS, t=sIds[si], o=(y*OW+x)*4;
+    if(t===EMPTY)continue;
+    let r=sBase[si*3], g=sBase[si*3+1], b=sBase[si*3+2], f=1;
+    if(state.walls){
+      if(t===WALL){let k=1;while(k<=6&&sIds[si+k*SW]===WALL)k++;
+        if(k<=6)f=k===1?.4:.62; else if(sIds[si-SW]!==WALL)f=1.2}
+      else for(let k=1;k<=5;k++){if(sIds[si-k*SW]===WALL){f=.5+.09*(k-1);break}}
+    }
+    if(state.edges&&t!==WALL){const z=ZOF[t];const e=TER[t].edge;
+      if(e&&(ZOF[sIds[si-1]]>z||ZOF[sIds[si+1]]>z||ZOF[sIds[si-SW]]>z||ZOF[sIds[si+SW]]>z)){
+        if(e[0]==='tint'){const c=e[1],a=e[2];r+=(c[0]-r)*a;g+=(c[1]-g)*a;b+=(c[2]-b)*a} else f*=e[1]}}
+    d[o]=r*f;d[o+1]=g*f;d[o+2]=b*f;d[o+3]=255;
+  }
+  for(let cy=Y0;cy<Y1;cy++)for(let cx=X0;cx<X1;cx++){const p=src.getP(cx,cy);if(p>=0)drawSprite(d,OW,(cx-X0)*TS,(cy-Y0)*TS,PROPS[p].pix)}
+  edgePass(src,d,OW,OH,X0,Y0,X1,Y1);
+  return out;
+}
+function drawSprite(d,OW,ox,oy,pix){
+  for(let y=0;y<TS;y++)for(let x=0;x<TS;x++){const p=pix[y*TS+x];if(!p)continue;const o=((oy+y)*OW+ox+x)*4;
+    if(p==='s'){if(d[o+3]===0){d[o+3]=100}else{d[o]*=.55;d[o+1]*=.55;d[o+2]*=.55}}
+    else{d[o]=p[0];d[o+1]=p[1];d[o+2]=p[2];d[o+3]=255}}
+}
+
+/* ---------- edge walls: walls, doors and fences that sit on grid lines ----------
+   getH(x,y) is the edge along the top of cell (x,y); getV(x,y) the edge along its
+   left side. 1 = wall, 2 = door, 3 = fence. Walls draw 4 px thick, centred on the
+   line, with a 3/4 front face under horizontal runs. */
+const WOOD=hex('#8e5f30'), WOOD_D=hex('#6a4321'), WOOD_L=hex('#a87842');
+function edgePass(src,d,OW,OH,X0,Y0,X1,Y1){
+  const bx=X0*TS, by=Y0*TS;
+  const at=(X,Y)=>(X>=0&&X<OW&&Y>=0&&Y<OH)?(Y*OW+X)*4:-1;
+  const set=(X,Y,c,f)=>{const o=at(X,Y);if(o>=0){d[o]=c[0]*f;d[o+1]=c[1]*f;d[o+2]=c[2]*f;d[o+3]=255}};
+  const dim=(X,Y,f)=>{const o=at(X,Y);if(o<0)return;if(d[o+3]===0){d[o+3]=(1-f)*220}else{d[o]*=f;d[o+1]*=f;d[o+2]*=f}};
+  const tw=TEX[WALL], brick=(X,Y)=>{const i=(((Y+by)&63)*S+((X+bx)&63))*3;return[tw[i],tw[i+1],tw[i+2]]};
+  const front=state.walls;
+  const H=[],V=[];
+  for(let y=Y0-1;y<=Y1;y++)for(let x=X0-1;x<=X1;x++){const h=src.getH(x,y),v=src.getV(x,y);if(h)H.push([x,y,h]);if(v)V.push([x,y,v])}
+  if(front){
+    for(const [x,y,v] of H){const PX=(x-X0)*TS,PY=(y-Y0)*TS;
+      for(let X=PX;X<PX+TS;X++){if(v===3)dim(X,PY+2,.75);else{dim(X,PY+6,.6);dim(X,PY+7,.72);dim(X,PY+8,.85)}}}
+    for(const [x,y,v] of V){const PX=(x-X0)*TS,PY=(y-Y0)*TS;
+      for(let Y=PY;Y<PY+TS;Y++){if(v===3)dim(PX+1,Y,.8);else{dim(PX+2,Y,.7);dim(PX+3,Y,.85)}}}
+  }
+  const post=(X,Y)=>{for(let j=-2;j<=1;j++)for(let i=-1;i<=1;i++)set(X+i,Y+j,j===-2?WOOD_L:WOOD_D,i===1?.8:1)};
+  for(const [x,y,v] of V){const X0p=(x-X0)*TS,Y0p=(y-Y0)*TS;
+    if(v===3){for(let Y=Y0p-1;Y<Y0p+TS+1;Y++){set(X0p-1,Y,WOOD_L,1);set(X0p,Y,WOOD,1)}
+      post(X0p,Y0p);post(X0p,Y0p+8);if(src.getV(x,y+1)!==3)post(X0p,Y0p+TS);continue}
+    for(let Y=Y0p-2;Y<Y0p+TS+2;Y++)for(let X=X0p-2;X<X0p+2;X++){
+      const rim=(X===X0p-2||X===X0p+1)?.8:1;
+      if(v===2&&Y>=Y0p+2&&Y<Y0p+TS-2) set(X,Y,((Y-Y0p)&3)===0?WOOD_D:WOOD,rim);
+      else set(X,Y,brick(X,Y),1.15*rim)}
+    if(front&&!src.getV(x,y+1)) for(let Y=Y0p+TS+2;Y<Y0p+TS+6;Y++)for(let X=X0p-2;X<X0p+2;X++)
+      set(X,Y,brick(X,Y),Y===Y0p+TS+5?.45:.62);
+  }
+  for(const [x,y,v] of H){const X0p=(x-X0)*TS,Y0p=(y-Y0)*TS;
+    if(v===3){for(let X=X0p-1;X<X0p+TS+1;X++){set(X,Y0p-1,WOOD_L,1);set(X,Y0p,WOOD,1)}
+      post(X0p,Y0p);post(X0p+8,Y0p);if(src.getH(x+1,y)!==3)post(X0p+TS,Y0p);continue}
+    for(let X=X0p-2;X<X0p+TS+2;X++){const door=v===2&&X>=X0p+2&&X<X0p+TS-2;
+      for(let Y=Y0p-2;Y<Y0p+2;Y++){const rim=Y===Y0p-2?.85:1;
+        if(door)set(X,Y,((X-X0p)&3)===0?WOOD_D:WOOD,rim);else set(X,Y,brick(X,Y),1.15*rim)}
+      if(front)for(let Y=Y0p+2;Y<Y0p+6;Y++){const f=Y===Y0p+5?.45:.62;
+        if(door)set(X,Y,((X-X0p)&3)===0?WOOD_D:WOOD,f*1.1);else set(X,Y,brick(X,Y),f)}}
+  }
+}
+
+/* ---------- the endless world ---------- */
+let SEED = 20261009;
+function baseT(x,y){
+  const e=fbm(x*.0035,y*.0035,SEED)*.75+fbm(x*.02,y*.02,SEED+5)*.25;
+  if(e<.37)return DEEP; if(e<.41)return SHAL;
+  const m=fbm(x*.006+300,y*.006,SEED+11), tp=fbm(x*.0025-200,y*.0025,SEED+23);
+  if(e<.43)return tp<.36?SNOW:SAND;
+  if(e>.62){const dt=vn(x*.08,y*.08,SEED+31);if(e>.66&&tp>.58&&dt>.7)return LAVA;return(e>.68||tp<.4)?SNOW:ROCK}
+  if(tp<.35)return SNOW;
+  if(tp>.6&&m<.43)return SAND;
+  if(m>.6&&e<.5)return MARSH;
+  if(m>.53||(m>.47&&vn(x*.05,y*.05,SEED+41)>.62))return FOREST;
+  return GRASS;
+}
+const BIOME = t => t===DEEP?'Deep water':t===SHAL?'Shallows':t===SAND?'Sand':t===GRASS?'Grassland':t===FOREST?'Forest':t===SNOW?'Snowfield':t===ROCK?'Mountains':t===MARSH?'Marsh':t===LAVA?'Lava':TER[t]?TER[t].name:'';
+
+/* locations: at most one per 56×56 region, placed by the seed */
+const P1=['Ash','Bram','Cold','Dun','Elder','Fen','Gold','Hollow','Iron','Kings','Lark','Mire','North','Oak','Raven','Stone','Thorn','Wolf','Wyn','Black','Red','Brook','Glen','Wind','Grey','Bright','Hart','Elm','Salt','Barrow'];
+const P2=['ford','wick','stead','holm','mere','ton','by','bury','gate','hollow','vale','well','moor','crest','fell','haven','field','dale','marsh','combe'];
+function makeName(R,type){const n=P1[R()*P1.length|0]+P2[R()*P2.length|0];
+  return type==='ruin'?`Ruins of ${n}`:type==='tower'?`${n} Watch`:type==='camp'?`${P1[R()*P1.length|0]} Camp`:n}
+const locCache = new Map();
+function loc(rx,ry){const k=rx+','+ry;if(locCache.has(k))return locCache.get(k);
+  const R=mulberry32(hashInt(rx,ry,SEED));let L=null;
+  if(R()<.8){const x=rx*RS+8+Math.floor(R()*(RS-16)), y=ry*RS+8+Math.floor(R()*(RS-16)), t=baseT(x,y);
+    if(t!==DEEP&&t!==SHAL&&t!==LAVA){const r=R();
+      let type=r<.1?'town':r<.45?'village':r<.62?'ruin':r<.78?'tower':'camp';
+      if((t===ROCK||t===SNOW)&&(type==='town'||type==='village'))type=R()<.5?'tower':'ruin';
+      L={rx,ry,x,y,type,name:makeName(R,type),seed:hashInt(rx,ry,SEED+7),made:false}}}
+  locCache.set(k,L);return L}
+const SETTLE = t => t==='town'||t==='village'||t==='tower';
+const radiusOf = L => L.type==='town'?16:L.type==='village'?12:7;
+
+/* roads: each settlement links to its east, south and south-east neighbours */
+const roadCache = new Map();
+function roadBetween(A,B){const k=`${A.rx},${A.ry}>${B.rx},${B.ry}`;if(roadCache.has(k))return roadCache.get(k);
+  let res=null;const dx=B.x-A.x,dy=B.y-A.y,len=Math.hypot(dx,dy);
+  if(len<RS*1.9){const R=mulberry32(hashInt(A.rx*7+B.rx,A.ry*13+B.ry,SEED+3)),n=Math.ceil(len/3),px=-dy/len,py=dx/len,amp=(R()-.5)*len*.25,s=R()*1000;
+    const pts=[];let wet=0;
+    for(let i=0;i<=n;i++){const t=i/n,off=Math.sin(t*Math.PI)*amp+(vn(t*5+s,0,SEED)-.5)*5*Math.sin(t*Math.PI);
+      const x=Math.round(A.x+dx*t+px*off),y=Math.round(A.y+dy*t+py*off);pts.push([x,y]);const bt=baseT(x,y);if(bt===DEEP||bt===SHAL)wet++;if(bt===LAVA)wet+=99}
+    if(wet<=8){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const [x,y] of pts){x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y)}
+      res={pts,x0,y0,x1,y1}}}
+  roadCache.set(k,res);return res}
+function roadsFrom(rx,ry){const A=loc(rx,ry),out=[];if(!A||!SETTLE(A.type))return out;
+  for(const [dx,dy] of [[1,0],[0,1],[1,1]]){const B=loc(rx+dx,ry+dy);if(B&&SETTLE(B.type)){const r=roadBetween(A,B);if(r)out.push(r)}}
+  return out}
+
+/* chunk data: 32×32 cells, generated on first touch, edits kept */
+const chunks = new Map(); let savedChunks = new Map();
+function chunk(cx,cy){const k=cx+','+cy;let c=chunks.get(k);if(c)return c;
+  const s=savedChunks.get(k);
+  if(s){c={terr:Uint8Array.from(s.t),props:Int8Array.from(s.p),hE:Uint8Array.from(s.h),vE:Uint8Array.from(s.v),edited:true}}
+  else c=genChunk(cx,cy);
+  chunks.set(k,c);return c}
+function genChunk(cx,cy){
+  const X0=cx*CS,Y0=cy*CS,RW=CS+2,ring=new Uint8Array(RW*RW);
+  for(let j=0;j<RW;j++)for(let i=0;i<RW;i++)ring[j*RW+i]=baseT(X0-1+i,Y0-1+j);
+  const terr=new Uint8Array(CS*CS),props=new Int8Array(CS*CS).fill(-1),hE=new Uint8Array(CS*CS),vE=new Uint8Array(CS*CS),keep=new Uint8Array(CS*CS);
+  for(let j=0;j<CS;j++)for(let i=0;i<CS;i++)terr[j*CS+i]=ring[(j+1)*RW+i+1];
+  const rx0=Math.floor((X0-20)/RS),rx1=Math.floor((X0+CS+20)/RS),ry0=Math.floor((Y0-20)/RS),ry1=Math.floor((Y0+CS+20)/RS);
+  for(let ry=ry0;ry<=ry1;ry++)for(let rx=rx0;rx<=rx1;rx++){const L=loc(rx,ry);if(!L)continue;const rad=radiusOf(L),plaza=SETTLE(L.type)&&L.type!=='tower'?3.2:0;
+    for(let j=0;j<CS;j++)for(let i=0;i<CS;i++){const d=Math.hypot(X0+i-L.x,Y0+j-L.y);if(d>rad)continue;const k=j*CS+i,t=terr[k];
+      keep[k]=1;if(d<=plaza&&t!==DEEP&&t!==SHAL)terr[k]=ROAD;else if(t===FOREST||t===MARSH)terr[k]=GRASS}}
+  for(let ry=Math.floor(Y0/RS)-2;ry<=Math.floor((Y0+CS)/RS)+1;ry++)for(let rx=Math.floor(X0/RS)-2;rx<=Math.floor((X0+CS)/RS)+1;rx++)
+    for(const r of roadsFrom(rx,ry)){if(r.x1<X0-1||r.x0>X0+CS||r.y1<Y0-1||r.y0>Y0+CS)continue;
+      for(let n=0;n<r.pts.length-1;n++)lineCells(r.pts[n],r.pts[n+1],(x,y)=>{for(const [ax,ay] of [[x,y],[x+1,y],[x,y+1],[x+1,y+1]]){
+        const i=ax-X0,j=ay-Y0;if(i<0||j<0||i>=CS||j>=CS)continue;const k=j*CS+i,t=terr[k];keep[k]=1;
+        terr[k]=(t===DEEP||t===SHAL)?PLANKS:t===LAVA?t:ROAD}})}
+  for(let j=0;j<CS;j++)for(let i=0;i<CS;i++){const k=j*CS+i;if(keep[k])continue;const t=terr[k],h=hash2(X0+i,Y0+j,SEED+77);
+    if(t===GRASS){let nf=false;for(let q=0;q<9;q++)if(ring[(j+(q/3|0))*RW+i+q%3]===FOREST)nf=true;if(h<(nf?.14:.012))props[k]=0}
+    else if((t===SAND||t===ROCK||t===SNOW)&&h>.985)props[k]=1}
+  return {terr,props,hE,vE,edited:false}}
+function lineCells(a,b,fn){let [x0,y0]=a;const [x1,y1]=b,dx=Math.abs(x1-x0),dy=-Math.abs(y1-y0),sx=x0<x1?1:-1,sy=y0<y1?1:-1;let e=dx+dy;
+  for(;;){fn(x0,y0);if(x0===x1&&y0===y1)break;const e2=2*e;if(e2>=dy){e+=dy;x0+=sx}if(e2<=dx){e+=dx;y0+=sy}}}
+function ci(x,y){const cx=Math.floor(x/CS),cy=Math.floor(y/CS);return[chunk(cx,cy),(y-cy*CS)*CS+(x-cx*CS)]}
+const world = {
+  getT:(x,y)=>{const [c,i]=ci(x,y);return c.terr[i]},
+  getP:(x,y)=>{const [c,i]=ci(x,y);return c.props[i]},
+  getH:(x,y)=>{const [c,i]=ci(x,y);return c.hE[i]},
+  getV:(x,y)=>{const [c,i]=ci(x,y);return c.vE[i]},
+};
+
+/* ---------- object grids (buildings, boats, anything with its own tiles) ---------- */
+function makeLayer(w,h,fill){return{W:w,H:h,terr:new Uint8Array(w*h).fill(fill),props:new Int8Array(w*h).fill(-1),
+  hE:new Uint8Array(w*(h+1)),vE:new Uint8Array((w+1)*h),cv:null,ver:0}}
+const layerSrc = L => ({
+  getT:(x,y)=>(x<0||y<0||x>=L.W||y>=L.H)?EMPTY:L.terr[y*L.W+x],
+  getP:(x,y)=>(x<0||y<0||x>=L.W||y>=L.H)?-1:L.props[y*L.W+x],
+  getH:(x,y)=>(x>=0&&x<L.W&&y>=0&&y<=L.H)?L.hE[y*L.W+x]:0,
+  getV:(x,y)=>(x>=0&&x<=L.W&&y>=0&&y<L.H)?L.vE[y*(L.W+1)+x]:0,
+});
+function renderLayer(L){const im=renderRect(layerSrc(L),-1,-1,L.W+1,L.H+1);
+  if(!L.cv)L.cv=document.createElement('canvas');L.cv.width=im.width;L.cv.height=im.height;L.cv.getContext('2d').putImageData(im,0,0);L.ver=renderVer}
+function resizeLayer(L,w,h){const o={W:L.W,H:L.H,terr:L.terr,props:L.props,hE:L.hE,vE:L.vE};const n=makeLayer(w,h,EMPTY);
+  for(let y=0;y<Math.min(h,o.H);y++)for(let x=0;x<Math.min(w,o.W);x++){n.terr[y*w+x]=o.terr[y*o.W+x];n.props[y*w+x]=o.props[y*o.W+x]}
+  for(let y=0;y<=Math.min(h,o.H);y++)for(let x=0;x<Math.min(w,o.W);x++)n.hE[y*w+x]=o.hE[y*o.W+x];
+  for(let y=0;y<Math.min(h,o.H);y++)for(let x=0;x<=Math.min(w,o.W);x++)n.vE[y*(w+1)+x]=o.vE[y*(o.W+1)+x];
+  Object.assign(L,{W:w,H:h,terr:n.terr,props:n.props,hE:n.hE,vE:n.vE,ver:0})}
+function wallRing(L){for(let x=0;x<L.W;x++){L.hE[x]=1;L.hE[L.H*L.W+x]=1}for(let y=0;y<L.H;y++){L.vE[y*(L.W+1)]=1;L.vE[y*(L.W+1)+L.W]=1}}
+function doorOn(L,side,R){const mx=Math.floor(L.W/2),my=Math.floor(L.H/2);
+  if(side===0)L.hE[mx]=2;else if(side===2)L.hE[L.H*L.W+mx]=2;else if(side===1)L.vE[my*(L.W+1)+L.W]=2;else L.vE[my*(L.W+1)]=2}
+function makeHouse(R,w,h,floor,doorSide){const L=makeLayer(w,h,floor);wallRing(L);doorOn(L,doorSide,R);
+  const inner=()=>(R()*L.H|0)*L.W+(R()*L.W|0);if(R()<.7)L.props[inner()]=3;if(R()<.4)L.props[inner()]=2;return L}
+
+let objs = [], deleted = new Set();
+const objIds = () => new Set(objs.map(o=>o.id));
+const objSize = o => o.kind==='grid'?[o.L.W*TS,o.L.H*TS]:[TS,TS];
+function bounds(o){const [w,h]=objSize(o),odd=o.rot&1;return[(odd?h:w)*o.s,(odd?w:h)*o.s]}
+
+function buildLocation(L){
+  const R=mulberry32(L.seed), out=[], rects=[];
+  const id=k=>`${L.rx},${L.ry}:${k}`;
+  const free=(x,y,bw,bh)=>{for(const r of rects)if(x<r[0]+r[2]+1&&x+bw+1>r[0]&&y<r[1]+r[3]+1&&y+bh+1>r[1])return false;
+    for(const [ax,ay] of [[x,y],[x+bw-1,y],[x,y+bh-1],[x+bw-1,y+bh-1],[x+(bw>>1),y+(bh>>1)]]){const t=baseT(ax,ay);if(t===DEEP||t===SHAL||t===LAVA)return false}
+    return true};
+  const sideTo=(ox,oy)=>{const dx=L.x-ox,dy=L.y-oy;return Math.abs(dx)>Math.abs(dy)?(dx>0?1:3):(dy>0?2:0)};
+  const place=(k,name,lay,tx,ty,rot)=>{const odd=rot&1,bw=odd?lay.H:lay.W,bh=odd?lay.W:lay.H;rects.push([tx,ty,bw,bh]);
+    out.push({id:id(k),kind:'grid',name,L:lay,x:(tx+bw/2)*TS,y:(ty+bh/2)*TS,s:1,rot,gen:true,mod:false})};
+  if(L.type==='town'||L.type==='village'){
+    const n=L.type==='town'?10+(R()*4|0):4+(R()*4|0), rmax=L.type==='town'?15:11;
+    if(L.type==='town'){const tx=L.x-3,ty=L.y-9;if(free(tx,ty,6,5)){const hall=makeLayer(6,5,FLAG);wallRing(hall);doorOn(hall,2);hall.hE[5*6+1]=2;hall.props[6+1]=2;hall.props[6+4]=3;place(0,'Town hall',hall,tx,ty,0)}}
+    for(let k=1,tries=0;k<=n&&tries<80;tries++){const a=R()*Math.PI*2,r=5+R()*(rmax-5),w=3+(R()*3|0),h=3+(R()*2|0),rot=R()*4|0,odd=rot&1,bw=odd?h:w,bh=odd?w:h;
+      const tx=Math.round(L.x+Math.cos(a)*r-bw/2),ty=Math.round(L.y+Math.sin(a)*r-bh/2);
+      if(!free(tx,ty,bw,bh))continue;const ws=sideTo(tx+bw/2,ty+bh/2);
+      place(k,'House',makeHouse(R,w,h,R()<.75?PLANKS:FLAG,(ws-rot+4)%4),tx,ty,rot);k++}
+    // a moored boat if open water is near
+    for(let t=0;t<40;t++){const a=R()*Math.PI*2,r=8+R()*14,bx=Math.round(L.x+Math.cos(a)*r),by=Math.round(L.y+Math.sin(a)*r);let ok=true;
+      for(let j=-1;j<3&&ok;j++)for(let i=-1;i<6&&ok;i++)if(baseT(bx+i,by+j)!==DEEP)ok=false;
+      if(ok){const B=makeLayer(5,2,PLANKS);for(let x=0;x<5;x++){B.hE[x]=3;B.hE[10+x]=3}B.vE[0]=3;B.vE[6]=3;B.vE[5]=3;B.vE[11]=3;B.hE[12]=0;B.props[3]=3;
+        out.push({id:id('boat'),kind:'grid',name:'Boat',L:B,x:(bx+2.5)*TS+5,y:(by+1)*TS-4,s:1,rot:0,gen:true,mod:false});break}}
+  } else if(L.type==='tower'){const T=makeLayer(3,3,FLAG);wallRing(T);doorOn(T,sideTo(L.x,L.y+5));T.props[4]=5;place(0,'Watchtower',T,L.x-1,L.y-1,0)}
+  else if(L.type==='ruin'){const w=6+(R()*3|0),h=5+(R()*2|0),Ru=makeLayer(w,h,FLAG);wallRing(Ru);
+    for(let i=0;i<Ru.terr.length;i++)if(R()<.22)Ru.terr[i]=EMPTY;
+    for(let i=0;i<Ru.hE.length;i++)if(Ru.hE[i]&&R()<.35)Ru.hE[i]=0;for(let i=0;i<Ru.vE.length;i++)if(Ru.vE[i]&&R()<.35)Ru.vE[i]=0;
+    Ru.terr[Ru.W+1]=FLAG;Ru.props[Ru.W+1]=5;const rot=R()*4|0,odd=rot&1;place(0,'Ruin',Ru,L.x-((odd?h:w)>>1),L.y-((odd?w:h)>>1),rot)}
+  else if(L.type==='camp'){out.push({id:id('fire'),kind:'sprite',name:'Campfire',prop:4,x:(L.x+.5)*TS,y:(L.y+.5)*TS,s:1,rot:0,gen:true,mod:false});
+    const n=2+(R()*2|0);for(let k=0;k<n;k++){const a=k/n*Math.PI*2+R()*.6;out.push({id:id('tent'+k),kind:'sprite',name:'Tent',prop:6,x:(L.x+.5+Math.cos(a)*3)*TS,y:(L.y+.5+Math.sin(a)*3)*TS,s:2,rot:0,gen:true,mod:false})}}
+  return out}
+function ensureLoc(L){if(!L||L.made)return;L.made=true;const ids=objIds();
+  const list=buildLocation(L).filter(o=>!deleted.has(o.id)&&!ids.has(o.id));if(!list.length)return;
+  let at=objs.findIndex(o=>!o.gen);if(at<0)at=objs.length;objs.splice(at,0,...list)}
+
+/* ---------- view state + caches ---------- */
+const view=$('view'), ctx=view.getContext('2d'), stage=$('stage');
+let zoom=2, ox=0, oy=0, dpr=1, home=[0,0];
+const tileCache=new Map(), atlasCache=new Map(); const TILE_CAP=56, ATLAS_CAP=1400;
+function lru(m,k){const v=m.get(k);if(v){m.delete(k);m.set(k,v)}return v}
+function evict(m,cap){while(m.size>cap)m.delete(m.keys().next().value)}
+
+function renderTile(cx,cy){const im=renderRect(world,cx*CS,cy*CS,cx*CS+CS,cy*CS+CS);
+  let e=tileCache.get(cx+','+cy);if(!e){const cv=document.createElement('canvas');cv.width=cv.height=CS*TS;e={cv};}
+  e.cv.getContext('2d').putImageData(im,0,0);e.ver=renderVer;tileCache.set(cx+','+cy,e);evict(tileCache,TILE_CAP)}
+
+/* region-map raster: wash colours, ink coastline, hand-drawn glyphs */
+const INK=hex('#3b3326'), COAST=hex('#c3dde0');
+function renderAtlas(cx,cy){
+  const X0=cx*CS,Y0=cy*CS,N=CS*AP,RW=CS+6,tg=new Uint8Array(RW*RW);
+  for(let j=0;j<RW;j++)for(let i=0;i<RW;i++)tg[j*RW+i]=world.getT(X0-3+i,Y0-3+j);
+  const T=(i,j)=>tg[(j+3)*RW+i+3];
+  let e=atlasCache.get(cx+','+cy);if(!e){const cv=document.createElement('canvas');cv.width=cv.height=N;e={cv}}
+  const c2=e.cv.getContext('2d'),im=c2.createImageData(N,N),d=im.data;const B=9,glyphs=new Map();
+  const glyph=(bx,by)=>{const k=bx+','+by;let g=glyphs.get(k);if(g)return g;
+    const gx=bx*B+2+(hash2(bx,by,SEED+1)*5|0),gy=by*B+2+(hash2(bx,by,SEED+2)*5|0);
+    const t=T(Math.floor(gx/AP)-X0,Math.floor(gy/AP)-Y0);g={gx,gy,t,on:hash2(bx,by,SEED+3)};glyphs.set(k,g);return g};
+  for(let py=0;py<N;py++)for(let px=0;px<N;px++){
+    const fx=(px+.5)/AP-.5,fy=(py+.5)/AP-.5,i0=Math.floor(fx),j0=Math.floor(fy),tx=fx-i0,ty=fy-j0;
+    const a=T(i0,j0),b=T(i0+1,j0),c=T(i0,j0+1),q=T(i0+1,j0+1);
+    const wts=[(1-tx)*(1-ty),tx*(1-ty),(1-tx)*ty,tx*ty],ts=[a,b,c,q];
+    let wet=0,deep=0;for(let k=0;k<4;k++){if(ts[k]<=SHAL)wet+=wts[k];if(ts[k]===DEEP)deep+=wts[k]}
+    let col;
+    if(wet>.5){const dd=sm(clamp((deep/wet-.2)/.6,0,1));const A=TER[SHAL].atlc,Bc=TER[DEEP].atlc;col=[A[0]+(Bc[0]-A[0])*dd,A[1]+(Bc[1]-A[1])*dd,A[2]+(Bc[2]-A[2])*dd];
+      if(wet<.66)col=COAST}
+    else{col=[0,0,0];for(let k=0;k<4;k++){const cc=TER[ts[k]<=SHAL?SAND:ts[k]].atlc;col[0]+=cc[0]*wts[k];col[1]+=cc[1]*wts[k];col[2]+=cc[2]*wts[k]}
+      const gx=X0*AP+px,gy=Y0*AP+py,g=glyph(Math.floor(gx/B),Math.floor(gy/B)),lx=gx-g.gx,ly=gy-g.gy;
+      if(g.t===FOREST){const r=Math.hypot(lx,ly+1);if(r<2.1)col=lx+ly<-1?hex('#8fa866'):hex('#6f8a4e');else if(r<2.8)col=hex('#43552f');else if(lx===0&&(ly===2||ly===3))col=hex('#4a3b28')}
+      else if((g.t===ROCK||g.t===SNOW&&g.on<.5)&&ly>=-4&&ly<=2){const hw=(ly+4)*.75;if(Math.abs(lx)<=hw){
+        const snow=g.t===SNOW;col=(Math.abs(lx)>hw-1||ly===2)?INK:lx<0?(snow?hex('#ffffff'):hex('#e2d8c4')):(snow?hex('#cbd5df'):hex('#a3977f'))}}
+      else if(g.t===MARSH&&g.on<.8){if(ly===0&&Math.abs(lx)<=2)col=hex('#5f7a5a');else if(ly===-1&&(lx===-1||lx===1))col=hex('#5f7a5a')}
+      else if(g.t===SAND&&g.on<.6){if(Math.abs(lx)<=3&&ly===Math.round(lx*lx*.22)-1)col=hex('#c2a56c')}
+      else if(g.t===GRASS&&g.on<.3){if((lx===0||lx===2)&&ly===0)col=hex('#a3b373')}
+      else if(g.t===LAVA){if(Math.abs(lx)+Math.abs(ly)<=1)col=hex('#ffd25a')}
+      if(ts[0]===ROAD||ts[0]===PLANKS)col=[col[0]*.85,col[1]*.8,col[2]*.72]}
+    if(Math.abs(wet-.5)<.07)col=INK;
+    const f=.95+hash2(X0*AP+px,Y0*AP+py,9)*.06,o=(py*N+px)*4;
+    d[o]=col[0]*f;d[o+1]=col[1]*f;d[o+2]=col[2]*f;d[o+3]=255}
+  c2.putImageData(im,0,0);atlasCache.set(cx+','+cy,e);evict(atlasCache,ATLAS_CAP)}
+
+/* ---------- editing: the target is the world, or the building being edited ---------- */
+let editObj=null, selObj=null;
+let undo=[], op=null, changed=false;
+function beginOp(){op={cells:new Map(),objs:new Map()};changed=false}
+function endOp(){if(op&&(op.cells.size||op.objs.size)){undo.push(op);if(undo.length>80)undo.shift();saveSoon()}op=null}
+function recCell(x,y){if(!op)return;const k=x+','+y;if(op.cells.has(k))return;const [c,i]=ci(x,y);op.cells.set(k,{x,y,t:c.terr[i],p:c.props[i],h:c.hE[i],v:c.vE[i]})}
+function recObj(o,isNew){if(!op||op.objs.has(o.id))return;op.objs.set(o.id,isNew?{idx:-1,data:null}:{idx:objs.indexOf(o),data:serObj(o,false)})}
+let dirtyR=null;
+function invalidate(x0,y0,x1,y1){if(!dirtyR)dirtyR=[x0,y0,x1,y1];else{dirtyR[0]=Math.min(dirtyR[0],x0);dirtyR[1]=Math.min(dirtyR[1],y0);dirtyR[2]=Math.max(dirtyR[2],x1);dirtyR[3]=Math.max(dirtyR[3],y1)}schedule()}
+function applyDirty(){if(!dirtyR)return;const [a,b,c,d]=dirtyR;dirtyR=null;const x0=a-2,y0=b-2,x1=c+2,y1=d+2;
+  for(let cy=Math.floor(y0/CS);cy<=Math.floor(y1/CS);cy++)for(let cx=Math.floor(x0/CS);cx<=Math.floor(x1/CS);cx++){
+    const e=tileCache.get(cx+','+cy);if(e){const sx0=Math.max(x0,cx*CS),sy0=Math.max(y0,cy*CS),sx1=Math.min(x1,cx*CS+CS-1),sy1=Math.min(y1,cy*CS+CS-1);
+      const im=renderRect(world,sx0,sy0,sx1+1,sy1+1);e.cv.getContext('2d').putImageData(im,(sx0-cx*CS)*TS,(sy0-cy*CS)*TS)}
+    if(atlasCache.has(cx+','+cy))renderAtlas(cx,cy)}}
+function markEdited(x,y){const [c]=ci(x,y);c.edited=true}
+function setT(x,y,v){changed=true;
+  if(editObj){const L=editObj.L;if(x<0||y<0||x>=L.W||y>=L.H)return;const i=y*L.W+x;if(L.terr[i]===v)return;recObj(editObj);L.terr[i]=v;L.ver=0;editObj.mod=true;return}
+  if(v===EMPTY)return;const [c,i]=ci(x,y);if(c.terr[i]===v)return;recCell(x,y);c.terr[i]=v;c.edited=true;invalidate(x,y,x,y)}
+function setP(x,y,v){
+  if(editObj){const L=editObj.L;if(x<0||y<0||x>=L.W||y>=L.H)return;const i=y*L.W+x;if(L.props[i]===v)return;recObj(editObj);L.props[i]=v;L.ver=0;editObj.mod=true;changed=true;return}
+  const [c,i]=ci(x,y);if(c.props[i]===v)return;recCell(x,y);c.props[i]=v;c.edited=true;changed=true;invalidate(x,y,x,y)}
+function setEdge(e,v){
+  if(editObj){const L=editObj.L;let arr,i;
+    if(e.h){if(e.x<0||e.x>=L.W||e.y<0||e.y>L.H)return;arr=L.hE;i=e.y*L.W+e.x}else{if(e.x<0||e.x>L.W||e.y<0||e.y>=L.H)return;arr=L.vE;i=e.y*(L.W+1)+e.x}
+    if(arr[i]===v)return;recObj(editObj);arr[i]=v;L.ver=0;editObj.mod=true;changed=true;return}
+  const [c,i]=ci(e.x,e.y),arr=e.h?c.hE:c.vE;if(arr[i]===v)return;recCell(e.x,e.y);arr[i]=v;c.edited=true;changed=true;
+  if(e.h)invalidate(e.x,e.y-1,e.x,e.y);else invalidate(e.x-1,e.y,e.x,e.y)}
+const getEdge=e=>editObj?(e.h?layerSrc(editObj.L).getH(e.x,e.y):layerSrc(editObj.L).getV(e.x,e.y)):(e.h?world.getH(e.x,e.y):world.getV(e.x,e.y));
+const tgtT=(x,y)=>editObj?layerSrc(editObj.L).getT(x,y):world.getT(x,y);
+
+function serObj(o,json){const c=a=>json?Array.from(a):a.slice();
+  return{id:o.id,kind:o.kind,name:o.name,prop:o.prop,x:o.x,y:o.y,s:o.s,rot:o.rot,gen:o.gen,mod:o.mod,
+    L:o.L?{W:o.L.W,H:o.L.H,terr:c(o.L.terr),props:c(o.L.props),hE:c(o.L.hE),vE:c(o.L.vE)}:null}}
+function deserObj(s){const o={...s};if(s.L){const L=makeLayer(s.L.W,s.L.H,EMPTY);L.terr.set(s.L.terr);L.props.set(s.L.props);L.hE.set(s.L.hE);L.vE.set(s.L.vE);o.L=L}return o}
+
+function doUndo(){const u=undo.pop();if(!u)return;
+  for(const c of u.cells.values()){const [ch,i]=ci(c.x,c.y);ch.terr[i]=c.t;ch.props[i]=c.p;ch.hE[i]=c.h;ch.vE[i]=c.v;ch.edited=true;invalidate(c.x,c.y-1,c.x,c.y)}
+  for(const [id,r] of u.objs){const cur=objs.findIndex(o=>o.id===id);if(cur>=0)objs.splice(cur,1);
+    if(r.data){const o=deserObj(r.data);objs.splice(clamp(r.idx,0,objs.length),0,o);deleted.delete(id);
+      if(editObj&&editObj.id===id)editObj=o;if(selObj&&selObj.id===id)selObj=o}
+    else{if(editObj&&editObj.id===id)exitEdit();if(selObj&&selObj.id===id)selObj=null}}
+  syncObjPanel();saveSoon();schedule()}
+
+/* ---------- persistence (this browser only) ---------- */
+const KEY='tilewright.world.v2';let saveT=0;
+function saveSoon(){clearTimeout(saveT);saveT=setTimeout(saveNow,400)}
+// the map's saved state as a plain value: painted chunks saved earlier but not drawn this session are kept, live ones overlay them;
+// before the map is first shown the view is whatever was saved (or none), never a placeholder
+function mapState(){const ch=Object.fromEntries(savedChunks);for(const [k,c] of chunks)if(c.edited)ch[k]={t:Array.from(c.terr),p:Array.from(c.props),h:Array.from(c.hE),v:Array.from(c.vE)};
+  return{seed:SEED,ch,os:objs.filter(o=>!o.gen||o.mod).map(o=>serObj(o,true)),del:[...deleted],view:booted?{ox,oy,zoom}:savedView}}
+function saveNow(){if(window.__ledgerSuspendMapSave)return;try{localStorage.setItem(KEY,JSON.stringify(mapState()))}catch(e){}}
+let savedView=null;
+function applyState(s){SEED=s.seed;savedChunks=new Map(Object.entries(s.ch||{}));objs=(s.os||[]).map(deserObj);deleted=new Set(s.del||[]);savedView=s.view||null}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(!s||typeof s.seed!=='number')return null;applyState(s);return s}catch(e){return null}}
+
+/* ---------- drawing ---------- */
+let pending=[], workRaf=0, raf=0, hover=null, hoverEdge=null, measure=null, drag=null;
+function schedule(){if(!raf)raf=requestAnimationFrame(()=>{raf=0;applyDirty();draw()})}
+function work(){workRaf=0;const t0=performance.now();pending.sort((a,b)=>a.d-b.d);
+  while(pending.length&&performance.now()-t0<14){const j=pending.shift();if(j.kind==='t')renderTile(j.cx,j.cy);else renderAtlas(j.cx,j.cy)}
+  schedule()}
+function tileAlpha(){return sm(clamp((zoom-TILE_LO)/(TILE_HI-TILE_LO),0,1))}
+function viewRect(){const r=stage.getBoundingClientRect();return{x0:-ox/zoom,y0:-oy/zoom,x1:(r.width-ox)/zoom,y1:(r.height-oy)/zoom,w:r.width,h:r.height}}
+function objTransform(o){ctx.translate(o.x,o.y);ctx.rotate(o.rot*Math.PI/2);ctx.scale(o.s,o.s)}
+function drawObj(o,a){if(o.kind==='grid'){if(o.L.ver!==renderVer)renderLayer(o.L);const [w,h]=objSize(o);
+    ctx.save();ctx.globalAlpha=a;objTransform(o);ctx.drawImage(o.L.cv,-w/2-TS,-h/2-TS);ctx.restore()}
+  else{ctx.save();ctx.globalAlpha=a;objTransform(o);ctx.drawImage(PROP_CV[o.prop],-8,-8);ctx.restore()}}
+function inView(o,v){const [bw,bh]=bounds(o),r=Math.max(bw,bh);return o.x+r>v.x0&&o.x-r<v.x1&&o.y+r>v.y0&&o.y-r<v.y1}
+
+function draw(){
+  const v=viewRect(), ta=tileAlpha(), ka=1-ta;
+  pending=[];
+  ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle=ka>.5?'#e6d9bc':'#0f1215';ctx.fillRect(0,0,view.width,view.height);
+  ctx.setTransform(dpr*zoom,0,0,dpr*zoom,dpr*ox,dpr*oy);
+  const span=CS*TS, cx0=Math.floor(v.x0/span), cx1=Math.floor(v.x1/span), cy0=Math.floor(v.y0/span), cy1=Math.floor(v.y1/span);
+  const mx=(v.x0+v.x1)/2/span, my=(v.y0+v.y1)/2/span;
+  // regions in view: make sure their buildings exist
+  for(let ry=Math.floor(v.y0/TS/RS)-1;ry<=Math.floor(v.y1/TS/RS)+1;ry++)for(let rx=Math.floor(v.x0/TS/RS)-1;rx<=Math.floor(v.x1/TS/RS)+1;rx++)ensureLoc(loc(rx,ry));
+  for(let cy=cy0;cy<=cy1;cy++)for(let cx=cx0;cx<=cx1;cx++){const k=cx+','+cy,dd=Math.hypot(cx+.5-mx,cy+.5-my);
+    const t=ta>0?lru(tileCache,k):null;
+    if(ta>0&&(!t||t.ver!==renderVer))pending.push({kind:'t',cx,cy,d:dd-100});
+    if(ka>0||!t){const a=lru(atlasCache,k);
+      if(a){ctx.imageSmoothingEnabled=true;ctx.drawImage(a.cv,cx*span,cy*span,span,span)}else pending.push({kind:'a',cx,cy,d:dd})}
+    if(t&&ta>0){ctx.imageSmoothingEnabled=false;ctx.globalAlpha=ta;ctx.drawImage(t.cv,cx*span,cy*span);ctx.globalAlpha=1}}
+  ctx.imageSmoothingEnabled=false;
+  if(state.grid&&ta>.5){ctx.beginPath();ctx.lineWidth=1/zoom;ctx.strokeStyle=`rgba(8,10,6,${.3*ta})`;
+    for(let x=Math.floor(v.x0/TS)*TS;x<v.x1;x+=TS){ctx.moveTo(x,v.y0);ctx.lineTo(x,v.y1)}
+    for(let y=Math.floor(v.y0/TS)*TS;y<v.y1;y+=TS){ctx.moveTo(v.x0,y);ctx.lineTo(v.x1,y)}ctx.stroke()}
+  if(TW.zones&&TW.zones.length)for(const z of TW.zones){const cx=(z.x+.5)*TS,cy=(z.y+.5)*TS,R=z.r*TS;
+    if(cx+R<v.x0||cx-R>v.x1||cy+R<v.y0||cy-R>v.y1)continue;const g=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+    g.addColorStop(0,z.col+'8c');g.addColorStop(.6,z.col+'59');g.addColorStop(1,z.col+'14');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fill();
+    if(z.ring){ctx.setLineDash([8/zoom,6/zoom]);ctx.lineWidth=2/zoom;ctx.strokeStyle=z.col+'cc';ctx.stroke();ctx.setLineDash([])}}
+  if(ka>0)drawRegionOverlay(v,ka,'under');
+  for(const o of objs){if(o===editObj||!inView(o,v))continue;
+    if(ta>0)drawObj(o,ta);
+    if(ka>0&&o.kind==='grid'&&zoom>.12){const [w,h]=objSize(o);ctx.save();ctx.globalAlpha=ka;objTransform(o);
+      ctx.fillStyle='#6b5238';ctx.fillRect(-w/2,-h/2,w,h);ctx.lineWidth=1/(zoom*o.s);ctx.strokeStyle='#2e261b';ctx.strokeRect(-w/2,-h/2,w,h);ctx.restore()}}
+  if(ka>0)drawRegionOverlay(v,ka,'over');
+  if(ta>.3&&TW.markers&&TW.markers.length){ctx.save();ctx.setTransform(dpr,0,0,dpr,0,0);const rr=clamp(3+zoom*2.5,4,10);
+    ctx.textAlign='center';ctx.textBaseline='bottom';ctx.font='700 11px "Atkinson Hyperlegible", system-ui, sans-serif';ctx.globalAlpha=ta;
+    for(const m of TW.markers){const sx=ox+m.x*zoom,sy=oy+m.y*zoom;if(sx<-20||sy<-20||sx>v.w+20||sy>v.h+20)continue;const r=m.small?rr*.7:rr;
+      ctx.beginPath();ctx.arc(sx,sy,r,0,7);ctx.fillStyle=m.col;ctx.fill();ctx.lineWidth=m.sel?3:1.5;ctx.strokeStyle=m.sel?'#ffffff':'#1b1712';ctx.stroke();
+      if(zoom>=1.6||m.sel){ctx.lineWidth=3;ctx.strokeStyle='rgba(15,18,21,.85)';ctx.strokeText(m.label,sx,sy-r-2);ctx.fillStyle='#ffffff';ctx.fillText(m.label,sx,sy-r-2)}}
+    ctx.restore()}
+  if(ta>.5&&TW.links&&TW.links.size){ctx.save();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.textAlign='center';ctx.textBaseline='middle';
+    for(const [k,lk] of TW.links){const [rx,ry]=k.split(',').map(Number),L=loc(rx,ry);if(!L)continue;
+      const sx=ox+(L.x+.5)*TS*zoom,sy=oy+(L.y+.5-radiusOf(L)-1)*TS*zoom;if(sx<-200||sy<-50||sx>v.w+200||sy>v.h+50)continue;
+      ctx.font='700 16px "IM Fell English", Georgia, serif';const w=ctx.measureText(lk.name||L.name).width+20;
+      ctx.fillStyle='rgba(243,234,211,.92)';ctx.strokeStyle=lk.col||'#b8862b';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect?ctx.roundRect(sx-w/2,sy-13,w,26,6):ctx.rect(sx-w/2,sy-13,w,26);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#2f281e';ctx.fillText(lk.name||L.name,sx,sy+1);
+      if(lk.label){ctx.font='italic 12px "IM Fell English", Georgia, serif';ctx.lineWidth=3;ctx.strokeStyle='rgba(243,234,211,.9)';ctx.strokeText(lk.label,sx,sy+22);ctx.fillStyle='#7a5418';ctx.fillText(lk.label,sx,sy+22)}}
+    ctx.restore()}
+  if(TW.encounters&&TW.encounters.length){ctx.save();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.textAlign='center';
+    const s=ta>.5?clamp(4+zoom*3,6,12):5;
+    for(const e of TW.encounters){const sx=ox+e.x*zoom,sy=oy+e.y*zoom;if(sx<-30||sy<-30||sx>v.w+30||sy>v.h+30)continue;
+      ctx.beginPath();ctx.moveTo(sx,sy-s);ctx.lineTo(sx+s,sy);ctx.lineTo(sx,sy+s);ctx.lineTo(sx-s,sy);ctx.closePath();
+      ctx.fillStyle=e.sel?'#ff8a6a':'#c0392b';ctx.fill();ctx.lineWidth=e.sel?2.5:1.5;ctx.strokeStyle=e.sel?'#ffffff':'#1b1712';ctx.stroke();
+      if(e.n>1&&s>=7){ctx.font='700 9px "Atkinson Hyperlegible", system-ui, sans-serif';ctx.textBaseline='middle';ctx.fillStyle='#ffffff';ctx.fillText(String(e.n),sx,sy+.5)}
+      if(zoom>=.8||e.sel){ctx.font='700 11px "Atkinson Hyperlegible", system-ui, sans-serif';ctx.textBaseline='top';ctx.lineWidth=3;ctx.strokeStyle='rgba(15,18,21,.85)';
+        ctx.strokeText(e.label,sx,sy+s+2);ctx.fillStyle='#ffb3a3';ctx.fillText(e.label,sx,sy+s+2)}}
+    ctx.restore()}
+  if(editObj){ctx.fillStyle='rgba(12,14,16,.5)';ctx.fillRect(v.x0,v.y0,v.x1-v.x0,v.y1-v.y0);drawObj(editObj,1);
+    const [w,h]=objSize(editObj);ctx.save();objTransform(editObj);ctx.translate(-w/2,-h/2);ctx.beginPath();ctx.lineWidth=1/(zoom*editObj.s);ctx.strokeStyle='rgba(214,165,72,.55)';
+    for(let x=0;x<=editObj.L.W;x++){ctx.moveTo(x*TS,0);ctx.lineTo(x*TS,h)}for(let y=0;y<=editObj.L.H;y++){ctx.moveTo(0,y*TS);ctx.lineTo(w,y*TS)}ctx.stroke();ctx.restore()}
+  drawToolOverlay();
+  if(selObj&&state.tool==='objects'){const o=selObj,[w,h]=objSize(o);ctx.save();objTransform(o);const u=1/(zoom*o.s);
+    ctx.setLineDash([5*u,4*u]);ctx.lineWidth=1.5*u;ctx.strokeStyle='#d6a548';ctx.strokeRect(-w/2-2*u,-h/2-2*u,w+4*u,h+4*u);ctx.setLineDash([]);
+    ctx.fillStyle='#d6a548';ctx.fillRect(w/2-4*u,h/2-4*u,9*u,9*u);ctx.restore()}
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  if(measure)drawMeasure();
+  drawScaleBar(v);if(ka>.3)drawCompass(v,ka);
+  $('modeTag').textContent=ta>=.5?'Battle map':'Region map';
+  updateStatus();
+  if(pending.length&&!workRaf)workRaf=requestAnimationFrame(work);
+}
+
+function drawRegionOverlay(v,a,pass){
+  const rx0=Math.floor(v.x0/TS/RS)-2,rx1=Math.floor(v.x1/TS/RS)+1,ry0=Math.floor(v.y0/TS/RS)-2,ry1=Math.floor(v.y1/TS/RS)+1;
+  if(pass==='under'){ctx.save();ctx.globalAlpha=a;ctx.lineJoin=ctx.lineCap='round';
+    for(const [lw,col] of [[4.5,'#f3e6c8'],[2,'#8a6239']]){ctx.beginPath();ctx.lineWidth=lw/zoom;ctx.strokeStyle=col;
+      for(let ry=ry0;ry<=ry1;ry++)for(let rx=rx0;rx<=rx1;rx++)for(const r of roadsFrom(rx,ry)){
+        ctx.moveTo((r.pts[0][0]+1)*TS,(r.pts[0][1]+1)*TS);for(const p of r.pts)ctx.lineTo((p[0]+1)*TS,(p[1]+1)*TS)}
+      if(col==='#8a6239')ctx.setLineDash([6/zoom,3/zoom]);ctx.stroke();ctx.setLineDash([])}
+    ctx.restore();return}
+  ctx.save();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.globalAlpha=a;ctx.textAlign='center';ctx.textBaseline='top';
+  for(let ry=ry0;ry<=ry1;ry++)for(let rx=rx0;rx<=rx1;rx++){const L=loc(rx,ry);if(!L)continue;
+    const link=TW.links&&TW.links.get(rx+','+ry);
+    const big=L.type==='town',show=link||big||(L.type==='village'&&zoom>.09)||zoom>.14;if(!show)continue;
+    const sx=ox+(L.x+.5)*TS*zoom, sy=oy+(L.y+.5)*TS*zoom;
+    if(link){ctx.beginPath();ctx.arc(sx,sy,big?11:9,0,7);ctx.lineWidth=2.5;ctx.strokeStyle=link.col||'#b8862b';ctx.stroke()}
+    ctx.lineWidth=1.4;ctx.strokeStyle='#2f281e';
+    if(L.type==='town'||L.type==='village'){ctx.beginPath();ctx.arc(sx,sy,big?6:4,0,7);ctx.fillStyle='#8c3b2a';ctx.fill();ctx.stroke();if(big){ctx.beginPath();ctx.arc(sx,sy,2,0,7);ctx.fillStyle='#f3e6c8';ctx.fill()}}
+    else if(L.type==='tower'){ctx.fillStyle='#2f281e';ctx.fillRect(sx-3,sy-7,6,11);ctx.fillRect(sx-4,sy-9,2,3);ctx.fillRect(sx-1,sy-9,2,3);ctx.fillRect(sx+2,sy-9,2,3)}
+    else if(L.type==='ruin'){ctx.setLineDash([3,2]);ctx.strokeRect(sx-5,sy-5,10,10);ctx.setLineDash([])}
+    else{ctx.beginPath();ctx.moveTo(sx-6,sy+4);ctx.lineTo(sx,sy-6);ctx.lineTo(sx+6,sy+4);ctx.closePath();ctx.fillStyle='#a0743f';ctx.fill();ctx.stroke()}
+    ctx.font=big?'700 18px "IM Fell English", Georgia, serif':L.type==='village'?'15px "IM Fell English", Georgia, serif':'italic 13px "IM Fell English", Georgia, serif';
+    ctx.lineWidth=3.5;ctx.strokeStyle='rgba(243,234,211,.9)';ctx.strokeText(L.name,sx,sy+9);ctx.fillStyle='#2f281e';ctx.fillText(L.name,sx,sy+9);
+    if(link&&link.label){ctx.font='italic 12px "IM Fell English", Georgia, serif';const ly=sy+(big?29:26);ctx.strokeText(link.label,sx,ly);ctx.fillStyle='#7a5418';ctx.fillText(link.label,sx,ly)}}
+  ctx.restore()}
+/* settlement under a screen point, for clicks on the region map */
+function locNearCell(x,y){const rx=Math.floor(x/RS),ry=Math.floor(y/RS);let best=null,bd=1e9;
+  for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const L=loc(rx+i,ry+j);if(!L)continue;const d=Math.hypot(L.x-x,L.y-y);if(d<radiusOf(L)+4&&d<bd){bd=d;best=L}}return best}
+function locAtScreen(px,py){const v=viewRect();let best=null,bd=16;
+  for(let ry=Math.floor(v.y0/TS/RS)-1;ry<=Math.floor(v.y1/TS/RS)+1;ry++)for(let rx=Math.floor(v.x0/TS/RS)-1;rx<=Math.floor(v.x1/TS/RS)+1;rx++){
+    const L=loc(rx,ry);if(!L)continue;const d=Math.hypot(ox+(L.x+.5)*TS*zoom-px,oy+(L.y+.5)*TS*zoom-py);if(d<bd){bd=d;best=L}}
+  return best}
+function drawCompass(v,a){const x=v.w-34,y=58;ctx.save();ctx.globalAlpha=a;ctx.translate(x,y);
+  ctx.fillStyle='#2f281e';ctx.beginPath();ctx.moveTo(0,-16);ctx.lineTo(5,0);ctx.lineTo(0,-3);ctx.lineTo(-5,0);ctx.closePath();ctx.fill();
+  ctx.fillStyle='#f3e6c8';ctx.strokeStyle='#2f281e';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,16);ctx.lineTo(5,0);ctx.lineTo(0,3);ctx.lineTo(-5,0);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.font='14px "IM Fell English", Georgia, serif';ctx.textAlign='center';ctx.fillStyle='#2f281e';ctx.fillText('N',0,-20);ctx.restore()}
+function drawScaleBar(v){const opts=[5,10,25,50,100,250,500,1000,2640,5280,10560];let ft=opts[0];
+  for(const f of opts){if(f/5*TS*zoom<=170)ft=f}const px=ft/5*TS*zoom,x=v.w-120-px,y=v.h-26;
+  const dark=tileAlpha()<.5;ctx.save();ctx.strokeStyle=dark?'#2f281e':'#e8e3d4';ctx.fillStyle=ctx.strokeStyle;ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x,y-5);ctx.lineTo(x,y);ctx.lineTo(x+px,y);ctx.lineTo(x+px,y-5);ctx.stroke();
+  ctx.font=dark?'14px "IM Fell English", Georgia, serif':'12px "Atkinson Hyperlegible", system-ui, sans-serif';ctx.textAlign='center';
+  ctx.fillText(ft>=5280?`${ft/5280} mile${ft>5280?'s':''}`:ft===2640?'½ mile':`${ft} ft`,x+px/2,y-16);ctx.restore()}
+
+/* overlays in the target's own coordinates */
+function tgtTransform(){ctx.setTransform(dpr*zoom,0,0,dpr*zoom,dpr*ox,dpr*oy);if(editObj){const [w,h]=objSize(editObj);objTransform(editObj);ctx.translate(-w/2,-h/2)}}
+const tgtScale=()=>zoom*(editObj?editObj.s:1);
+function drawToolOverlay(){
+  if(TW.viewOnly)return;
+  if(state.tool==='pan'||state.tool==='measure'||state.tool==='objects')return;
+  ctx.save();tgtTransform();const u=1/tgtScale();
+  if(state.sel.kind==='e'){ctx.strokeStyle=state.sel.i===0?'#e0604a':'#d6a548';ctx.lineWidth=Math.max(4,3*u);ctx.lineCap='square';ctx.beginPath();
+    if(drag&&drag.kind==='edge'&&drag.moved){for(const e of edgeRun(drag.a,drag.b))edgePath(e)}else if(hoverEdge)edgePath(hoverEdge);ctx.stroke()}
+  else if(hover){const cells=brushCells(hover[0],hover[1]),xs=cells.map(c=>c[0]),ys=cells.map(c=>c[1]);
+    ctx.lineWidth=2*u;ctx.strokeStyle='#d6a548';const a=Math.min(...xs),b=Math.min(...ys);ctx.strokeRect(a*TS,b*TS,(Math.max(...xs)-a+1)*TS,(Math.max(...ys)-b+1)*TS)}
+  ctx.restore()}
+function feet(a,b){const dx=Math.abs(a[0]-b[0]),dy=Math.abs(a[1]-b[1]),mx=Math.max(dx,dy),mn=Math.min(dx,dy);
+  return state.diag==='5'?mx*5:(mx-mn)*5+mn*5+Math.floor(mn/2)*5}
+const fmtDist=ft=>ft>=5280?`${(ft/5280).toFixed(2)} mi (${ft.toLocaleString()} ft)`:`${ft} ft`;
+function drawMeasure(){const [a,b]=[measure.a,measure.b],P=c=>[ox+(c[0]+.5)*TS*zoom,oy+(c[1]+.5)*TS*zoom],[ax,ay]=P(a),[bx,by]=P(b);
+  ctx.strokeStyle='#d6a548';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx,by);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#d6a548';for(const [x,y] of [[ax,ay],[bx,by]]){ctx.beginPath();ctx.arc(x,y,4,0,7);ctx.fill()}
+  const label=fmtDist(feet(a,b));ctx.font='700 13px "Atkinson Hyperlegible", system-ui, sans-serif';const w=ctx.measureText(label).width+14,sx=bx+12,sy=by-12;
+  ctx.fillStyle='rgba(15,18,21,.9)';ctx.fillRect(sx,sy-11,w,22);ctx.strokeStyle='#d6a548';ctx.lineWidth=1;ctx.strokeRect(sx+.5,sy-10.5,w-1,21);
+  ctx.fillStyle='#e8e3d4';ctx.textBaseline='middle';ctx.fillText(label,sx+7,sy+.5)}
+function nearLoc(x,y){let best=null,bd=1e9;const rx=Math.floor(x/RS),ry=Math.floor(y/RS);
+  for(let j=-1;j<=1;j++)for(let i=-1;i<=1;i++){const L=loc(rx+i,ry+j);if(!L)continue;const d=Math.hypot(L.x-x,L.y-y);if(d<bd){bd=d;best=L}}
+  return best&&bd<radiusOf(best)+12?best:null}
+function updateStatus(){let s=`${Math.round(zoom*100)}%`;
+  if(hover){if(editObj){const t=tgtT(hover[0],hover[1]);s=`${editObj.name} · Col ${hover[0]+1} · Row ${hover[1]+1} · ${t===EMPTY?'Empty':TER[t]?TER[t].name:''} · ${s}`}
+    else{const t=world.getT(hover[0],hover[1]),p=world.getP(hover[0],hover[1]),L=nearLoc(hover[0],hover[1]);
+      s=`${hover[0]}, ${hover[1]} · ${BIOME(t)}`+(p>=0?` · ${PROPS[p].name}`:'')+(L?` · near ${L.name}`:'')+` · ${s}`}}
+  if(measure)s=`Distance ${fmtDist(feet(measure.a,measure.b))} · `+s;
+  $('status').textContent=s}
+
+/* ---------- pointer + picking ---------- */
+function resize(){dpr=window.devicePixelRatio||1;const r=stage.getBoundingClientRect();view.width=Math.round(r.width*dpr);view.height=Math.round(r.height*dpr);schedule()}
+function centerOn(x,y,z){const r=stage.getBoundingClientRect();if(z)zoom=z;ox=r.width/2-x*zoom;oy=r.height/2-y*zoom;schedule()}
+function screenToMap(e){const r=view.getBoundingClientRect();return[(e.clientX-r.left-ox)/zoom,(e.clientY-r.top-oy)/zoom]}
+function objLocal(o,mx,my){const dx=mx-o.x,dy=my-o.y,a=-o.rot*Math.PI/2,c=Math.cos(a),s=Math.sin(a);return[(dx*c-dy*s)/o.s,(dx*s+dy*c)/o.s]}
+function tgtPx(e){const [mx,my]=screenToMap(e);if(!editObj)return[mx,my];const [lx,ly]=objLocal(editObj,mx,my),[w,h]=objSize(editObj);return[lx+w/2,ly+h/2]}
+const toCell=e=>{const [x,y]=tgtPx(e);return[Math.floor(x/TS),Math.floor(y/TS)]};
+function nearestVertex(e){const [x,y]=tgtPx(e);return[Math.round(x/TS),Math.round(y/TS)]}
+function nearestEdge(e){const [px,py]=tgtPx(e),fx=px/TS,fy=py/TS,dv=Math.abs(fx-Math.round(fx)),dh=Math.abs(fy-Math.round(fy));
+  return dh<dv?{h:1,x:Math.floor(fx),y:Math.round(fy)}:{h:0,x:Math.round(fx),y:Math.floor(fy)}}
+function edgeRun(a,b){const out=[];
+  if(Math.abs(b[0]-a[0])>=Math.abs(b[1]-a[1])){for(let x=Math.min(a[0],b[0]);x<Math.max(a[0],b[0]);x++)out.push({h:1,x,y:a[1]})}
+  else for(let y=Math.min(a[1],b[1]);y<Math.max(a[1],b[1]);y++)out.push({h:0,x:a[0],y});
+  return out}
+function edgePath(e){ctx.moveTo(e.x*TS,e.y*TS);if(e.h)ctx.lineTo(e.x*TS+TS,e.y*TS);else ctx.lineTo(e.x*TS,e.y*TS+TS)}
+function brushCells(cx,cy){const n=state.sel.kind==='t'?state.brush:1,o=-Math.floor((n-1)/2),out=[];
+  for(let y=0;y<n;y++)for(let x=0;x<n;x++)out.push([cx+o+x,cy+o+y]);return out}
+function applyAt(cx,cy){if(state.sel.kind==='t'){for(const [x,y] of brushCells(cx,cy))setT(x,y,state.sel.i)}else if(state.sel.kind==='p')setP(cx,cy,state.sel.i);if(editObj)schedule()}
+function flood(cx,cy){if(state.sel.kind!=='t'){applyAt(cx,cy);return}
+  const from=tgtT(cx,cy),to=state.sel.i;if(from===to||from===EMPTY&&!editObj)return;const st=[[cx,cy]],seen=new Set();let n=0;
+  while(st.length&&n<6000){const [x,y]=st.pop(),k=x+','+y;if(seen.has(k))continue;seen.add(k);if(tgtT(x,y)!==from)continue;
+    if(editObj&&(x<0||y<0||x>=editObj.L.W||y>=editObj.L.H))continue;setT(x,y,to);n++;st.push([x+1,y],[x-1,y],[x,y+1],[x,y-1])}
+  schedule()}
+function hitObj(mx,my){for(let i=objs.length-1;i>=0;i--){const o=objs[i],[lx,ly]=objLocal(o,mx,my),[w,h]=objSize(o);if(Math.abs(lx)<=w/2+2&&Math.abs(ly)<=h/2+2)return o}return null}
+function hitHandle(o,mx,my){const [lx,ly]=objLocal(o,mx,my),[w,h]=objSize(o);return Math.hypot((lx-w/2)*o.s,(ly-h/2)*o.s)*zoom<11}
+function snapObj(o){const [bw,bh]=bounds(o);o.x=Math.round((o.x-bw/2)/TS)*TS+bw/2;o.y=Math.round((o.y-bh/2)/TS)*TS+bh/2}
+
+const ptrs=new Map();let spaceDown=false;
+view.addEventListener('contextmenu',e=>e.preventDefault());
+view.addEventListener('pointerdown',e=>{
+  view.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2){if(op)endOp();const [p,q]=[...ptrs.values()];drag={kind:'pinch',d0:Math.hypot(p.x-q.x,p.y-q.y),z0:zoom,mx:(p.x+q.x)/2,my:(p.y+q.y)/2,ox0:ox,oy0:oy};return}
+  if(TW.placing&&e.button===0){const [mx,my]=screenToMap(e);if(TW.onPlace)TW.onPlace(mx,my);return}
+  if(e.button===1||e.button===2||state.tool==='pan'||spaceDown||TW.viewOnly){
+    if(TW.viewOnly&&e.button===0){const r=view.getBoundingClientRect(),[mx,my]=screenToMap(e);
+      if(TW.encounters&&TW.onEncounterClick){const px=e.clientX-r.left,py=e.clientY-r.top;let best=null,bd=13;
+        for(const en of TW.encounters){const d=Math.hypot(ox+en.x*zoom-px,oy+en.y*zoom-py);if(d<bd){bd=d;best=en}}
+        if(best){drag={kind:'picke',en:best,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY};return}}
+      if(TW.markers&&TW.onMarkerClick&&tileAlpha()>.3){const px=e.clientX-r.left,py=e.clientY-r.top;let best=null,bd=12;
+        for(const m of TW.markers){const d=Math.hypot(ox+m.x*zoom-px,oy+m.y*zoom-py);if(d<bd){bd=d;best=m}}
+        if(best){drag={kind:'pickm',m:best,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY};return}}
+      const L=tileAlpha()<.5?locAtScreen(e.clientX-r.left,e.clientY-r.top):locNearCell(Math.floor(mx/TS),Math.floor(my/TS));
+      if(L){drag={kind:'pick',L,x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY};return}}
+    drag={kind:'pan',x:e.clientX,y:e.clientY};view.style.cursor='grabbing';return}
+  const c=toCell(e);
+  if(state.tool==='measure'){const [mx,my]=screenToMap(e),m=[Math.floor(mx/TS),Math.floor(my/TS)];measure={a:m,b:m};drag={kind:'measure'};schedule();return}
+  measure=null;
+  if(tileAlpha()<.5&&e.button===0){const r=view.getBoundingClientRect(),L=locAtScreen(e.clientX-r.left,e.clientY-r.top);
+    if(L){if(TW.onLocClick)TW.onLocClick(L);else centerOn((L.x+.5)*TS,(L.y+.5)*TS,2);return}}
+  if(state.tool==='objects'){const [mx,my]=screenToMap(e);
+    if(selObj&&hitHandle(selObj,mx,my)){beginOp();recObj(selObj);drag={kind:'scale',o:selObj,s0:selObj.s};return}
+    const o=hitObj(mx,my);selectObj(o);if(o){beginOp();recObj(o);drag={kind:'move',o,dx:mx-o.x,dy:my-o.y,x0:o.x,y0:o.y}}schedule();return}
+  if(state.sel.kind==='e'){beginOp();drag={kind:'edge',a:nearestVertex(e),b:nearestVertex(e),single:nearestEdge(e),moved:false};schedule();return}
+  if(state.tool==='fill'){beginOp();flood(c[0],c[1]);endOp();return}
+  beginOp();drag={kind:'paint',last:c};applyAt(c[0],c[1]);
+});
+view.addEventListener('pointermove',e=>{
+  if(ptrs.has(e.pointerId))ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  hover=toCell(e);hoverEdge=state.sel.kind==='e'?nearestEdge(e):null;
+  if(drag&&drag.kind==='pinch'&&ptrs.size===2){const [p,q]=[...ptrs.values()],r=view.getBoundingClientRect();
+    const nz=clamp(drag.z0*Math.hypot(p.x-q.x,p.y-q.y)/drag.d0,ZMIN,ZMAX),mx=drag.mx-r.left,my=drag.my-r.top,cx=(p.x+q.x)/2-r.left,cy=(p.y+q.y)/2-r.top;
+    ox=cx-(mx-drag.ox0)*nz/drag.z0;oy=cy-(my-drag.oy0)*nz/drag.z0;zoom=nz;schedule();return}
+  if(!drag){schedule();return}
+  if((drag.kind==='pick'||drag.kind==='pickm'||drag.kind==='picke')&&Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)>5)drag.kind='pan';
+  if(drag.kind==='pan'){ox+=e.clientX-drag.x;oy+=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY}
+  else if(drag.kind==='paint'){const c=hover;if(c[0]!==drag.last[0]||c[1]!==drag.last[1]){lineCells(drag.last,c,(x,y)=>applyAt(x,y));drag.last=c}}
+  else if(drag.kind==='measure'){const [mx,my]=screenToMap(e);measure.b=[Math.floor(mx/TS),Math.floor(my/TS)]}
+  else if(drag.kind==='edge'){const b=nearestVertex(e);drag.b=b;if(b[0]!==drag.a[0]||b[1]!==drag.a[1])drag.moved=true}
+  else if(drag.kind==='move'){const [mx,my]=screenToMap(e),o=drag.o;o.x=mx-drag.dx;o.y=my-drag.dy;if(state.snap!==e.shiftKey)snapObj(o);if(o.x!==drag.x0||o.y!==drag.y0){o.mod=true;changed=true}}
+  else if(drag.kind==='scale'){const [mx,my]=screenToMap(e),o=drag.o,[w,h]=objSize(o);o.s=clamp(Math.round(Math.hypot(mx-o.x,my-o.y)/Math.hypot(w/2,h/2)*20)/20,.25,6);
+    if(o.s!==drag.s0){o.mod=true;changed=true}syncObjPanel()}
+  schedule();
+});
+function endPtr(e){ptrs.delete(e.pointerId);
+  if(drag&&drag.kind==='pickm'&&e.type==='pointerup'&&TW.onMarkerClick)TW.onMarkerClick(drag.m.id);
+  if(drag&&drag.kind==='picke'&&e.type==='pointerup'&&TW.onEncounterClick)TW.onEncounterClick(drag.en.id);
+  if(drag&&drag.kind==='pick'&&e.type==='pointerup'){const L=drag.L;if(TW.onLocClick)TW.onLocClick(L);else centerOn((L.x+.5)*TS,(L.y+.5)*TS,Math.max(zoom,1))}
+  if(drag&&drag.kind==='edge'&&e.type==='pointerup'){const v=state.sel.i;
+    if(drag.moved){for(const ed of edgeRun(drag.a,drag.b))setEdge(ed,v)}
+    else if(drag.single){const cur=getEdge(drag.single);setEdge(drag.single,v&&cur===v?0:v)}}
+  if(drag&&['paint','edge','move','scale'].includes(drag.kind)){if(!changed)op=null;endOp()}
+  if(ptrs.size===0){drag=null;view.style.cursor=state.tool==='pan'?'grab':''}
+  schedule()}
+view.addEventListener('pointerup',endPtr);view.addEventListener('pointercancel',endPtr);
+view.addEventListener('pointerleave',()=>{hover=null;hoverEdge=null;schedule()});
+view.addEventListener('dblclick',e=>{if(state.tool!=='objects')return;const [mx,my]=screenToMap(e),o=hitObj(mx,my);if(o&&o.kind==='grid')enterEdit(o)});
+function zoomAt(f,sx,sy){const nz=clamp(zoom*f,ZMIN,ZMAX);ox=sx-(sx-ox)*nz/zoom;oy=sy-(sy-oy)*nz/zoom;zoom=nz;schedule();saveSoon()}
+view.addEventListener('wheel',e=>{e.preventDefault();const r=view.getBoundingClientRect();zoomAt(Math.exp(-e.deltaY*.0015),e.clientX-r.left,e.clientY-r.top)},{passive:false});
+$('zIn').onclick=()=>{const r=view.getBoundingClientRect();zoomAt(1.4,r.width/2,r.height/2)};
+$('zOut').onclick=()=>{const r=view.getBoundingClientRect();zoomAt(1/1.4,r.width/2,r.height/2)};
+
+/* ---------- objects panel ---------- */
+function selectObj(o){selObj=o;syncObjPanel()}
+function syncObjPanel(){const o=selObj;$('objCard').hidden=!o;$('objHint').hidden=!!o;if(!o)return;
+  $('objName').textContent=o.name||(o.kind==='grid'?'Tile object':PROPS[o.prop].name);
+  $('oscale').value=o.s;$('oscaleOut').textContent=`${o.s.toFixed(2)}×`;
+  const g=o.kind==='grid';$('dimRow').hidden=!g;$('editTiles').hidden=!g;if(g){$('ow').value=o.L.W;$('oh').value=o.L.H}}
+function objOp(fn){if(!selObj)return;beginOp();recObj(selObj);fn(selObj);selObj.mod=true;changed=true;endOp();syncObjPanel();schedule()}
+$('oscale').oninput=()=>{if(!selObj)return;if(!op){beginOp();recObj(selObj)}selObj.s=+$('oscale').value;selObj.mod=true;changed=true;$('oscaleOut').textContent=`${selObj.s.toFixed(2)}×`;schedule()};
+$('oscale').onchange=()=>endOp();
+$('rotBtn').onclick=()=>objOp(o=>{o.rot=(o.rot+1)&3;if(state.snap)snapObj(o)});
+for(const id of ['ow','oh'])$(id).onchange=()=>objOp(o=>{resizeLayer(o.L,clamp(+$('ow').value|0,1,24),clamp(+$('oh').value|0,1,24))});
+$('frontBtn').onclick=()=>objOp(o=>{objs.splice(objs.indexOf(o),1);objs.push(o)});
+$('backBtn').onclick=()=>objOp(o=>{objs.splice(objs.indexOf(o),1);objs.unshift(o)});
+const newId=()=>'u'+Date.now().toString(36)+(Math.random()*1e6|0).toString(36);
+function addObj(o){beginOp();recObj(o,true);objs.push(o);changed=true;endOp();setSeg('toolSeg','objects');selectObj(o);schedule()}
+$('dupBtn').onclick=()=>{if(!selObj)return;const o=deserObj(serObj(selObj,false));o.id=newId();o.gen=false;o.mod=false;o.x+=TS;o.y+=TS;addObj(o)};
+function delSel(){if(!selObj)return;const o=selObj;beginOp();recObj(o);objs.splice(objs.indexOf(o),1);if(o.gen)deleted.add(o.id);changed=true;endOp();if(editObj===o)exitEdit();selectObj(null);schedule()}
+$('delBtn').onclick=delSel;
+function viewCenter(){const v=viewRect();return[(v.x0+v.x1)/2,(v.y0+v.y1)/2]}
+$('addBuilding').onclick=()=>{const [x,y]=viewCenter(),L=makeLayer(4,3,PLANKS);wallRing(L);doorOn(L,2);const o={id:newId(),kind:'grid',name:'Building',L,x,y,s:1,rot:0,gen:false,mod:false};snapObj(o);addObj(o)};
+$('addSprite').onclick=()=>{const [x,y]=viewCenter(),p=state.sel.kind==='p'&&state.sel.i>=0?state.sel.i:0;addObj({id:newId(),kind:'sprite',name:PROPS[p].name,prop:p,x,y,s:1,rot:0,gen:false,mod:false})};
+function enterEdit(o){editObj=o;selectObj(o);$('editBar').hidden=false;$('editLabel').textContent=`Editing ${o.name||'object'} tiles`;$('emptySw').hidden=false;
+  if(state.tool==='objects'||state.tool==='measure'||state.tool==='pan')setSeg('toolSeg','paint');schedule()}
+function exitEdit(){editObj=null;$('editBar').hidden=true;$('emptySw').hidden=true;if(state.sel.kind==='t'&&state.sel.i===EMPTY)select('t',GRASS);saveSoon();schedule()}
+$('editTiles').onclick=()=>{if(selObj&&selObj.kind==='grid')enterEdit(selObj)};
+$('doneEdit').onclick=exitEdit;
+$('snap').onchange=()=>{state.snap=$('snap').checked};
+
+/* ---------- palette ---------- */
+function swatch(paint){const c=document.createElement('canvas');c.width=c.height=TS;const x=c.getContext('2d'),id=x.createImageData(TS,TS);paint(id.data);x.putImageData(id,0,0);return c}
+function texInto(d,t){const tx=TEX[t];for(let i=0;i<TS*TS;i++){const y=i>>4,x=i&15,ti=((y+8)*S+x+8)*3;d[i*4]=tx[ti];d[i*4+1]=tx[ti+1];d[i*4+2]=tx[ti+2];d[i*4+3]=255}}
+function swBtn(list,kind,i,title,key,paint){const b=document.createElement('button');b.className='sw';b.title=key?`${title} (${key})`:title;b.setAttribute('aria-label',title);
+  b.append(swatch(paint));if(key){const k=document.createElement('span');k.className='k';k.textContent=key;b.append(k)}
+  b.onclick=()=>select(kind,i);b.dataset.kind=kind;b.dataset.i=i;$(list).append(b);return b}
+const keyFor=i=>i<9?String(i+1):i===9?'0':'';
+TER.forEach((t,i)=>swBtn('terrainList','t',i,t.name,keyFor(i),d=>texInto(d,i)));
+swBtn('terrainList','t',EMPTY,'Empty (building tiles only)','',d=>{for(let i=0;i<256;i++){const c=((i>>2)^(i>>6))&1?70:40;d[i*4]=d[i*4+1]=d[i*4+2]=c;d[i*4+3]=255}}).id='emptySw';
+$('emptySw').hidden=true;
+const spriteInto=(d,pix)=>{for(let j=0;j<256;j++){const q=pix[j];if(!q)continue;if(q==='s'){d[j*4]*=.55;d[j*4+1]*=.55;d[j*4+2]*=.55}else{d[j*4]=q[0];d[j*4+1]=q[1];d[j*4+2]=q[2]}}};
+PROPS.forEach((p,i)=>swBtn('propList','p',i,p.name,'',d=>{texInto(d,GRASS);spriteInto(d,p.pix)}));
+swBtn('propList','p',-1,'Remove prop','',d=>{texInto(d,GRASS);for(let j=3;j<13;j++)for(const x of [j,15-j]){const o=(j*16+x)*4;d[o]=210;d[o+1]=70;d[o+2]=50}});
+const EDGES=[{i:1,name:'Edge wall',key:'W'},{i:2,name:'Door',key:'D'},{i:3,name:'Fence',key:'V'},{i:0,name:'Erase edges',key:'E'}];
+EDGES.forEach(ed=>swBtn('edgeList','e',ed.i,ed.name,ed.key,d=>{texInto(d,FLAG);const tw=TEX[WALL];
+  for(let y=5;y<11;y++)for(let x=0;x<16;x++){const o=(y*16+x)*4;
+    if(ed.i===0){if(y>6&&y<9){d[o]=210;d[o+1]=70;d[o+2]=50}continue}
+    if(ed.i===3){if(y===7||y===8||((x===2||x===9)&&y>=6&&y<=9)){const c=y===7?WOOD_L:WOOD_D;d[o]=c[0];d[o+1]=c[1];d[o+2]=c[2]}continue}
+    const door=ed.i===2&&x>=3&&x<13,ti=(y*S+x)*3,f=y<9?1.15:.62,c=door?((x&3)===0?WOOD_D:WOOD):[tw[ti],tw[ti+1],tw[ti+2]];
+    d[o]=c[0]*f;d[o+1]=c[1]*f;d[o+2]=c[2]*f}}));
+function select(kind,i){state.sel={kind,i};
+  document.querySelectorAll('.sw').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.kind===kind&&+b.dataset.i===i)));
+  const nm=kind==='t'?(i===EMPTY?'Empty':TER[i].name):kind==='p'?(i<0?'':PROPS[i].name):'';
+  $('selName').textContent=kind==='t'?`Painting: ${nm}`:kind==='e'?(i===0?'Erasing edges: click or drag along grid lines':`${EDGES.find(e=>e.i===i).name}s: click a grid line, or drag along one`):i<0?'Removing props':`Placing: ${nm}`;
+  if(state.tool==='measure'||state.tool==='pan'||state.tool==='objects'||(kind==='e'&&state.tool==='fill'))setSeg('toolSeg','paint')}
+function setSeg(id,v){document.querySelectorAll(`#${id} button`).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===String(v))));
+  if(id==='toolSeg'){state.tool=v;if(v!=='measure')measure=null;if(v==='objects'&&editObj)exitEdit();view.style.cursor=v==='pan'?'grab':v==='objects'?'default':''}
+  if(id==='brushSeg')state.brush=+v;
+  if(id==='modeSeg'&&state.mode!==+v){state.mode=+v;restyle()}
+  schedule()}
+function restyle(){renderVer++;schedule()}
+['toolSeg','brushSeg','modeSeg'].forEach(id=>document.querySelectorAll(`#${id} button`).forEach(b=>b.onclick=()=>setSeg(id,b.dataset.v)));
+let slT=0;
+function slider(id,key){const el=$(id),out=$(id+'Out');const upd=()=>{state[key]=+el.value;out.textContent=(+el.value).toFixed(2)};upd();
+  el.oninput=()=>{upd();clearTimeout(slT);slT=setTimeout(restyle,60)}}
+slider('reach','reach');slider('rough','rough');
+for(const k of ['edges','walls','grid'])$(k).onchange=()=>{state[k]=$(k).checked;if(k==='grid')schedule();else restyle()};
+$('diag').onchange=()=>{state.diag=$('diag').value;schedule()};
+
+/* ---------- world controls ---------- */
+function findHome(){for(let r=0;r<8;r++)for(let ry=-r;ry<=r;ry++)for(let rx=-r;rx<=r;rx++){if(Math.max(Math.abs(rx),Math.abs(ry))!==r)continue;
+  const L=loc(rx,ry);if(L&&(L.type==='village'||L.type==='town'))return[(L.x+.5)*TS,(L.y+.5)*TS]}return[0,0]}
+function resetWorld(seed,keepEdits){SEED=seed;if(!keepEdits)savedView=null;chunks.clear();locCache.clear();roadCache.clear();tileCache.clear();atlasCache.clear();
+  if(!keepEdits){savedChunks=new Map();objs=[];deleted=new Set()}undo=[];editObj=null;selObj=null;$('editBar').hidden=true;syncObjPanel();
+  $('seed').value=SEED;home=findHome()}
+$('newWorld').onclick=()=>{resetWorld((Math.random()*1e9)|0,false);centerOn(home[0],home[1],2);saveNow();if(TW.onSeed)TW.onSeed(SEED)};
+$('seed').onchange=()=>{const s=+$('seed').value|0;if(s===SEED)return;resetWorld(s,false);centerOn(home[0],home[1],Math.max(zoom,.5));saveNow();if(TW.onSeed)TW.onSeed(SEED)};
+$('homeBtn').onclick=()=>centerOn(home[0],home[1],2);
+$('undoBtn').onclick=doUndo;
+let resetArmed=0;
+$('resetBtn').onclick=()=>{if(!resetArmed){resetArmed=setTimeout(()=>{resetArmed=0;$('resetBtn').textContent='Reset edits'},2500);$('resetBtn').textContent='Click again to reset';return}
+  clearTimeout(resetArmed);resetArmed=0;$('resetBtn').textContent='Reset edits';resetWorld(SEED,false);schedule();saveNow()};
+
+addEventListener('keydown',e=>{
+  if(!mapActive())return;
+  if(e.target.closest&&e.target.closest('select,input,textarea'))return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();doUndo();return}
+  if(e.code==='Space'){spaceDown=true;e.preventDefault();return}
+  if(e.key==='Escape'){if(editObj)exitEdit();else{selectObj(null);measure=null;schedule()}return}
+  if((e.key==='Delete'||e.key==='Backspace')&&state.tool==='objects'){delSel();return}
+  const k=e.key.toLowerCase();
+  if(/^[0-9]$/.test(k)){select('t',k==='0'?9:+k-1);return}
+  if(k==='w')select('e',1);else if(k==='d')select('e',2);else if(k==='v')select('e',3);else if(k==='e')select('e',0);
+  else if(k==='b')setSeg('toolSeg','paint');else if(k==='f')setSeg('toolSeg','fill');else if(k==='o')setSeg('toolSeg','objects');else if(k==='m')setSeg('toolSeg','measure');else if(k==='h')setSeg('toolSeg','pan');
+  else if(k==='r'&&selObj)$('rotBtn').click();
+  else if(k==='g'){$('grid').checked=!$('grid').checked;state.grid=$('grid').checked;schedule()}
+  else if(k==='['||k===']'){const s=[1,2,3,5],i=s.indexOf(state.brush);setSeg('brushSeg',s[clamp(i+(k===']'?1:-1),0,3)])}
+});
+addEventListener('keyup',e=>{if(e.code==='Space')spaceDown=false});
+addEventListener('pagehide',saveNow);
+
+/* ---------- host API: lets a page that embeds the map link its own places to settlements ---------- */
+function mapActive(){const mv=document.getElementById('mapView');return!mv||!mv.hidden}
+Object.assign(TW,{
+  getSeed:()=>SEED,
+  setSeed:s=>{if(s===SEED)return;resetWorld(s,false);if(booted)centerOn(home[0],home[1],Math.max(zoom,.3));saveNow()},
+  loc:(rx,ry)=>loc(rx,ry),
+  findByName:(name,radius=45)=>{const n=String(name).trim().toLowerCase();for(let r=0;r<=radius;r++)for(let ry=-r;ry<=r;ry++)for(let rx=-r;rx<=r;rx++){
+    if(Math.max(Math.abs(rx),Math.abs(ry))!==r)continue;const L=loc(rx,ry);if(L&&L.name.toLowerCase()===n)return L}return null},
+  focusLoc:(rx,ry,z)=>{const L=loc(rx,ry);if(L)centerOn((L.x+.5)*TS,(L.y+.5)*TS,z||.25)},
+  redraw:()=>{resize()},
+  locObjects:(rx,ry)=>{const L=loc(rx,ry);if(!L)return[];ensureLoc(L);const p=`${rx},${ry}:`;return objs.filter(o=>String(o.id).startsWith(p)).map(o=>({id:o.id,name:o.name,x:o.x,y:o.y}))},
+  focusPx:(x,y,z)=>centerOn(x,y,z||2.5),
+  saveNow:()=>saveNow(),
+  reloadSaved:()=>{const s=load();if(s)resetWorld(s.seed,true);else resetWorld(SEED,false);schedule()},
+  getState:()=>mapState(),
+  setState:s=>{if(s&&typeof s.seed==='number'){applyState(s);resetWorld(s.seed,true)}else resetWorld(SEED,false);if(booted&&savedView){ox=savedView.ox;oy=savedView.oy;zoom=clamp(savedView.zoom,ZMIN,ZMAX)}saveNow();schedule()},
+  terrainAt:(cx,cy)=>world.getT(cx,cy),
+  nearLoc:(cx,cy)=>locNearCell(cx,cy),
+  view:()=>{const v=viewRect();return{x0:v.x0,y0:v.y0,x1:v.x1,y1:v.y1,zoom}},
+  setCursor:c=>{view.style.cursor=c||''},
+});
+
+/* ---------- boot ---------- */
+const saved=load();
+$('seed').value=SEED;home=findHome();
+select('t',GRASS);setSeg('toolSeg','paint');setSeg('brushSeg',1);
+document.querySelectorAll('#modeSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v==='1')));
+syncObjPanel();
+let booted=false;
+new ResizeObserver(()=>{resize();if(!booted&&stage.clientWidth>10){booted=true;
+  if(savedView){ox=savedView.ox;oy=savedView.oy;zoom=clamp(savedView.zoom,ZMIN,ZMAX)}else centerOn(home[0],home[1],2);schedule()}}).observe(stage);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(schedule);
+})();
+</script>

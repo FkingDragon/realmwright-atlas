@@ -1,22 +1,24 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Realmwright Atlas</title><meta name="description" content="A procedural D&amp;D 5e world atlas: maps, live markets, NPC tracking, guilds, monsters and a character creator, all in one page."><meta name="theme-color" content="#0b0e12"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2212%22 fill=%22%230b0e12%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2220%22 fill=%22none%22 stroke=%22%23c9a253%22 stroke-width=%224%22/%3E%3Cpath d=%22M32 14l6 18-6 18-6-18z%22 fill=%22%23e2c37a%22/%3E%3C/svg%3E"></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Realmwright Atlas</title><meta name="description" content="A procedural D&amp;D 5e world atlas: maps, live markets, NPC tracking, guilds, monsters and a character creator, all in one page."><meta name="theme-color" content="#171a1f"><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E%3Crect width=%2264%22 height=%2264%22 rx=%2212%22 fill=%22%230b0e12%22/%3E%3Ccircle cx=%2232%22 cy=%2232%22 r=%2220%22 fill=%22none%22 stroke=%22%23c9a253%22 stroke-width=%224%22/%3E%3Cpath d=%22M32 14l6 18-6 18-6-18z%22 fill=%22%23e2c37a%22/%3E%3C/svg%3E"></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Pixelify+Sans:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: a full-bleed map canvas with instrument panels pinned to its edges, like brass fittings on a chart table */
 :root {
-  --bg: #0b0e12;
-  --panel: #151a20;
-  --panel-2: #1d242c;
-  --line: #2d3742;
-  --text: #ece4d0;
-  --muted: #a1a7a8;
-  --brass: #c9a253;
-  --brass-hi: #e2c37a;
-  --oxblood: #b8573f;
-  --ink: #1a140c;
-  --f-display: 'IM Fell English SC', 'IM Fell English', Georgia, 'Times New Roman', serif;
-  --f-ui: 'Alegreya Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  /* Tilewright palette: charcoal panels, lantern gold, parchment text */
+  --bg: #171a1f;
+  --panel: #20252c;
+  --panel-2: #272d35;
+  --line: #353c46;
+  --text: #e8e3d4;
+  --muted: #99a0a8;
+  --brass: #d6a548;
+  --brass-hi: #e3b341;
+  --oxblood: #c8603f;
+  --ink: #1b1f24;
+  --stage: #0f1215;
+  --f-display: 'Pixelify Sans', 'Courier New', monospace;
+  --f-ui: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --r: 10px;
   color-scheme: dark;
 }
@@ -29,13 +31,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
 #map:active { cursor: grabbing; }
 #map[data-tool="settle"], #map[data-tool="road"], #map[data-tool="label"], #map[data-tool="measure"] { cursor: crosshair; }
 #map[data-tool="paint"] { cursor: none; }
-.panel { background: var(--panel); background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid var(--line); border-radius: var(--r); box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(201,162,83,.06); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+#map[data-tool="tiles"] { cursor: crosshair; }
+.panel { background: var(--panel); background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid var(--line); border-radius: var(--r); box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(214,165,72,.06); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 
 /* top bar */
 .top { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 12px); left: 12px; right: 12px; display: flex; gap: 10px; align-items: flex-start; pointer-events: none; }
 .top > * { pointer-events: auto; }
 .plate { padding: 8px 14px 9px; min-width: 0; position: relative; }
-.plate::after { content: ''; position: absolute; inset: 3px; border: 1px solid rgba(201,162,83,.28); border-radius: 7px; pointer-events: none; }
+.plate::after { content: ''; position: absolute; inset: 3px; border: 1px solid rgba(214,165,72,.28); border-radius: 7px; pointer-events: none; }
 .plate h1 { margin: 0; font: 400 20px/1.15 var(--f-display); letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
 .plate .meta-line { font-size: 12px; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-top: 2px; white-space: nowrap; }
 .plate .meta-line b { color: var(--brass-hi); font-weight: 500; }
@@ -67,7 +70,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .tool svg { width: 22px; height: 22px; }
 .tool span { font-size: 11px; letter-spacing: .03em; }
 .tool:hover { background: var(--panel-2); }
-.tool[aria-pressed="true"] { background: rgba(201,162,83,.16); border-color: rgba(201,162,83,.55); color: var(--brass-hi); }
+.tool[aria-pressed="true"] { background: rgba(214,165,72,.16); border-color: rgba(214,165,72,.55); color: var(--brass-hi); }
 .tool:disabled { opacity: .35; cursor: default; background: none; }
 .tools hr { border: 0; border-top: 1px solid var(--line); margin: 4px 6px; }
 
@@ -122,13 +125,13 @@ section h3 { margin: 0; font: 400 16px var(--f-display); color: var(--brass-hi);
 .fauna li { display: grid; grid-template-columns: 1fr auto 52px; gap: 8px; align-items: center; }
 .fauna em { font-style: normal; font-size: 11px; letter-spacing: .05em; text-transform: uppercase; padding: 1px 6px; border-radius: 99px; border: 1px solid; }
 .r-common { color: #a9c58b; border-color: rgba(169,197,139,.4); }
-.r-uncommon { color: var(--brass-hi); border-color: rgba(226,195,122,.45); }
+.r-uncommon { color: var(--brass-hi); border-color: rgba(227,179,65,.45); }
 .r-rare { color: #f0a58f; border-color: rgba(240,165,143,.45); }
 .fauna b { font-weight: 500; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
 .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 5px; }
 .sw { display: flex; align-items: center; gap: 7px; padding: 5px 7px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 7px; cursor: pointer; font-size: 12.5px; text-align: left; }
 .sw i { width: 18px; height: 18px; border-radius: 4px; flex: none; box-shadow: inset 0 0 0 1px rgba(0,0,0,.35); }
-.sw[aria-pressed="true"] { border-color: var(--brass); background: rgba(201,162,83,.14); }
+.sw[aria-pressed="true"] { border-color: var(--brass); background: rgba(214,165,72,.14); }
 .confirm { border: 1px solid rgba(184,87,63,.6); background: rgba(184,87,63,.1); border-radius: 8px; padding: 10px 12px; display: grid; gap: 8px; margin-top: 10px; }
 .confirm p { margin: 0; font-size: 13.5px; }
 .pop hr { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
@@ -150,7 +153,7 @@ section h3 { margin: 0; font: 400 16px var(--f-display); color: var(--brass-hi);
 .zoomb { display: flex; flex-direction: column; gap: 4px; }
 .zoomb button { width: 38px; height: 38px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel-2); cursor: pointer; font-size: 20px; line-height: 1; }
 
-.toast { position: absolute; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 70px); transform: translateX(-50%); padding: 9px 14px; font-size: 14px; max-width: min(440px, calc(100vw - 32px)); text-align: center; z-index: 8; border-color: rgba(201,162,83,.5); }
+.toast { position: absolute; left: 50%; top: calc(env(safe-area-inset-top, 0px) + 70px); transform: translateX(-50%); padding: 9px 14px; font-size: 14px; max-width: min(440px, calc(100vw - 32px)); text-align: center; z-index: 8; border-color: rgba(214,165,72,.5); }
 .loading { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(11,14,18,.72); z-index: 10; }
 .loading .card { padding: 18px 24px; text-align: center; }
 .loading .card div { font: 400 22px var(--f-display); }
@@ -252,7 +255,7 @@ section h3 { margin: 0; font: 400 16px var(--f-display); color: var(--brass-hi);
 .dot.ok { background: #5fae6e; } .dot.bad { background: #e0583f; }
 .star { font-style: normal; color: var(--brass-hi); }
 .star-btn { flex: none; border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 7px 10px; cursor: pointer; font-size: 13px; font-weight: 500; white-space: nowrap; }
-.star-btn[aria-pressed="true"] { border-color: var(--brass); color: var(--brass-hi); background: rgba(201,162,83,.14); }
+.star-btn[aria-pressed="true"] { border-color: var(--brass); color: var(--brass-hi); background: rgba(214,165,72,.14); }
 .star-btn:focus-visible, .ego .node:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 2px; }
 .link.back { justify-self: start; text-decoration: none; font-size: 13.5px; }
 .secret-line { font-size: 13.5px; color: #e7a6c2; }
@@ -323,7 +326,7 @@ h2 .link:hover, .town-name .link:hover { color: var(--brass-hi); }
 .mon-h { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
 .mon-h h2 { margin: 0; }
 .diff { display: inline-block; padding: 1px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; border: 1px solid; }
-.diff.d0 { color: var(--muted); border-color: var(--line); } .diff.d1 { color: #7cc48a; border-color: rgba(124,196,138,.5); } .diff.d2 { color: var(--brass-hi); border-color: rgba(226,195,122,.5); }
+.diff.d0 { color: var(--muted); border-color: var(--line); } .diff.d1 { color: #7cc48a; border-color: rgba(124,196,138,.5); } .diff.d2 { color: var(--brass-hi); border-color: rgba(227,179,65,.5); }
 .diff.d3 { color: #ee9a5c; border-color: rgba(238,154,92,.55); } .diff.d4 { color: #ec7a62; border-color: rgba(236,122,98,.6); background: rgba(192,83,58,.15); }
 .fauna .link { text-align: left; }
 @media (max-width: 760px) { .pop.mon { left: 12px; } }
@@ -331,10 +334,10 @@ h2 .link:hover, .town-name .link:hover { color: var(--brass-hi); }
 .mk-tabs.g4 button { padding-inline: 2px; }
 .rank { display: inline-flex; align-items: center; justify-content: center; min-width: 74px; padding: 3px 8px; border-radius: 5px; font: 600 11.5px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: #15110a; background: var(--rk); box-shadow: inset 0 0 0 1px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35); flex: none; }
 .rank.sm { min-width: 62px; padding: 2px 6px; font-size: 10px; }
-.evlist.quests button.mine { border-color: var(--brass); background: rgba(201,162,83,.1); }
+.evlist.quests button.mine { border-color: var(--brass); background: rgba(214,165,72,.1); }
 .evlist.pad, .pad { padding: 8px; }
 .pad.grid { display: grid; gap: 10px; }
-.hall { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: linear-gradient(180deg, rgba(201,162,83,.08), transparent); }
+.hall { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; background: linear-gradient(180deg, rgba(214,165,72,.08), transparent); }
 .hall p { margin: 3px 0 0; }
 .facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; font-size: 13.5px; }
 .facts li { display: grid; grid-template-columns: 96px 1fr; gap: 8px; align-items: baseline; }
@@ -381,7 +384,7 @@ h2 .link:hover, .town-name .link:hover { color: var(--brass-hi); }
 .infl { border-top: 1px solid var(--line); padding-top: 8px; }
 .infl p { margin: 0; }
 .pill { display: inline-block; font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; padding: 1px 7px; border-radius: 99px; border: 1px solid; vertical-align: 1px; }
-.pill.on { color: var(--brass-hi); border-color: rgba(226,195,122,.5); } .pill.off { color: var(--muted); border-color: var(--line); }
+.pill.on { color: var(--brass-hi); border-color: rgba(227,179,65,.5); } .pill.off { color: var(--muted); border-color: var(--line); }
 .infl-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .infl-list .infl { border-top: 0; padding-top: 0; }
 .infl-list .infl h3 { display: none; }
@@ -397,7 +400,7 @@ h2 .link:hover, .town-name .link:hover { color: var(--brass-hi); }
 .threat > div:first-child { display: grid; } .threat b { font: 400 22px/1.1 var(--f-display); } .threat small { color: var(--muted); font-size: 12px; }
 .threat.ok b { color: #9fdcaa; } .threat.warn b { color: #e2c37a; } .threat.bad b { color: #f0a58f; }
 .tmeter { height: 6px; border-radius: 3px; background: #2a333c; overflow: hidden; } .tmeter i { display: block; height: 100%; background: linear-gradient(90deg, #5fae6e, #e0a83b 50%, #e0583f); }
-.placing { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border: 1px dashed var(--brass); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; background: rgba(201,162,83,.08); }
+.placing { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; border: 1px dashed var(--brass); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; background: rgba(214,165,72,.08); }
 .placing .btn { margin-left: auto; }
 .mhp { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
 .mhp li { display: grid; grid-template-columns: minmax(80px, 1fr) 1fr auto 52px auto auto; gap: 6px; align-items: center; font-size: 13px; }
@@ -410,7 +413,7 @@ h2 .link:hover, .town-name .link:hover { color: var(--brass-hi); }
 .best .bt { flex: 1; min-width: 0; display: grid; gap: 1px; }
 .best .bn { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .best .bn .link { font-weight: 600; font-size: 14.5px; text-align: left; }
-.best .crb { font-size: 11px; letter-spacing: .05em; color: var(--brass-hi); border: 1px solid rgba(201,162,83,.5); border-radius: 4px; padding: 0 5px; white-space: nowrap; }
+.best .crb { font-size: 11px; letter-spacing: .05em; color: var(--brass-hi); border: 1px solid rgba(214,165,72,.5); border-radius: 4px; padding: 0 5px; white-space: nowrap; }
 .best small { color: var(--muted); font-size: 12px; line-height: 1.35; overflow-wrap: anywhere; }
 .best small.hab { color: #b9c2b0; }
 .best .btn { flex: none; align-self: center; }
@@ -441,7 +444,7 @@ h2 .link:hover, .town-name .link:hover { color: var(--brass-hi); }
 .chips { display: flex; flex-wrap: wrap; gap: 5px; }
 .chip { border: 1px solid var(--line); background: var(--panel-2); border-radius: 999px; padding: 5px 11px; font-size: 13px; cursor: pointer; color: #d9d2c0; }
 .chip:hover:not(:disabled) { border-color: #4a5664; }
-.chip.on { background: rgba(201,162,83,.18); border-color: var(--brass); color: var(--brass-hi); }
+.chip.on { background: rgba(214,165,72,.18); border-color: var(--brass); color: var(--brass-hi); }
 .chip:disabled { opacity: .38; cursor: default; }
 .chip.static { cursor: default; }
 .chip:focus-visible, .opt:focus-visible, .ab:focus-visible, .sv:focus-visible, .cbox:focus-visible, .skills button:focus-visible, .pip:focus-visible, .sp-t:focus-visible, .prep:focus-visible, .dice button:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 2px; }
@@ -449,7 +452,7 @@ h2 .link:hover, .town-name .link:hover { color: var(--brass-hi); }
 .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .opt { text-align: left; border: 1px solid var(--line); background: var(--panel-2); border-radius: 8px; padding: 8px 10px; cursor: pointer; display: grid; gap: 2px; color: var(--text); font: inherit; }
 .opt b { font-weight: 600; font-size: 13.5px; } .opt small { color: var(--muted); font-size: 12px; line-height: 1.35; }
-.opt.on { border-color: var(--brass); background: rgba(201,162,83,.13); } .opt.on b { color: var(--brass-hi); }
+.opt.on { border-color: var(--brass); background: rgba(214,165,72,.13); } .opt.on b { color: var(--brass-hi); }
 .opt:disabled { opacity: .4; cursor: default; }
 .howto { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 14px; color: #d9d2c0; } .howto b { color: var(--brass-hi); font-weight: 500; }
 .scores { width: 100%; border-collapse: collapse; font-size: 13.5px; }
@@ -501,7 +504,7 @@ div.sp-t { cursor: default; flex-wrap: wrap; }
 .rollbar .rc-d { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .rc-t.crit, .rlog b.crit { color: #8fe3a0 !important; } .rc-t.fumble, .rlog b.fumble { color: #f0a58f !important; } .rc-t.heal { color: #9fdcaa !important; }
 .rollbar.flash { animation: rflash .5s ease-out; }
-@keyframes rflash { from { border-color: var(--brass-hi); box-shadow: 0 0 0 3px rgba(226,195,122,.35); } to { border-color: var(--line); } }
+@keyframes rflash { from { border-color: var(--brass-hi); box-shadow: 0 0 0 3px rgba(227,179,65,.35); } to { border-color: var(--line); } }
 .rollctl { display: grid; gap: 6px; }
 .rollctl .seg button { font-size: 12.5px; }
 .dice { display: flex; gap: 4px; } .dice button { flex: 1; border: 1px solid var(--line); background: var(--panel-2); border-radius: 6px; padding: 6px 0; cursor: pointer; font-size: 12.5px; color: #d9d2c0; font-variant-numeric: tabular-nums; }
@@ -532,7 +535,7 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
 .saves { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
 .saves .lab { width: 100%; }
 .sv { flex: 1; min-width: 70px; border: 1px solid var(--line); background: none; border-radius: 8px; padding: 6px 4px; cursor: pointer; font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.sv b { color: var(--text); font-weight: 600; } .sv.p { border-color: rgba(201,162,83,.6); color: var(--brass-hi); } .sv.p b { color: var(--brass-hi); }
+.sv b { color: var(--text); font-weight: 600; } .sv.p { border-color: rgba(214,165,72,.6); color: var(--brass-hi); } .sv.p b { color: var(--brass-hi); }
 .atk { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .atk li { display: flex; align-items: center; gap: 5px; border-bottom: 1px dotted #39434e; padding: 4px 0; }
 .atk li > div { flex: 1; min-width: 0; display: grid; } .atk small { color: var(--muted); font-size: 12px; }
@@ -588,6 +591,118 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
   .toast { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 130px); }
 }
 @media (prefers-reduced-motion: reduce) { #scaleBar, #ladderMark { transition: none; } }
+
+/* ---------------------------------------------------------------- Tilewright look
+   Flat charcoal cards, pixel headings in small caps, outlined buttons and
+   gold for whatever is switched on. Map labels keep their engraved serif. */
+body { font-size: 14px; }
+.panel { background: var(--panel); border-color: var(--line); box-shadow: 0 8px 24px rgba(0,0,0,.42); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.plate::after { display: none; }
+.plate h1 { font: 700 21px/1.1 var(--f-display); color: var(--brass); letter-spacing: .01em; }
+.plate .meta-line { font-family: var(--f-display); font-size: 11px; letter-spacing: .1em; }
+.plate .meta-line b { color: var(--text); }
+.pop h2, .ihead h2, .mk-head h2, .town-name, .mb-open b, .loading .card div, .today, .disp b, .threat b { font-family: var(--f-display); font-weight: 500; }
+.pop h2 { font-size: 18px; color: var(--brass); }
+.ihead h2 { font-size: 22px; }
+.title-in { font-family: var(--f-display); font-weight: 500; font-size: 22px; }
+section h3, .mk-body h4, .lab, .stats dt, .board th, .scores thead th, .cbox span, .lvh, .facts li > span { font-family: var(--f-display); font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+section h3 { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.eyebrow { font-family: var(--f-display); font-size: 11px; letter-spacing: .14em; color: var(--brass); }
+.big, .cbox b, .ab b, .hpv, .rollbar .rc-t, .idx b, #zoomName { font-family: var(--f-display); font-weight: 500; }
+.big { color: var(--brass); }
+.sub, .small, .hook, .pop ol, .feats p, .spells details p { color: var(--text); }
+
+/* tool rail */
+.tool { color: var(--text); border-radius: 7px; }
+.tool span { font-family: var(--f-display); font-size: 11px; letter-spacing: .05em; }
+.tool:hover { background: var(--panel-2); }
+.tool[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--ink); }
+
+/* segmented controls and tabs */
+.seg { background: transparent; padding: 0; gap: 0; border-radius: 7px; overflow: hidden; }
+.seg button { border-radius: 0; border-right: 1px solid var(--line); color: var(--text); font-size: 13px; padding: 7px 4px; }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--brass); color: var(--ink); font-weight: 700; }
+.seg.mk-tabs { border-radius: 9px; }
+.seg.mk-tabs button { font-family: var(--f-display); font-size: 13px; letter-spacing: .06em; padding: 8px 4px; }
+.seg.mk-tabs button[aria-pressed="true"] { font-weight: 500; }
+
+/* buttons, chips, inputs */
+.btn, .mk-ctl button, .star-btn, .x, .zoomb button, .ibtn, .dice button { background: transparent; border-radius: 7px; }
+.btn { font-weight: 400; font-size: 13.5px; padding: 8px 12px; }
+.btn:hover:not(:disabled), .mk-ctl button:hover, .ibtn:hover, .x:hover, .zoomb button:hover, .star-btn:hover { border-color: var(--brass); }
+.btn.primary, .mk-ctl .play { background: var(--brass); border-color: var(--brass); color: var(--ink); font-weight: 700; }
+.btn.primary:hover:not(:disabled) { background: var(--brass-hi); border-color: var(--brass-hi); }
+.btn.danger:hover:not(:disabled) { border-color: #e5785f; color: #ffb7a6; }
+.ibtn { background: var(--panel); }
+.ibtn[aria-expanded="true"] { background: var(--brass); border-color: var(--brass); color: var(--ink); }
+.chip { background: transparent; color: var(--text); }
+.chip:hover:not(:disabled) { border-color: var(--brass); }
+.chip.on { background: var(--brass); border-color: var(--brass); color: var(--ink); font-weight: 700; }
+.chip.on small { color: var(--ink); }
+.sw[aria-pressed="true"], .opt.on { border-color: var(--brass); background: rgba(214,165,72,.14); }
+.field input:not([type="range"]), .field select, .field textarea, .pop textarea, .inline input, .pp-tools input, .pp-tools select, .relform select, .logform input, .pcform input, .pcform select, .hero-bar select, .scores select, .scores input, .asi select, .kitg select, .hp-ctl input, .mhp input { background: var(--bg); border-color: var(--line); border-radius: 6px; }
+.search input { background: var(--panel); border-radius: 9px; }
+.evlist button, .best li, .opt, .cbox, .ab { background: var(--panel-2); }
+.evlist button:hover, .best li:hover { border-color: var(--brass); }
+.link { color: var(--text); text-decoration-color: rgba(214,165,72,.55); text-underline-offset: 3px; }
+.link:hover { color: var(--brass-hi); }
+.ext { color: var(--brass-hi); }
+.stats div { background: var(--panel); }
+.hall { background: var(--panel-2); }
+.rung { color: var(--text); font-family: var(--f-display); font-size: 12px; letter-spacing: .04em; }
+.rollbar { background: var(--stage); }
+.loading { background: rgba(15,18,21,.78); }
+
+/* panels never squash their rows when space runs short; they scroll instead */
+.inspector { grid-auto-rows: max-content; }
+/* a taller tool rail: tighten it sooner on short screens */
+@media (min-width: 761px) and (max-height: 960px) { .tool { padding: 4px 0 3px; gap: 1px; } .tool span { font-size: 10px; } .tools { gap: 2px; } }
+@media (min-width: 761px) and (max-height: 820px) { .tool span { display: none; } .tool { padding: 6px 0; } }
+@media (max-width: 760px) {
+  .tool { min-width: 50px; flex: 1 0 50px; }
+  .tool span { font-size: 9.5px; letter-spacing: .02em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+/* battle map palette */
+.tw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 5px; }
+.tw-b { aspect-ratio: 1; min-width: 0; padding: 3px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); cursor: pointer; display: grid; place-items: center; color: var(--muted); }
+.tw-b img { width: 100%; height: 100%; image-rendering: pixelated; display: block; border-radius: 3px; }
+.tw-b:hover { border-color: var(--brass); }
+.tw-b[aria-pressed="true"] { border-color: var(--brass); box-shadow: 0 0 0 2px var(--brass); }
+.tw-b:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 2px; }
+.tw-x { font: 500 18px var(--f-display); line-height: 1; }
+.tw-cur { margin: 0; font-size: 13px; color: var(--muted); } .tw-cur b { color: var(--text); font-weight: 700; }
+
+/* shop, inn bill and stat blocks */
+.shop-t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.shop-t th { text-align: left; font: 500 11px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 6px 6px; border-bottom: 1px solid var(--line); }
+.shop-t th.num, .shop-t td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.shop-t td { padding: 7px 6px; border-bottom: 1px solid rgba(53,60,70,.6); vertical-align: top; }
+.shop-t tr.cat td { font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); padding-top: 14px; border-bottom: 1px solid var(--line); }
+.shop-t tr.item { cursor: pointer; }
+.shop-t tr.item:hover td, .shop-t tr.item:focus-visible td { background: var(--panel-2); }
+.shop-t tr.item:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: -2px; }
+.shop-t tr.na td { color: var(--muted); }
+.shop-t td small { color: var(--muted); font-size: 12px; }
+.shop-t .note { display: block; margin-top: 4px; line-height: 1.45; max-width: 60ch; }
+.shop-t .ext { color: var(--text); text-decoration-color: rgba(214,165,72,.55); }
+.rar.rr-common { color: #b9c2c9; } .rar.rr-uncommon { color: #79c08a; } .rar.rr-rare { color: #6fa8e8; } .rar.rr-veryrare { color: #b28ae8; } .rar.rr-legendary { color: #e3a341; } .rar.rr-artifact { color: #e5785f; }
+.breakdown { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+.breakdown li { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.breakdown small { color: var(--muted); font-size: 12px; }
+.breakdown b { font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.inn-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; }
+.inn-total b { font: 500 22px var(--f-display); color: var(--brass); font-variant-numeric: tabular-nums; }
+.inn-out { display: grid; gap: 4px; }
+.sblock { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; font-size: 13px; }
+.sblock summary { cursor: pointer; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
+.sblock p { margin: 0; line-height: 1.45; }
+.sblock h4 { margin: 8px 0 2px; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 3px; }
+.sb-k { color: var(--muted); font-style: italic; }
+.sb-ab { width: 100%; border-collapse: collapse; margin: 4px 0; text-align: center; font-variant-numeric: tabular-nums; }
+.sb-ab th { font: 500 11px var(--f-display); letter-spacing: .08em; color: var(--muted); }
+.sb-ab td { font-size: 13px; padding: 2px 0; } .sb-ab small { color: var(--muted); }
+.pop.mon { max-height: calc(100% - 120px); overflow: auto; }
 </style>
 
 <div id="app">
@@ -628,15 +743,16 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
       <li><b>Zoom</b> with the mouse wheel, a pinch, or the ladder at bottom right. The world map becomes realms, then regions, then town streets, then a 5-ft battle grid.</li>
       <li><b>Explore</b>: tap a town to see its population, trades, folk and local wildlife. Tap a road to see its length and travel time.</li>
       <li><b>Settle</b>, <b>Road</b>, <b>Paint</b> and <b>Label</b> add your own places, routes, terrain and notes. Select something and drag it to move it.</li>
-      <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run.</li>
+      <li><b>Tiles</b> paints the pixel battle map square by square: ground, props such as trees, chests and beds, walls, doors, windows and fences, and whole buildings. Zoom right in first; the battle map is drawn in the same pixel style as the old Tilewright tool.</li>
+      <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 items in the System Reference Document for that town and adds up an inn bill.</li>
       <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter.</li>
       <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for.</li>
       <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character.</li>
-      <li><b>Monsters</b> shows creature groups living in their natural habitats, plus rare wanderers and haunts. They appear and move on over the weeks, while lairs stay for months. Place your own from the Bestiary (any Monster Manual creature, or a custom one), track each creature's hit points and initiative, and mark them slain. Monsters near a town raise its danger, which brings more monster quests, bigger rewards and higher bounties on the Market's Bounties tab.</li>
+      <li><b>Monsters</b> shows creature groups living in their natural habitats, plus rare wanderers and haunts. They appear and move on over the weeks, while lairs stay for months. Place your own from the Bestiary (any of the 334 creatures in the System Reference Document, each with its full stat block, or a custom one), track each creature's hit points and initiative, and mark them slain. Monsters near a town raise its danger, which brings more monster quests, bigger rewards and higher bounties on the Market's Bounties tab.</li>
       <li><b>Links</b> Underlined names go somewhere: towns, realms, people, organisations and events all open their own page and move the map to them. Press the open tool again, a tab you are already on, or the – button to fold the panel into a slim bar; tap the bar to bring it back.</li><li><b>Measure</b> gives distance and overland travel time between any two points.</li>
       <li>Everything saves in this browser. Use <b>World → Copy map code</b> for a backup. Undo with Ctrl+Z.</li>
     </ol>
-    <p class="meta" style="margin-top:10px">Shortcuts: V explore, K market, N people, G guilds, H heroes, B monsters, S settle, R road, P paint, L label, M measure, Delete removes the selection, Esc cancels. Character rules include material from the System Reference Document 5.1 by Wizards of the Coast LLC, licensed under CC BY 4.0.</p>
+    <p class="meta" style="margin-top:10px">Shortcuts: V explore, K market, N people, G guilds, H heroes, B monsters, S settle, R road, P paint, T tiles, L label, M measure, Delete removes the selection, Esc cancels. Character rules include material from the System Reference Document 5.1 by Wizards of the Coast LLC, licensed under CC BY 4.0.</p>
   </div>
 
   <nav class="tools panel" aria-label="Tools">
@@ -649,6 +765,7 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
     <button type="button" class="tool" data-tool="settle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-6 8 6v8.5a.5.5 0 0 1-.5.5H15v-5H9v5H4.5a.5.5 0 0 1-.5-.5z"/></svg><span>Settle</span></button>
     <button type="button" class="tool" data-tool="road" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M7 21L10 3M17 21L14 3"/><path d="M12 6v2M12 11v2M12 16v2"/></svg><span>Road</span></button>
     <button type="button" class="tool" data-tool="paint" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M19 3.5a1.8 1.8 0 0 1 2.5 2.5L12 15.5 9 12.5z"/><path d="M8.5 14c-2.2 0-3.6 1.4-3.6 3.4 0 1.2-.6 2.2-1.9 2.9 3.4.6 7.5-.4 7.6-3.8"/></svg><span>Paint</span></button>
+    <button type="button" class="tool" data-tool="tiles" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="1"/><path d="M3.5 9.2h17M3.5 14.8h17M9.2 3.5v17M14.8 3.5v17"/><path d="M9.2 9.2h5.6v5.6H9.2z" fill="currentColor" stroke="none" opacity=".55"/></svg><span>Tiles</span></button>
     <button type="button" class="tool" data-tool="label" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V4.5A1.5 1.5 0 0 1 4.5 3H12l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.4"/></svg><span>Label</span></button>
     <button type="button" class="tool" data-tool="measure" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 16.5L16.5 3 21 7.5 7.5 21z"/><path d="M7 12.5l2 2M10 9.5l1.5 1.5M13 6.5l2 2"/></svg><span>Measure</span></button>
     <hr>
@@ -1040,6 +1157,352 @@ function terrainLib() {
 
 (() => {
 'use strict';
+// ================================================================ pixel battle map (Tilewright renderer)
+// Runs in the tile workers as well as here. Everything is drawn from 16 × 16 pixel cells, one per
+// 5-ft square, with Tilewright's tiling textures, soft blending between natural ground, wall faces,
+// edge walls and doors, and little sprites for props. Needs only the terrain library T.
+function pixelLib(T) {
+  'use strict';
+  const TS = 16, S = 64, EMPTY = 255, CELL = 1056;
+  function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function hash2(x, y, s) { let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263) + Math.imul(s | 0, 1442695041)) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16; return (h >>> 0) / 4294967296; }
+  const sm = (t) => t * t * (3 - 2 * t);
+  function vn(x, y, s) {
+    const ix = Math.floor(x), iy = Math.floor(y), tx = sm(x - ix), ty = sm(y - iy);
+    const a = hash2(ix, iy, s), b = hash2(ix + 1, iy, s), c = hash2(ix, iy + 1, s), d = hash2(ix + 1, iy + 1, s);
+    return a + (b - a) * tx + (c - a) * ty + (a - b - c + d) * tx * ty;
+  }
+  function tvn(x, y, cell, s) {
+    const L = S / cell, fx = x / cell, fy = y / cell, ix = Math.floor(fx), iy = Math.floor(fy), tx = sm(fx - ix), ty = sm(fy - iy), m = (v) => ((v % L) + L) % L;
+    const a = hash2(m(ix), m(iy), s), b = hash2(m(ix + 1), m(iy), s), c = hash2(m(ix), m(iy + 1), s), d = hash2(m(ix + 1), m(iy + 1), s);
+    return a + (b - a) * tx + (c - a) * ty + (a - b - c + d) * tx * ty;
+  }
+  function hex(h) { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+  const sh = (c, f) => [c[0] * f, c[1] * f, c[2] * f];
+
+  // ---------- 64 × 64 tiling pixel textures ----------
+  const newTex = () => new Uint8ClampedArray(S * S * 3);
+  function put(t, x, y, c) { x = ((x % S) + S) % S; y = ((y % S) + S) % S; const i = (y * S + x) * 3; t[i] = c[0]; t[i + 1] = c[1]; t[i + 2] = c[2]; }
+  function quant(t, cols, cell, seed, jit) {
+    const R = mulberry32(seed); cols = cols.map(hex);
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      let n = tvn(x, y, cell, seed) * 0.65 + tvn(x, y, cell / 2, seed + 7) * 0.35;
+      n = (n - 0.5) * 2.2 + 0.5 + (R() - 0.5) * jit;
+      let k = Math.floor(n * cols.length); k = k < 0 ? 0 : k >= cols.length ? cols.length - 1 : k; put(t, x, y, cols[k]);
+    }
+  }
+  function sprinkle(t, seed, p, col, fn) { const R = mulberry32(seed); const c = hex(col); for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) if (R() < p) { if (fn) fn(x, y, c); else put(t, x, y, c); } }
+  function waves(t, seed, n, c1, c2) { const R = mulberry32(seed), a = hex(c1), b = hex(c2); for (let i = 0; i < n; i++) { const x = R() * S | 0, y = R() * S | 0; put(t, x, y + 1, a); put(t, x + 1, y, b); put(t, x + 2, y, a); put(t, x + 3, y + 1, a); } }
+  const tuft = (t) => (x, y, c) => { put(t, x, y, c); put(t, x, y - 1, c); };
+  function texDeep() { const t = newTex(); quant(t, ['#162d55', '#1a3663', '#1f3f70'], 16, 11, 0.25); waves(t, 12, 12, '#3b66a1', '#5a86bf'); return t; }
+  function texShallow() { const t = newTex(); quant(t, ['#2b7893', '#3086a2', '#3994af'], 16, 21, 0.25); waves(t, 22, 11, '#7cc2d2', '#a9e0e8'); return t; }
+  function texSand() { const t = newTex(); quant(t, ['#c4a466', '#d0b375', '#dbc085'], 8, 31, 0.35); sprinkle(t, 32, 0.06, '#ad8c52'); sprinkle(t, 33, 0.025, '#ead49c'); return t; }
+  function texGrass() { const t = newTex(); quant(t, ['#447c33', '#4d8a3a', '#579742'], 8, 41, 0.4); sprinkle(t, 42, 0.07, '#3a6b2b', tuft(t)); sprinkle(t, 43, 0.03, '#70ad52'); return t; }
+  function canopy(seed, base, cols) {
+    const t = newTex(); quant(t, base, 8, seed, 0.3);
+    const R = mulberry32(seed + 1), cs = [];
+    for (let n = 0; n < 18; n++) cs.push({ x: R() * S | 0, y: R() * S | 0, r: 4.5 + R() * 3.5 });
+    const [shd, rim, hi, mid, dk] = cols.map(hex);
+    for (const c of cs) { const r = Math.ceil(c.r) + 2; for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if ((dx - 1) * (dx - 1) + (dy - 2) * (dy - 2) <= c.r * c.r) put(t, c.x + dx, c.y + dy, shd); }
+    for (const c of cs) {
+      const r = Math.ceil(c.r);
+      for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+        const d = Math.hypot(dx, dy); if (d > c.r) continue;
+        const l = 1 - Math.hypot(dx + c.r * 0.35, dy + c.r * 0.35) / (c.r * 1.5) + (R() - 0.5) * 0.18;
+        put(t, c.x + dx, c.y + dy, d > c.r - 1 ? rim : l > 0.6 ? hi : l > 0.38 ? mid : dk);
+      }
+    }
+    return t;
+  }
+  const texForest = () => canopy(51, ['#1c3d1c', '#214621'], ['#142e15', '#1d3f1d', '#5c9a45', '#47823a', '#356a2f']);
+  const texJungle = () => canopy(151, ['#123a1f', '#174426'], ['#0c2a15', '#15401f', '#63b350', '#3f9a3e', '#2a7a31']);
+  function texDirt() { const t = newTex(); quant(t, ['#6c4c2f', '#785636', '#83613d'], 8, 61, 0.4); sprinkle(t, 62, 0.025, '#9a7a54', (x, y, c) => { put(t, x, y, c); put(t, x, y + 1, hex('#4c3520')); }); return t; }
+  function texFlag() {
+    const t = newTex(), R = mulberry32(65), tones = ['#7f7c76', '#8a8780', '#94918a'].map(hex), mortar = hex('#4d4a46');
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      let c;
+      if ((x & 7) === 0 || (y & 7) === 0) c = mortar;
+      else { c = tones[hash2(x >> 3, y >> 3, 3) * 3 | 0]; if ((y & 7) === 1) c = sh(c, 1.08); if ((x & 7) === 7 || (y & 7) === 7) c = sh(c, 0.9); if (R() < 0.04) c = sh(c, 0.88); }
+      put(t, x, y, c);
+    }
+    const ck = hex('#5a5751'); for (let n = 0; n < 7; n++) { const x = (R() * 8 | 0) * 8 + 2 + (R() * 3 | 0), y = (R() * 8 | 0) * 8 + 2; put(t, x, y, ck); put(t, x + 1, y + 1, ck); put(t, x + 1, y + 2, ck); put(t, x + 2, y + 3, ck); }
+    return t;
+  }
+  function texWall() {
+    const t = newTex(), R = mulberry32(91), tones = ['#615b53', '#6b655c', '#757066'].map(hex), mortar = hex('#2e2b28');
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const r = y >> 2, off = (r & 1) * 4; let c;
+      if ((y & 3) === 0 || ((x + off) & 7) === 0) c = mortar;
+      else { c = tones[hash2(((x + off) >> 3) & 7, r, 5) * 3 | 0]; if ((y & 3) === 1) c = sh(c, 1.12); if ((y & 3) === 3) c = sh(c, 0.88); if (R() < 0.05) c = sh(c, 0.9); }
+      put(t, x, y, c);
+    }
+    return t;
+  }
+  function texLava() {
+    const t = newTex(), R = mulberry32(73); const c1 = hex('#ffd84a'), c2 = hex('#ff8a1f'), h1 = hex('#a42c0e'), h2 = hex('#b8340f'), l1 = hex('#4f150a'), l2 = hex('#5e1a0b');
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const n = tvn(x, y, 16, 71) * 0.6 + tvn(x, y, 8, 72) * 0.4, e = Math.abs(n - 0.5), j = R() < 0.5; put(t, x, y, e < 0.018 ? c1 : e < 0.04 ? c2 : n > 0.5 ? (j ? h1 : h2) : (j ? l1 : l2)); }
+    return t;
+  }
+  function texSnow() { const t = newTex(); quant(t, ['#c9d6e4', '#d8e2ed', '#e6eef6'], 8, 81, 0.35); sprinkle(t, 82, 0.02, '#ffffff'); sprinkle(t, 83, 0.03, '#aebfd3'); return t; }
+  function texPlanks() {
+    const t = newTex(), tones = ['#8a6034', '#946838', '#7f5830'].map(hex), seam = hex('#3e2914'), nail = hex('#c9b28a');
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) {
+      const r = y >> 2, off = (r * 5) & 15, bx = ((x + off) >> 4) & 3; let c;
+      if ((y & 3) === 0 || ((x + off) & 15) === 0) c = seam;
+      else { c = tones[hash2(bx, r, 9) * 3 | 0]; if ((y & 3) === 1) c = sh(c, 1.1); if ((y & 3) === 3) c = sh(c, 0.86); if (hash2(x, y, 4) < 0.04) c = sh(c, 0.9); if (((x + off) & 15) === 2 && (y & 3) === 2) c = nail; }
+      put(t, x, y, c);
+    }
+    return t;
+  }
+  function texRock() { const t = newTex(); quant(t, ['#6e6a63', '#7b766e', '#88837a'], 8, 101, 0.45); sprinkle(t, 102, 0.04, '#55514b', (x, y, c) => { put(t, x, y, c); put(t, x + 1, y, c); put(t, x, y - 1, hex('#9d978c')); }); sprinkle(t, 103, 0.02, '#a6a095'); return t; }
+  function texMarsh() {
+    const t = newTex(); quant(t, ['#4a5a32', '#53643a', '#5d6d40'], 8, 111, 0.4);
+    const w1 = hex('#3d5f5a'), w2 = hex('#4b7069');
+    for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const n = tvn(x, y, 16, 113) * 0.7 + tvn(x, y, 8, 114) * 0.3; if (n > 0.6) put(t, x, y, n > 0.66 ? w1 : w2); }
+    sprinkle(t, 115, 0.05, '#7a8a48', tuft(t)); return t;
+  }
+  function texIce() {
+    const t = newTex(); quant(t, ['#b6d1e0', '#c8dfeb', '#d9eaf3'], 16, 121, 0.3);
+    const R = mulberry32(122), k = hex('#8fb2c7'), hi = hex('#f2f8fb');
+    for (let n = 0; n < 7; n++) { let x = R() * S | 0, y = R() * S | 0; for (let s = 0; s < 14; s++) { put(t, x, y, k); put(t, x + 1, y - 1, hi); x += R() < 0.6 ? 1 : 0; y += R() < 0.5 ? 1 : -1; } }
+    return t;
+  }
+  function texScrub() { const t = newTex(); quant(t, ['#7c7a43', '#8a874b', '#979353'], 8, 131, 0.45); sprinkle(t, 132, 0.06, '#66652f', tuft(t)); sprinkle(t, 133, 0.03, '#b2a865'); sprinkle(t, 134, 0.015, '#8d6d43'); return t; }
+  function texTundra() { const t = newTex(); quant(t, ['#79826b', '#858d75', '#91987f'], 8, 141, 0.4); sprinkle(t, 142, 0.04, '#5f6955', tuft(t)); sprinkle(t, 143, 0.03, '#aab09a'); sprinkle(t, 144, 0.01, '#9b5a4a'); return t; }
+  function texFloor() { const t = newTex(); quant(t, ['#2c5223', '#335c28', '#3b672d'], 8, 161, 0.45); sprinkle(t, 162, 0.05, '#25461f', tuft(t)); sprinkle(t, 163, 0.025, '#5c4a2b'); sprinkle(t, 164, 0.02, '#4f8037'); return t; }
+  function texNeedles() { const t = newTex(); quant(t, ['#3a3f27', '#43482c', '#4c5131'], 8, 171, 0.45); sprinkle(t, 172, 0.06, '#5f4a2c', (x, y, c) => { put(t, x, y, c); put(t, x + 1, y + 1, c); }); sprinkle(t, 173, 0.03, '#2c3a22'); return t; }
+
+  // ---------- terrain table ----------
+  // z = layer height (lower layers draw the edge where they meet higher ones); soft = blends with neighbours.
+  const TER = [
+    { name: 'Deep water', z: 0, soft: 1, tex: texDeep, edge: ['tint', '#4f7fbf', 0.55] },
+    { name: 'Shallows', z: 1, soft: 1, tex: texShallow, edge: ['tint', '#d6f1f3', 0.75] },
+    { name: 'Sand', z: 2, soft: 1, tex: texSand, edge: ['dark', 0.8] },
+    { name: 'Grass', z: 4, soft: 1, tex: texGrass, edge: ['dark', 0.75] },
+    { name: 'Forest', z: 6, soft: 1, tex: texForest, edge: ['dark', 0.7] },
+    { name: 'Dirt road', z: 3, soft: 1, tex: texDirt, edge: ['dark', 0.75] },
+    { name: 'Flagstone', z: 3, soft: 0, tex: texFlag, edge: ['dark', 0.7] },
+    { name: 'Stone wall', z: 9, soft: 0, tex: texWall, edge: null },
+    { name: 'Lava', z: 1, soft: 1, tex: texLava, edge: ['tint', '#ffcf4a', 0.8] },
+    { name: 'Snow', z: 5, soft: 1, tex: texSnow, edge: ['dark', 0.85] },
+    { name: 'Planks', z: 3, soft: 0, tex: texPlanks, edge: ['dark', 0.7] },
+    { name: 'Rock', z: 7, soft: 1, tex: texRock, edge: ['dark', 0.78] },
+    { name: 'Marsh', z: 2, soft: 1, tex: texMarsh, edge: ['dark', 0.8] },
+    { name: 'Ice', z: 2, soft: 1, tex: texIce, edge: ['tint', '#f2f8fb', 0.6] },
+    { name: 'Dry grass', z: 4, soft: 1, tex: texScrub, edge: ['dark', 0.78] },
+    { name: 'Tundra', z: 4, soft: 1, tex: texTundra, edge: ['dark', 0.8] },
+    { name: 'Forest floor', z: 5, soft: 1, tex: texFloor, edge: ['dark', 0.78] },
+    { name: 'Pine needles', z: 5, soft: 1, tex: texNeedles, edge: ['dark', 0.8] },
+    { name: 'Jungle', z: 6, soft: 1, tex: texJungle, edge: ['dark', 0.7] },
+  ];
+  const NT = TER.length;
+  const DEEP = 0, SHAL = 1, SAND = 2, GRASS = 3, FOREST = 4, ROAD = 5, FLAG = 6, WALL = 7, LAVA = 8, SNOW = 9, PLANKS = 10, ROCK = 11, MARSH = 12, ICE = 13, SCRUB = 14, TUNDRA = 15, FLOOR = 16, NEEDLES = 17, JUNGLE = 18;
+  const TEX = TER.map((t) => t.tex());
+  TER.forEach((t) => { if (t.edge && t.edge[0] === 'tint') t.edge[1] = hex(t.edge[1]); });
+  const ORDER = [...TER.keys()].sort((a, b) => TER[a].z - TER[b].z);
+  const SOFT = new Uint8Array(256), ZOF = new Int16Array(256).fill(-1);
+  TER.forEach((t, i) => { SOFT[i] = t.soft; ZOF[i] = t.z; });
+  const isWet = (t) => t === DEEP || t === SHAL || t === LAVA;
+
+  // ---------- props: 16 × 16 sprites ('s' = cast shadow) ----------
+  function sprite(rows, pal) {
+    const pix = new Array(256).fill(null);
+    for (let y = 0; y < 16; y++) { const row = (rows[y] || '').padEnd(16, '.').slice(0, 16); for (let x = 0; x < 16; x++) { const ch = row[x]; if (ch === '.') continue; if (ch === 's') { pix[y * 16 + x] = 's'; continue; } if (pal[ch]) pix[y * 16 + x] = hex(pal[ch]); } }
+    return pix;
+  }
+  function stairs() {
+    const pix = new Array(256).fill(null), stone = hex('#9a958b'), k = hex('#2b2824'), side = hex('#4a4640');
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) { let c; if (x === 0 || x === 15 || y === 0 || y === 15) c = k; else if (x === 1 || x === 14) c = side; else { const st = Math.floor((y - 1) / 3), r = (y - 1) % 3; c = sh(stone, (r === 0 ? 1.15 : r === 1 ? 1 : 0.72) * (1 - st * 0.15)); } pix[y * 16 + x] = c; }
+    return pix;
+  }
+  const PROPS = [
+    { name: 'Tree', pix: sprite(['................', '......kkkk......', '....kkGGGhkk....', '...kgGGhhGGgk...', '..kggGGGGGGggk..', '..kdgggGGGgggk..', '.kddgggggggggdk.', '.kdddgggggggddk.', '.kdddddggggdddk.', '..kdddddddddkk..', '...kkdddddkk....', '.....kkbBkk.....', '......kbBk......', '....sskbBkss....', '...ssssssssss...', '................'], { k: '#16240f', d: '#2d5a26', g: '#3f7a32', G: '#5c9e44', h: '#7cc05a', b: '#6a4527', B: '#3d2716' }) },
+    { name: 'Boulder', pix: sprite(['................', '................', '................', '................', '.....kkkkk......', '...kkLLLLlkk....', '..kLLLlllllldk..', '..kLlllllllddk..', '.kllllllllldddk.', '.klllllllldddk..', '.kdlllllddddddk.', '..kddddddddddk..', '...kkkkkkkkkk...', '..ssssssssssss..', '................', '................'], { L: '#a9a498', l: '#8a857b', d: '#66625a', k: '#2d2a26' }) },
+    { name: 'Chest', pix: sprite(['................', '................', '................', '...kkkkkkkkkk...', '..kWWWWWWWWWWk..', '..kwwwwwwwwwwk..', '..kGwwwwwwwwGk..', '..kGGGGyyGGGGk..', '..kGwwwyywwwGk..', '..kxxxxxxxxxxk..', '..kGxxxxxxxxGk..', '..kxxxxxxxxxxk..', '..kkkkkkkkkkkk..', '..ssssssssssss..', '................', '................'], { k: '#2a1a0c', W: '#b7834a', w: '#8e5f30', x: '#6a4321', G: '#8d8f94', y: '#f0c64a' }) },
+    { name: 'Barrel', pix: sprite(['................', '................', '.....kkkkkk.....', '....kttttttk....', '...ktWttttWtk...', '...kkttttttkk...', '...kGGGGGGGGk...', '...kwWwwwwxwk...', '...kwWwwwwxwk...', '...kGGGGGGGGk...', '...kwWwwwwxwk...', '...kwWwwwwxwk...', '....kkkkkkkk....', '...ssssssssss...', '................', '................'], { k: '#241608', t: '#c79257', W: '#a8763f', w: '#87592c', x: '#66421f', G: '#6f7378' }) },
+    { name: 'Campfire', pix: sprite(['................', '......y.........', '.......y........', '......yoy.......', '.....yooy.y.....', '.....orooy......', '....yorrroy.....', '....orrRrro.....', '...gorRRRrog....', '..gbbBRRRBbbg...', '..gkbbBBBbbkg...', '...gggkkkggg....', '..ssssssssss....', '................', '................', '................'], { y: '#ffe066', o: '#ff9a1f', r: '#e2481a', R: '#b02a10', b: '#6b4423', B: '#4a2d16', g: '#8a8a85', k: '#241608' }) },
+    { name: 'Stairs down', pix: stairs() },
+    { name: 'Tent', pix: sprite(['................', '................', '................', '.......k........', '......kWk.......', '.....kWWwk......', '....kWWWwwk.....', '...kWWWkwwwk....', '..kWWWkdkwwwk...', '.kWWWWkddkwwwk..', 'kWWWWWkddkwwwwk.', 'kkkkkkkddkkkkkk.', '.ssssssssssssss.', '................', '................', '................'], { k: '#3b2f20', W: '#d8c9a3', w: '#b3a27a', d: '#3a2e1f' }) },
+    { name: 'Pine', pix: sprite(['................', '.......kk.......', '......kGgk......', '.....kGggdk.....', '......kgdk......', '.....kGggdk.....', '....kGgggddk....', '.....kggddk.....', '....kGgggddk....', '...kGgggggddk...', '..kGggggggdddk..', '...kkkkbBkkkk...', '......kbBk......', '....sskbBkss....', '...ssssssssss...', '................'], { k: '#0f2016', G: '#4f8a52', g: '#2f6338', d: '#1f4a2a', b: '#6a4527', B: '#3d2716' }) },
+    { name: 'Bush', pix: sprite(['................', '................', '................', '................', '................', '......kkkk......', '....kkGGgdkk....', '...kGGgrgggdk...', '...kGgggggrdk...', '..kgggrgggdddk..', '..kgggggdddddk..', '...kdddddddkk...', '....kkkkkkk.....', '...sssssssss....', '................', '................'], { k: '#16240f', G: '#6fae4f', g: '#4a8a38', d: '#2f6328', r: '#c0392b' }) },
+    { name: 'Well', pix: sprite(['................', '................', '.....kkkkkk.....', '...kkSSSSSSkk...', '..kSSskkkksSSk..', '..kSskwwWWksSk..', '.kSskwwwwWWksSk.', '.kbbbbbbbbbbbbk.', '.kBBBBBBBBBBBBk.', '.kSskwwwwwwksdk.', '..kSskwwwwksdk..', '..kSssskkkssdk..', '...kkdddddddk...', '.....kkkkkk.....', '....ssssssss....', '................'], { k: '#2b2824', S: '#a8a296', s: '#8a857b', d: '#66625a', w: '#2b6f8a', W: '#4f97b0', b: '#a87842', B: '#6a4321' }) },
+    { name: 'Market stall', pix: sprite(['................', '................', '................', '.kkkkkkkkkkkkkk.', '.kRRWWRRWWRRWWk.', '.kRRWWRRWWRRWWk.', '.krrwwrrwwrrwwk.', '.kkkkkkkkkkkkkk.', '.kbyyGbbaaGbbbk.', '.kbbbbbbbbbbbbk.', '.kkkkkkkkkkkkkk.', '.ssssssssssssss.', '................', '................', '................', '................'], { R: '#c0392b', r: '#8e2a20', W: '#efe3c8', w: '#c8bca0', k: '#2a1a0c', b: '#8e5f30', y: '#f0c64a', G: '#6faa45', a: '#d0482f' }) },
+    { name: 'Table', pix: sprite(['................', '................', '................', '..kkkkkkkkkkkk..', '..kTTTTTTTTTTk..', '..kTtttttttttk..', '..kTttWWtttttk..', '..kTttWWttyttk..', '..kTttttttttTk..', '..kttttttttttk..', '..kkkkkkkkkkkk..', '..kk........kk..', '..ssssssssssss..', '................', '................', '................'], { T: '#b7834a', t: '#94673a', W: '#e8e3d4', y: '#f0c64a', k: '#2a1a0c' }) },
+    { name: 'Bed', pix: sprite(['................', '...kkkkkkkkkk...', '...kWWWWWWWWk...', '...kWwwwwwwWk...', '...kkkkkkkkkk...', '...kBBBBBBBBk...', '...kBbbbbbbBk...', '...kBbbbbbbBk...', '...kBbbbbbbBk...', '...kBbbbbbbBk...', '...kBBBBBBBBk...', '...kffffffffk...', '...kkkkkkkkkk...', '...ssssssssss...', '................', '................'], { W: '#efe8d8', w: '#cfc6b0', B: '#9a3b32', b: '#7d2f28', f: '#8e5f30', k: '#2a1a0c' }) },
+    { name: 'Crate', pix: sprite(['................', '................', '................', '...kkkkkkkkkk...', '...kLLLLLLLLk...', '...kLxllllxlk...', '...kLlxllxllk...', '...kLllxxlllk...', '...kLllxxlllk...', '...kLlxllxllk...', '...kLxllllxlk...', '...kddddddddk...', '...kkkkkkkkkk...', '...ssssssssss...', '................', '................'], { L: '#c99a5a', l: '#a87842', x: '#6a4321', d: '#7f5830', k: '#2a1a0c' }) },
+    { name: 'Altar', pix: sprite(['................', '................', '....y......y....', '....o......o....', '...kWk....kWk...', '.kkkkkkkkkkkkkk.', '.kSSSSSSSSSSSSk.', '.kSsssssssssssk.', '.kSsssRRRRsssdk.', '.kSsssRRRRsssdk.', '.kddddddddddddk.', '.kkkkkkkkkkkkkk.', '.ssssssssssssss.', '................', '................', '................'], { S: '#c9c3b6', s: '#a8a296', d: '#7d786e', R: '#9a2b2b', W: '#efe3c8', y: '#ffe066', o: '#ff9a1f', k: '#2b2824' }) },
+  ];
+  const P_TREE = 0, P_BOULDER = 1, P_PINE = 7, P_BUSH = 8;
+
+  // ---------- natural ground from the world's biomes ----------
+  // biome ids from the terrain library: 0 deep, 1 sea, 2 shallows, 3 ice, 4 beach, 5 grass, 6 forest, 7 taiga,
+  // 8 jungle, 9 swamp, 10 desert, 11 scrub, 12 tundra, 13 snow, 14 mountains, 15 peaks, 16 river
+  const BIO = [DEEP, DEEP, SHAL, ICE, SAND, GRASS, FOREST, NEEDLES, JUNGLE, MARSH, SAND, SCRUB, TUNDRA, SNOW, ROCK, SNOW, SHAL];
+  function naturalT(cx, cy, circ) {
+    const x = (cx + 0.5) / CELL, y = (cy + 0.5) / CELL;
+    if (x < 0 || y < 0 || x > T.W || y > T.H) return DEEP;
+    const b = T.biomeAt(x, y, 15, circ);
+    const t = BIO[b];
+    if (b === 6 || b === 8) { // groves of closed canopy with clearings of forest floor between
+      const n = T.noise2(cx * 0.045 + 11.3, cy * 0.045 - 7.1) + 0.45 * T.noise2(cx * 0.12 - 3.7, cy * 0.12 + 5.2);
+      return n > (b === 8 ? -0.05 : 0.3) ? t : FLOOR;
+    }
+    return t;
+  }
+  function autoProp(t, cx, cy, nearCanopy) {
+    const h = T.hash(cx, cy, 901);
+    switch (t) {
+      case GRASS: return h < (nearCanopy ? 0.13 : 0.012) ? P_TREE : h > 0.982 ? P_BUSH : h > 0.979 ? P_BOULDER : -1;
+      case FLOOR: return h < 0.24 ? P_TREE : h < 0.31 ? P_BUSH : -1;
+      case NEEDLES: return h < 0.3 ? P_PINE : h < 0.33 ? P_BOULDER : -1;
+      case SCRUB: return h < 0.05 ? P_BUSH : h < 0.066 ? P_BOULDER : -1;
+      case ROCK: return h < 0.06 ? P_BOULDER : -1;
+      case TUNDRA: return h < 0.02 ? P_BOULDER : h < 0.032 ? P_BUSH : -1;
+      case SNOW: return h < 0.008 ? P_BOULDER : h > 0.995 ? P_PINE : -1;
+      case SAND: return h < 0.005 ? P_BOULDER : -1;
+      case MARSH: return h < 0.05 ? P_BUSH : -1;
+      default: return -1;
+    }
+  }
+
+  // ---------- the renderer ----------
+  // job: N squares a side from (X0, Y0). ov: terrain for the (N+4)² ring (255 natural, 254 road or bridge,
+  // 253 paved street or bridge, otherwise a terrain id). pr: props for the N² squares (-2 automatic, -1 none).
+  // eh / ev: edges for the (N+2)² ring, along the top and the left of each square (1 wall, 2 door, 3 fence, 4 window).
+  const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+  const sc = new Float32Array(NT);
+  const REACH = 0.5, ROUGH = 0.25;
+  function pick(nb, px, py, wx, wy) {
+    const u = (px + 0.5) / TS, v = (py + 0.5) / TS; sc.fill(0); let present = 0;
+    for (let k = 0; k < 9; k++) {
+      const t = nb[k]; if (!SOFT[t]) continue;
+      const dx = k % 3 - 1, dy = (k / 3 | 0) - 1;
+      const ex = u < dx ? dx - u : (u > dx + 1 ? u - dx - 1 : 0), ey = v < dy ? dy - v : (v > dy + 1 ? v - dy - 1 : 0);
+      const d = Math.sqrt(ex * ex + ey * ey); if (d >= REACH) continue;
+      let w = 1 - d / REACH; w = w * w * (3 - 2 * w); sc[t] += w; present |= 1 << t;
+    }
+    let best = nb[4], bs = -1e9;
+    for (let t = 0; t < NT; t++) if (present >> t & 1) {
+      const n = (vn(wx * 0.2, wy * 0.2, t * 101 + 7) * 0.65 + vn(wx * 0.5, wy * 0.5, t * 101 + 9) * 0.35) * 2 - 1;
+      const s = sc[t] + ROUGH * n + ZOF[t] * 0.002; if (s > bs) { bs = s; best = t; }
+    }
+    return best;
+  }
+  const WOOD = hex('#8e5f30'), WOOD_D = hex('#6a4321'), WOOD_L = hex('#a87842'), GLASS = hex('#9ccbe0'), GLASS_D = hex('#5f8fa6');
+  function drawSprite(d, OW, ox, oy, pix) {
+    for (let y = 0; y < TS; y++) for (let x = 0; x < TS; x++) {
+      const p = pix[y * TS + x]; if (!p) continue; const o = ((oy + y) * OW + ox + x) * 4;
+      if (p === 's') { d[o] *= 0.55; d[o + 1] *= 0.55; d[o + 2] *= 0.55; } else { d[o] = p[0]; d[o + 1] = p[1]; d[o + 2] = p[2]; d[o + 3] = 255; }
+    }
+  }
+  function render(job) {
+    const N = job.N, X0 = job.X0, Y0 = job.Y0, CW = N + 4, RW = N + 2, ov = job.ov, circ = job.circ;
+    const tc = new Uint8Array(CW * CW), natural = new Uint8Array(CW * CW);
+    for (let j = 0; j < CW; j++) for (let i = 0; i < CW; i++) {
+      const k = j * CW + i; let v = ov[k];
+      if (v >= 253) {
+        const n = naturalT(X0 - 2 + i, Y0 - 2 + j, circ); natural[k] = 1;
+        v = v === 255 ? n : (n === DEEP || n === SHAL || n === MARSH || n === ICE) ? PLANKS : v === 254 ? ROAD : FLAG;
+        if (ov[k] !== 255) natural[k] = 0;
+      }
+      tc[k] = v;
+    }
+    // props
+    const props = new Int8Array(N * N);
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const k = j * N + i, p = job.pr[k];
+      if (p !== -2) { props[k] = p; continue; }
+      const ck = (j + 2) * CW + i + 2;
+      if (!natural[ck]) { props[k] = -1; continue; }
+      let near = false;
+      if (tc[ck] === GRASS) for (let q = 0; q < 9 && !near; q++) { const t = tc[ck + ((q / 3 | 0) - 1) * CW + (q % 3 - 1)]; if (t === FOREST || t === FLOOR) near = true; }
+      props[k] = autoProp(tc[ck], X0 + i, Y0 + j, near);
+    }
+    // ground: a one-square ring around the chunk so blending matches across seams
+    const SW = (N + 2) * TS, sBase = new Uint8ClampedArray(SW * SW * 3), sIds = new Uint8Array(SW * SW);
+    const nb = new Array(9);
+    for (let j = 1; j < CW - 1; j++) for (let i = 1; i < CW - 1; i++) {
+      const own = tc[j * CW + i], cx = X0 - 2 + i, cy = Y0 - 2 + j, sx0 = (i - 1) * TS, sy0 = (j - 1) * TS;
+      let mixed = false;
+      for (let k = 0; k < 9; k++) { const t = tc[(j + (k / 3 | 0) - 1) * CW + i + k % 3 - 1]; nb[k] = t; if (t !== own && SOFT[t]) mixed = true; }
+      const plain = !SOFT[own] || !mixed;
+      for (let py = 0; py < TS; py++) {
+        const wy = cy * TS + py;
+        for (let px = 0; px < TS; px++) {
+          const wx = cx * TS + px;
+          const t = plain ? own : pick(nb, px, py, wx, wy), tx = TEX[t], ti = ((wy & 63) * S + (wx & 63)) * 3, si = (sy0 + py) * SW + sx0 + px;
+          sBase[si * 3] = tx[ti]; sBase[si * 3 + 1] = tx[ti + 1]; sBase[si * 3 + 2] = tx[ti + 2]; sIds[si] = t;
+        }
+      }
+    }
+    const OW = N * TS, d = new Uint8ClampedArray(OW * OW * 4);
+    for (let y = 0; y < OW; y++) for (let x = 0; x < OW; x++) {
+      const si = (y + TS) * SW + x + TS, t = sIds[si], o = (y * OW + x) * 4;
+      let r = sBase[si * 3], g = sBase[si * 3 + 1], b = sBase[si * 3 + 2], f = 1;
+      if (t === WALL) { let k = 1; while (k <= 6 && sIds[si + k * SW] === WALL) k++; if (k <= 6) f = k === 1 ? 0.4 : 0.62; else if (sIds[si - SW] !== WALL) f = 1.2; }
+      else for (let k = 1; k <= 5; k++) { if (sIds[si - k * SW] === WALL) { f = 0.5 + 0.09 * (k - 1); break; } }
+      if (t !== WALL) {
+        const z = ZOF[t], e = TER[t].edge;
+        if (e && (ZOF[sIds[si - 1]] > z || ZOF[sIds[si + 1]] > z || ZOF[sIds[si - SW]] > z || ZOF[sIds[si + SW]] > z)) {
+          if (e[0] === 'tint') { const c = e[1], a = e[2]; r += (c[0] - r) * a; g += (c[1] - g) * a; b += (c[2] - b) * a; } else f *= e[1];
+        }
+      }
+      d[o] = r * f; d[o + 1] = g * f; d[o + 2] = b * f; d[o + 3] = 255;
+    }
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) { const p = props[j * N + i]; if (p >= 0 && PROPS[p]) drawSprite(d, OW, i * TS, j * TS, PROPS[p].pix); }
+    edgePass(job, d, OW);
+    if (!job.half) return d;
+    const HW = OW >> 1, h = new Uint8ClampedArray(HW * HW * 4);
+    for (let y = 0; y < HW; y++) for (let x = 0; x < HW; x++) { const o = ((y * 2) * OW + x * 2) * 4, q = (y * HW + x) * 4; h[q] = d[o]; h[q + 1] = d[o + 1]; h[q + 2] = d[o + 2]; h[q + 3] = 255; }
+    return h;
+  }
+  // walls, doors, fences and windows that sit on the grid lines
+  function edgePass(job, d, OW) {
+    const N = job.N, X0 = job.X0, Y0 = job.Y0, RW = N + 2, X1 = X0 + N, Y1 = Y0 + N;
+    const getH = (x, y) => (x < X0 - 1 || y < Y0 - 1 || x > X1 || y > Y1) ? 0 : job.eh[(y - Y0 + 1) * RW + x - X0 + 1];
+    const getV = (x, y) => (x < X0 - 1 || y < Y0 - 1 || x > X1 || y > Y1) ? 0 : job.ev[(y - Y0 + 1) * RW + x - X0 + 1];
+    const bx = X0 * TS, by = Y0 * TS, OH = OW;
+    const at = (X, Y) => (X >= 0 && X < OW && Y >= 0 && Y < OH) ? (Y * OW + X) * 4 : -1;
+    const set = (X, Y, c, f) => { const o = at(X, Y); if (o >= 0) { d[o] = c[0] * f; d[o + 1] = c[1] * f; d[o + 2] = c[2] * f; d[o + 3] = 255; } };
+    const dim = (X, Y, f) => { const o = at(X, Y); if (o >= 0) { d[o] *= f; d[o + 1] *= f; d[o + 2] *= f; } };
+    const tw = TEX[WALL], brick = (X, Y) => { const i = (((Y + by) & 63) * S + ((X + bx) & 63)) * 3; return [tw[i], tw[i + 1], tw[i + 2]]; };
+    const H = [], V = [];
+    for (let y = Y0 - 1; y <= Y1; y++) for (let x = X0 - 1; x <= X1; x++) { const h = getH(x, y), v = getV(x, y); if (h) H.push([x, y, h]); if (v) V.push([x, y, v]); }
+    for (const [x, y, v] of H) { const PX = (x - X0) * TS, PY = (y - Y0) * TS; for (let X = PX; X < PX + TS; X++) { if (v === 3) dim(X, PY + 2, 0.75); else { dim(X, PY + 6, 0.6); dim(X, PY + 7, 0.72); dim(X, PY + 8, 0.85); } } }
+    for (const [x, y, v] of V) { const PX = (x - X0) * TS, PY = (y - Y0) * TS; for (let Y = PY; Y < PY + TS; Y++) { if (v === 3) dim(PX + 1, Y, 0.8); else { dim(PX + 2, Y, 0.7); dim(PX + 3, Y, 0.85); } } }
+    const post = (X, Y) => { for (let j = -2; j <= 1; j++) for (let i = -1; i <= 1; i++) set(X + i, Y + j, j === -2 ? WOOD_L : WOOD_D, i === 1 ? 0.8 : 1); };
+    const pane = (along, a, rim) => (along & 3) === 0 ? WOOD_D : a ? GLASS : GLASS_D;
+    for (const [x, y, v] of V) {
+      const X0p = (x - X0) * TS, Y0p = (y - Y0) * TS;
+      if (v === 3) { for (let Y = Y0p - 1; Y < Y0p + TS + 1; Y++) { set(X0p - 1, Y, WOOD_L, 1); set(X0p, Y, WOOD, 1); } post(X0p, Y0p); post(X0p, Y0p + 8); if (getV(x, y + 1) !== 3) post(X0p, Y0p + TS); continue; }
+      for (let Y = Y0p - 2; Y < Y0p + TS + 2; Y++) for (let X = X0p - 2; X < X0p + 2; X++) {
+        const rim = (X === X0p - 2 || X === X0p + 1) ? 0.8 : 1, mid = Y >= Y0p + 3 && Y < Y0p + TS - 3;
+        if (v === 2 && Y >= Y0p + 2 && Y < Y0p + TS - 2) set(X, Y, ((Y - Y0p) & 3) === 0 ? WOOD_D : WOOD, rim);
+        else if (v === 4 && mid) set(X, Y, pane(Y - Y0p, X < X0p, rim), 1);
+        else set(X, Y, brick(X, Y), 1.15 * rim);
+      }
+      if (!getV(x, y + 1)) for (let Y = Y0p + TS + 2; Y < Y0p + TS + 6; Y++) for (let X = X0p - 2; X < X0p + 2; X++) set(X, Y, brick(X, Y), Y === Y0p + TS + 5 ? 0.45 : 0.62);
+    }
+    for (const [x, y, v] of H) {
+      const X0p = (x - X0) * TS, Y0p = (y - Y0) * TS;
+      if (v === 3) { for (let X = X0p - 1; X < X0p + TS + 1; X++) { set(X, Y0p - 1, WOOD_L, 1); set(X, Y0p, WOOD, 1); } post(X0p, Y0p); post(X0p + 8, Y0p); if (getH(x + 1, y) !== 3) post(X0p + TS, Y0p); continue; }
+      for (let X = X0p - 2; X < X0p + TS + 2; X++) {
+        const door = v === 2 && X >= X0p + 2 && X < X0p + TS - 2, win = v === 4 && X >= X0p + 3 && X < X0p + TS - 3;
+        for (let Y = Y0p - 2; Y < Y0p + 2; Y++) { const rim = Y === Y0p - 2 ? 0.85 : 1; if (door) set(X, Y, ((X - X0p) & 3) === 0 ? WOOD_D : WOOD, rim); else if (win) set(X, Y, pane(X - X0p, Y < Y0p, rim), 1); else set(X, Y, brick(X, Y), 1.15 * rim); }
+        for (let Y = Y0p + 2; Y < Y0p + 6; Y++) { const f = Y === Y0p + 5 ? 0.45 : 0.62; if (door) set(X, Y, ((X - X0p) & 3) === 0 ? WOOD_D : WOOD, f * 1.1); else set(X, Y, brick(X, Y), f); }
+      }
+    }
+  }
+  // a 16 × 16 RGBA picture of one terrain or prop, for the editing palette
+  function swatch(kind, i) {
+    const d = new Uint8ClampedArray(TS * TS * 4);
+    if (kind === 't') { const tx = TEX[i]; for (let k = 0; k < TS * TS; k++) { const y = k >> 4, x = k & 15, ti = ((y + 8) * S + x + 8) * 3; d[k * 4] = tx[ti]; d[k * 4 + 1] = tx[ti + 1]; d[k * 4 + 2] = tx[ti + 2]; d[k * 4 + 3] = 255; } }
+    else { const tx = TEX[GRASS]; for (let k = 0; k < TS * TS; k++) { const y = k >> 4, x = k & 15, ti = ((y + 8) * S + x + 8) * 3; d[k * 4] = tx[ti] * 0.7 + 30; d[k * 4 + 1] = tx[ti + 1] * 0.7 + 30; d[k * 4 + 2] = tx[ti + 2] * 0.7 + 30; d[k * 4 + 3] = 255; } drawSprite(d, TS, 0, 0, PROPS[i].pix); }
+    return d;
+  }
+  return { TS, NT, TER: TER.map((t) => ({ name: t.name, soft: t.soft })), PROPS: PROPS.map((p) => ({ name: p.name })), ID: { DEEP, SHAL, SAND, GRASS, FOREST, ROAD, FLAG, WALL, LAVA, SNOW, PLANKS, ROCK, MARSH, ICE, SCRUB, TUNDRA, FLOOR, NEEDLES, JUNGLE }, P: { TREE: 0, BOULDER: 1, CHEST: 2, BARREL: 3, CAMPFIRE: 4, STAIRS: 5, TENT: 6, PINE: 7, BUSH: 8, WELL: 9, STALL: 10, TABLE: 11, BED: 12, CRATE: 13, ALTAR: 14 }, naturalT, render, swatch };
+}
+
 const T = terrainLib();
 const W = T.W, H = T.H, BB = T.B;
 const FT = 1 / 5280;
@@ -1104,7 +1567,7 @@ const STORE_KEY = 'atlas-world-v1';
 let SEED = 1847;
 let WORLD_NAME = '';
 let BASE = { settle: [], roads: [] };
-const blankEdits = () => ({ ov: {}, del: {}, add: [], rdel: {}, rov: {}, radd: [], strokes: [], labels: [], events: [], evOff: {}, npc: {}, npcRel: [], npcAdd: [], npcMore: {}, guild: { party: { name: '', members: [], gold: 0, log: [] }, q: {}, rep: {}, shift: {}, ag: {}, custom: [] }, monAdd: [], monOff: {}, next: 1 });
+const blankEdits = () => ({ ov: {}, del: {}, add: [], rdel: {}, rov: {}, radd: [], strokes: [], labels: [], events: [], evOff: {}, npc: {}, npcRel: [], npcAdd: [], npcMore: {}, guild: { party: { name: '', members: [], gold: 0, log: [] }, q: {}, rep: {}, shift: {}, ag: {}, custom: [] }, monAdd: [], monOff: {}, bm: {}, next: 1 });
 let edits = blankEdits();
 let history = [], future = [];
 let panelMin = false;
@@ -1800,8 +2263,9 @@ function evictTiles() {
 
 function initWorkers() {
   try {
-    const src = '"use strict";const T=(' + terrainLib.toString() + ')();let seed=null;' +
+    const src = '"use strict";const T=(' + terrainLib.toString() + ')();const PXL=(' + pixelLib.toString() + ')(T);let seed=null;' +
       'onmessage=function(ev){const d=ev.data;if(d.seed!==seed){T.setSeed(d.seed);seed=d.seed;}' +
+      'if(d.px){const q=PXL.render(d);postMessage({px:1,k:d.k,ver:d.ver,seed:d.seed,buf:q.buffer},[q.buffer]);return;}' +
       'const px=T.renderTile(d.z,d.tx,d.ty,d.R,d.circ,d.caps,d.borders);postMessage({k:d.k,ver:d.ver,seed:d.seed,buf:px.buffer},[px.buffer]);};';
     const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
     const n = Math.max(1, Math.min(4, (navigator.hardwareConcurrency || 4) - 1));
@@ -1824,6 +2288,11 @@ function initWorkers() {
   } catch (e) { liveWorkers = 0; }
 }
 function nextJob() {
+  while (pxQueue.length) {
+    const c = pxQueue.shift();
+    if (c.pend || (c.canvas && !c.stale) || pxChunks.get(c.k) !== c) continue;
+    return c;
+  }
   while (queue.length) {
     const t = queue.shift();
     if (t.pend || (t.canvas && !t.stale) || tiles.get(t.k) !== t) continue;
@@ -1832,6 +2301,7 @@ function nextJob() {
   return null;
 }
 function jobMsg(t) {
+  if (t.px) return pxMsg(t);
   const TS = W / Math.pow(2, t.z), x0 = t.tx * TS, y0 = t.ty * TS, m = TS / RES * 2;
   return { k: t.k, ver: t.ver, z: t.z, tx: t.tx, ty: t.ty, R: RES, seed: SEED, circ: circlesIn(x0 - m, y0 - m, x0 + TS + m, y0 + TS + m), caps: CAPS.slice(), borders: layers.borders };
 }
@@ -1855,13 +2325,14 @@ function pump() {
   mainBusy = true; t.pend = true;
   setTimeout(() => {
     const d = jobMsg(t);
-    const px = T.renderTile(d.z, d.tx, d.ty, d.R, d.circ, d.caps, d.borders);
+    const px = d.px ? PX.render(d) : T.renderTile(d.z, d.tx, d.ty, d.R, d.circ, d.caps, d.borders);
     mainBusy = false;
-    onTileDone(null, { k: d.k, ver: d.ver, seed: d.seed, buf: px.buffer });
+    onTileDone(null, { px: d.px, k: d.k, ver: d.ver, seed: d.seed, buf: px.buffer });
   }, 0);
 }
 function onTileDone(w, d) {
   if (w) { w.busy = false; w.job = null; }
+  if (d.px) { pxDone(d); pump(); return; }
   const t = d.seed === SEED ? tiles.get(d.k) : null;
   if (t) {
     t.pend = false;
@@ -1885,6 +2356,261 @@ function invalidateTiles(bb, zmin, zmax) {
       if (x0 > bb[2] || x0 + TS < bb[0] || y0 > bb[3] || y0 + TS < bb[1]) continue;
     }
     t.stale = true; t.ver = ++VERSEQ;
+  }
+  requestRender();
+}
+
+// ================================================================ pixel battle map: chunks, layout and drawing
+// Close in, the map turns into Tilewright pixel art, one 16-px cell per 5-ft square, in chunks of
+// 32 × 32 squares. The main thread lays out what the world puts on each square (roads, streets,
+// buildings and their walls and doors, town walls) plus anything painted on the battle map; the
+// workers work out the natural ground and paint the pixels.
+const PX = pixelLib(T);
+const CELL = 1056;                 // 5-ft squares per mile
+const PCS = 32;                    // squares per chunk side
+const PX_ON = 5.5, PX_FULL = 9;    // pixel art fades in between these many screen pixels per square
+const pxChunks = new Map();
+const PX_LIMIT = (window.matchMedia && matchMedia('(pointer: coarse)').matches) ? 40 : 96;
+let pxQueue = [], PXSEQ = 1;
+const pxCanvasPool = { 1: [], 0: [] };
+const cellOf = (v) => Math.floor(v * CELL);
+const pxKey = (cx, cy, half) => cx + ',' + cy + (half ? 'h' : '');
+const bmKey = (cx, cy) => Math.floor(cx / PCS) + ',' + Math.floor(cy / PCS);
+const bmIdx = (cx, cy) => (cy - Math.floor(cy / PCS) * PCS) * PCS + (cx - Math.floor(cx / PCS) * PCS);
+function pxAlpha() { const c = view.s / CELL; return c <= PX_ON ? 0 : c >= PX_FULL ? 1 : T.smooth(PX_ON, PX_FULL, c); }
+
+// ---------- what the battle-map edits say about one square ----------
+function bmChunk(cx, cy) { const b = edits.bm; return b ? b[bmKey(cx, cy)] || null : null; }
+function bmGet(kind, cx, cy) { const c = bmChunk(cx, cy); if (!c || !c[kind]) return undefined; return c[kind][bmIdx(cx, cy)]; }
+
+// ---------- per-plan index: which buildings and street segments touch which chunk ----------
+function planPx(P) {
+  if (P._px) return P._px;
+  const bBy = new Map(), sBy = new Map();
+  const add = (m, x0, y0, x1, y1, v) => {
+    const i0 = Math.floor((cellOf(x0) - 3) / PCS), i1 = Math.floor((cellOf(x1) + 3) / PCS), j0 = Math.floor((cellOf(y0) - 3) / PCS), j1 = Math.floor((cellOf(y1) + 3) / PCS);
+    for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) { const k = i + ',' + j; let a = m.get(k); if (!a) { a = []; m.set(k, a); } a.push(v); }
+  };
+  for (let i = 0; i < P.n; i++) { const r = (P.bw[i] + P.bd[i]) * 0.71; add(bBy, P.bx[i] - r, P.by[i] - r, P.bx[i] + r, P.by[i] + r, i); }
+  P.streets.forEach((st, si) => {
+    const p = st.pts, hw = st.w / 2;
+    for (let j = 2; j < p.length; j += 2) add(sBy, Math.min(p[j - 2], p[j]) - hw, Math.min(p[j - 1], p[j + 1]) - hw, Math.max(p[j - 2], p[j]) + hw, Math.max(p[j - 1], p[j + 1]) + hw, si * 4096 + j);
+  });
+  P._px = { bBy, sBy, door: new Map() };
+  return P._px;
+}
+// on the battle map every building is squared to the grid: its angle snaps to the nearest quarter turn
+function gridFrame(P, i) {
+  const q = Math.round(P.ba[i] / (Math.PI / 2)), odd = ((q % 2) + 2) % 2 === 1;
+  return { c: Math.round(Math.cos(q * Math.PI / 2)), s: Math.round(Math.sin(q * Math.PI / 2)), hw: (odd ? P.bd[i] : P.bw[i]) / 2, hd: (odd ? P.bw[i] : P.bd[i]) / 2, w: P.bw[i], d: P.bd[i] };
+}
+// the door sits in the wall that faces the nearest street (or the square)
+function doorOf(st, P, X, i) {
+  let d = X.door.get(i);
+  if (d !== undefined) return d;
+  const x = P.bx[i], y = P.by[i], G = gridFrame(P, i);
+  let best = Infinity, tx = st.x, ty = st.y;
+  const k = Math.floor(cellOf(x) / PCS) + ',' + Math.floor(cellOf(y) / PCS);
+  for (const v of X.sBy.get(k) || []) {
+    const p = P.streets[Math.floor(v / 4096)].pts, j = v % 4096;
+    const ax = p[j - 2], ay = p[j - 1], bx = p[j], by = p[j + 1], dx = bx - ax, dy = by - ay, l2 = dx * dx + dy * dy;
+    let t = l2 > 0 ? ((x - ax) * dx + (y - ay) * dy) / l2 : 0; t = t < 0 ? 0 : t > 1 ? 1 : t;
+    const qx = ax + dx * t, qy = ay + dy * t, dd = Math.hypot(qx - x, qy - y);
+    if (dd < best) { best = dd; tx = qx; ty = qy; }
+  }
+  const vx = tx - x, vy = ty - y;
+  let ax, ay, half;
+  if (Math.abs(vx) / G.hw > Math.abs(vy) / G.hd) { ax = vx >= 0 ? 1 : -1; ay = 0; half = G.hw; }
+  else { ax = 0; ay = vy >= 0 ? 1 : -1; half = G.hd; }
+  const ix = x + ax * (half - 2.5 * FT), iy = y + ay * (half - 2.5 * FT);
+  const cx = cellOf(ix), cy = cellOf(iy);
+  if (Math.abs(ax) >= Math.abs(ay)) d = 'v' + (ax > 0 ? cx + 1 : cx) + ',' + cy;
+  else d = 'h' + cx + ',' + (ay > 0 ? cy + 1 : cy);
+  X.door.set(i, d);
+  return d;
+}
+
+// ---------- lay out one chunk ----------
+function pxLayout(cxc, cyc) {
+  const N = PCS, X0 = cxc * N, Y0 = cyc * N, CW = N + 4, RW = N + 2;
+  const ov = new Uint8Array(CW * CW).fill(255), bid = new Int32Array(CW * CW).fill(-1);
+  const pr = new Int8Array(N * N).fill(-2), eh = new Uint8Array(RW * RW), ev = new Uint8Array(RW * RW);
+  const x0 = (X0 - 2) / CELL, y0 = (Y0 - 2) / CELL, x1 = (X0 + N + 2) / CELL, y1 = (Y0 + N + 2) / CELL;
+  const doors = new Set(), furn = [];
+  const cellsIn = (ax0, ay0, ax1, ay1, fn) => {
+    const i0 = Math.max(0, cellOf(ax0) - X0 + 2), i1 = Math.min(CW - 1, cellOf(ax1) - X0 + 2), j0 = Math.max(0, cellOf(ay0) - Y0 + 2), j1 = Math.min(CW - 1, cellOf(ay1) - Y0 + 2);
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) fn(j * CW + i, (X0 - 2 + i + 0.5) / CELL, (Y0 - 2 + j + 0.5) / CELL, i, j);
+  };
+  const noAuto = (i, j) => { if (i >= 2 && j >= 2 && i < N + 2 && j < N + 2) pr[(j - 2) * N + i - 2] = -1; };
+  // roads between places
+  const stamp = ++QSTAMP;
+  RGRID.query(x0, y0, x1, y1, (r) => {
+    if (r._q === stamp) return; r._q = stamp;
+    const hw = ROADTYPES[r.type].ft * FT * 0.5, bb = r._bb;
+    if (bb && (x1 < bb[0] - hw || x0 > bb[2] + hw || y1 < bb[1] - hw || y0 > bb[3] + hw)) return;
+    const p = roadGeom(r);
+    for (let k = 2; k < p.length; k += 2) {
+      const ax = p[k - 2], ay = p[k - 1], bx = p[k], by = p[k + 1];
+      const sx0 = Math.min(ax, bx) - hw, sx1 = Math.max(ax, bx) + hw, sy0 = Math.min(ay, by) - hw, sy1 = Math.max(ay, by) + hw;
+      if (sx1 < x0 || sx0 > x1 || sy1 < y0 || sy0 > y1) continue;
+      cellsIn(Math.max(sx0, x0), Math.max(sy0, y0), Math.min(sx1, x1), Math.min(sy1, y1), (q, x, y, i, j) => { if (segDist(x, y, ax, ay, bx, by) < hw) { ov[q] = 254; noAuto(i, j); } });
+    }
+  });
+  // settlements: square, streets, buildings, walls
+  const near = [];
+  SGRID.query(x0 - 0.7, y0 - 0.7, x1 + 0.7, y1 + 0.7, (s) => { const R = settleR(s) * 1.12; if (s.x + R >= x0 && s.x - R <= x1 && s.y + R >= y0 && s.y - R <= y1) near.push(s); });
+  let bseq = 0;
+  for (const s of near) {
+    const P = getPlan(s), X = planPx(P), R = P.R, paved = s.tier >= 3 ? 253 : 254;
+    cellsIn(Math.max(s.x - R, x0), Math.max(s.y - R, y0), Math.min(s.x + R, x1), Math.min(s.y + R, y1), (q, x, y, i, j) => { const dx = x - s.x, dy = y - s.y; if (dx * dx + dy * dy < R * R * 0.9) noAuto(i, j); });
+    const pr2 = P.plazaR;
+    cellsIn(Math.max(s.x - pr2, x0), Math.max(s.y - pr2, y0), Math.min(s.x + pr2, x1), Math.min(s.y + pr2, y1), (q, x, y) => { const dx = x - s.x, dy = y - s.y; if (dx * dx + dy * dy < pr2 * pr2) ov[q] = paved; });
+    if (P.well) { const i = cellOf(s.x) - X0, j = cellOf(s.y) - Y0; if (i >= 0 && j >= 0 && i < N && j < N) pr[j * N + i] = PX.P.WELL; }
+    const ck = cxc + ',' + cyc;
+    for (const v of X.sBy.get(ck) || []) {
+      const st = P.streets[Math.floor(v / 4096)], p = st.pts, k = v % 4096, hw = st.w / 2;
+      const ax = p[k - 2], ay = p[k - 1], bx = p[k], by = p[k + 1];
+      cellsIn(Math.max(Math.min(ax, bx) - hw, x0), Math.max(Math.min(ay, by) - hw, y0), Math.min(Math.max(ax, bx) + hw, x1), Math.min(Math.max(ay, by) + hw, y1), (q, x, y) => { if (segDist(x, y, ax, ay, bx, by) < hw) ov[q] = paved; });
+    }
+    for (const i of X.bBy.get(ck) || []) {
+      const kind = P.bk[i], bx = P.bx[i], by = P.by[i], G = gridFrame(P, i), c = G.c, sn = G.s, hw = G.w / 2, hd = G.d / 2, rr = Math.max(G.hw, G.hd) + 3 * FT;
+      if (kind === 3) { // market stall: a sprite on the square it stands on
+        const i2 = cellOf(bx) - X0, j2 = cellOf(by) - Y0;
+        if (i2 >= 0 && j2 >= 0 && i2 < N && j2 < N) pr[j2 * N + i2] = PX.P.STALL;
+        continue;
+      }
+      const id = ++bseq, floor = kind === 1 || kind === 2 ? PX.ID.FLAG : PX.ID.PLANKS;
+      cellsIn(Math.max(bx - rr, x0), Math.max(by - rr, y0), Math.min(bx + rr, x1), Math.min(by + rr, y1), (q, x, y) => {
+        if (Math.abs(x - bx) <= G.hw && Math.abs(y - by) <= G.hd) { ov[q] = floor; bid[q] = id; }
+      });
+      doors.add(doorOf(s, P, X, i));
+      // furnishings at fixed spots in the building's own frame
+      const spot = (fu, fw, prop) => furn.push([cellOf(bx + c * fu * hw - sn * fw * hd), cellOf(by + sn * fu * hw + c * fw * hd), prop, id]);
+      if (kind === 1) spot(0, -0.55, PX.P.ALTAR);
+      else if (kind === 2) { spot(-0.6, -0.6, PX.P.STAIRS); spot(0.4, 0.2, PX.P.TABLE); }
+      else if (kind === 4) { spot(-0.5, -0.4, PX.P.CRATE); spot(0.5, 0.4, PX.P.BARREL); }
+      else if (hw * hd * 4 > 260 * FT * FT) { const h = hashStr(s.id + i); spot(-0.55, -0.45, PX.P.BED); spot(0.35, 0.25, PX.P.TABLE); if (h % 3 === 0) spot(0.6, -0.55, PX.P.BARREL); else if (h % 3 === 1) spot(0.6, -0.55, PX.P.CHEST); }
+    }
+    if (P.wall) {
+      const wl = P.wall, Rw = wl.Rw, half = 6 * FT;
+      cellsIn(Math.max(s.x - Rw - half, x0), Math.max(s.y - Rw - half, y0), Math.min(s.x + Rw + half, x1), Math.min(s.y + Rw + half, y1), (q, x, y) => {
+        const dx = x - s.x, dy = y - s.y, d = Math.hypot(dx, dy);
+        if (Math.abs(d - Rw) > half) return;
+        const ang = Math.atan2(dy, dx);
+        if (wl.gates.some((g) => angDiff(ang, g[0]) < g[1])) return;
+        ov[q] = PX.ID.WALL; bid[q] = -1;
+      });
+      const tr = 13 * FT;
+      for (let k = 0; k < wl.towers.length; k += 2) {
+        const tx = wl.towers[k], ty = wl.towers[k + 1];
+        if (tx + tr < x0 || tx - tr > x1 || ty + tr < y0 || ty - tr > y1) continue;
+        cellsIn(tx - tr, ty - tr, tx + tr, ty + tr, (q, x, y) => { if (Math.hypot(x - tx, y - ty) < tr) { ov[q] = PX.ID.WALL; bid[q] = -1; } });
+      }
+    }
+  }
+  // walls between a building and anything else, with one door
+  const B = (x, y) => bid[(y - Y0 + 2) * CW + x - X0 + 2];
+  for (let y = Y0 - 1; y <= Y0 + N; y++) for (let x = X0 - 1; x <= X0 + N; x++) {
+    const a = B(x, y), up = B(x, y - 1), lf = B(x - 1, y), r = (y - Y0 + 1) * RW + x - X0 + 1;
+    if (a !== up && (a > 0 || up > 0)) eh[r] = doors.has('h' + x + ',' + y) ? 2 : 1;
+    if (a !== lf && (a > 0 || lf > 0)) ev[r] = doors.has('v' + x + ',' + y) ? 2 : 1;
+  }
+  for (const [fx, fy, prop, id] of furn) { const i = fx - X0, j = fy - Y0; if (i >= 0 && j >= 0 && i < N && j < N && B(fx, fy) === id) pr[j * N + i] = prop; }
+  // anything painted on the battle map
+  const bm = edits.bm;
+  if (bm) {
+    for (let j = 0; j < CW; j++) for (let i = 0; i < CW; i++) {
+      const cx = X0 - 2 + i, cy = Y0 - 2 + j, c = bm[bmKey(cx, cy)];
+      if (!c) continue;
+      const k = bmIdx(cx, cy);
+      if (c.t && c.t[k] !== undefined) ov[j * CW + i] = c.t[k];
+      if (i >= 2 && j >= 2 && i < N + 2 && j < N + 2) { if (c.p && c.p[k] !== undefined) pr[(j - 2) * N + i - 2] = c.p[k]; }
+      if (i >= 1 && j >= 1 && i < N + 3 && j < N + 3) { const r = (j - 1) * RW + i - 1; if (c.h && c.h[k] !== undefined) eh[r] = c.h[k]; if (c.v && c.v[k] !== undefined) ev[r] = c.v[k]; }
+    }
+  }
+  return { N, X0, Y0, ov, pr, eh, ev, circ: circlesIn(x0 - 0.01, y0 - 0.01, x1 + 0.01, y1 + 0.01) };
+}
+
+// ---------- chunk cache, queue and drawing ----------
+function pxGet(cx, cy, half) {
+  const k = pxKey(cx, cy, half);
+  let c = pxChunks.get(k);
+  if (!c) { c = { k, px: true, cx, cy, half, canvas: null, ver: ++PXSEQ, pend: false, stale: false }; pxChunks.set(k, c); }
+  return c;
+}
+function pxMsg(c) {
+  const L = pxLayout(c.cx, c.cy);
+  return { px: 1, k: c.k, ver: c.ver, seed: SEED, half: c.half, N: L.N, X0: L.X0, Y0: L.Y0, ov: L.ov, pr: L.pr, eh: L.eh, ev: L.ev, circ: L.circ };
+}
+function pxDone(d) {
+  const c = d.seed === SEED ? pxChunks.get(d.k) : null;
+  if (!c) return;
+  c.pend = false;
+  if (c.canvas && c.shown >= d.ver) return;
+  const n = PCS * PX.TS >> (c.half ? 1 : 0);
+  const cv = c.canvas || pxCanvasPool[c.half ? 1 : 0].pop() || mkCanvas(n, n);
+  cv.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(d.buf), n, n), 0, 0);
+  c.canvas = cv; c.shown = d.ver;
+  if (c.ver === d.ver) c.stale = false;
+  requestRender();
+}
+function pxEvict() {
+  if (pxChunks.size <= PX_LIMIT) return;
+  for (const [k, c] of pxChunks) {
+    if (pxChunks.size <= PX_LIMIT) break;
+    if (pxVisible.has(k) || c.pend) continue;
+    if (c.canvas) pxCanvasPool[c.half ? 1 : 0].length < 8 && pxCanvasPool[c.half ? 1 : 0].push(c.canvas);
+    pxChunks.delete(k);
+  }
+}
+let pxVisible = new Set();
+// returns true when every square in view has its pixels
+function drawPixels(alpha) {
+  const cpx = view.s / CELL, half = cpx < 9.5, span = PCS / CELL;
+  const cx0 = Math.floor(Math.max(0, VB[0]) / span), cx1 = Math.floor(Math.min(W, VB[2]) / span);
+  const cy0 = Math.floor(Math.max(0, VB[1]) / span), cy1 = Math.floor(Math.min(H, VB[3]) / span);
+  const need = [];
+  let ready = true;
+  pxVisible = new Set();
+  ctx.save();
+  ctx.imageSmoothingEnabled = false;
+  ctx.globalAlpha = alpha;
+  const mx = view.x / span, my = view.y / span;
+  for (let cy = cy0; cy <= cy1; cy++) for (let cx = cx0; cx <= cx1; cx++) {
+    const c = pxGet(cx, cy, half);
+    pxVisible.add(c.k);
+    pxChunks.delete(c.k); pxChunks.set(c.k, c);
+    const a = Math.round(sx(cx * span)), b = Math.round(sx((cx + 1) * span)), t = Math.round(sy(cy * span)), u = Math.round(sy((cy + 1) * span));
+    let cv = c.canvas;
+    if (!cv) { const o = pxChunks.get(pxKey(cx, cy, !half)); if (o && o.canvas && !o.stale) cv = o.canvas; }
+    if (cv) ctx.drawImage(cv, a, t, b - a, u - t); else ready = false;
+    if ((!c.canvas || c.stale) && !c.pend) need.push([Math.hypot(cx + 0.5 - mx, cy + 0.5 - my), c]);
+  }
+  ctx.restore();
+  need.sort((p, q) => p[0] - q[0]);
+  pxQueue = need.map((n) => n[1]);
+  pump();
+  pxEvict();
+  return ready;
+}
+// every square in view already has pixels (either level of detail)
+function pxCovered() {
+  const cpx = view.s / CELL, half = cpx < 9.5, span = PCS / CELL;
+  const cx0 = Math.floor(Math.max(0, VB[0]) / span), cx1 = Math.floor(Math.min(W, VB[2]) / span);
+  const cy0 = Math.floor(Math.max(0, VB[1]) / span), cy1 = Math.floor(Math.min(H, VB[3]) / span);
+  for (let cy = cy0; cy <= cy1; cy++) for (let cx = cx0; cx <= cx1; cx++) {
+    const c = pxChunks.get(pxKey(cx, cy, half)), o = pxChunks.get(pxKey(cx, cy, !half));
+    if (!(c && c.canvas) && !(o && o.canvas && !o.stale)) return false;
+  }
+  return true;
+}
+function pxQueueTilesClear() { queue = []; }
+// mark chunks touching a box (in miles) for repainting
+function pxInvalidate(bb) {
+  const span = PCS / CELL, m = 3 / CELL;
+  for (const c of pxChunks.values()) {
+    if (bb) { const ax = c.cx * span, ay = c.cy * span; if (ax - m > bb[2] || ax + span + m < bb[0] || ay - m > bb[3] || ay + span + m < bb[1]) continue; }
+    c.stale = true; c.ver = ++PXSEQ;
   }
   requestRender();
 }
@@ -2137,14 +2863,20 @@ let pendingPreview = null;
 
 function render() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.fillStyle = '#0b0e12';
+  ctx.fillStyle = '#0f1215';
   ctx.fillRect(0, 0, vw, vh);
   const s = view.s;
   VB = [wxOf(0), wyOf(0), wxOf(vw), wyOf(vh)];
-  drawTiles();
-  if (layers.roads) drawRoads();
-  drawPlans();
+  const pa = pxAlpha();
+  const covered = pa >= 1 && pxCovered();
+  if (!covered) drawTiles();
+  else { pxQueueTilesClear(); }
+  if (pa > 0) drawPixels(pa);
+  if (layers.roads && !covered) drawRoads();
+  drawPlans(covered);
   if (layers.grid) drawGrid();
+  drawTilesOverlay();
+  if (tool === 'tiles' && twActive() !== twWasActive) { twWasActive = twActive(); setTimeout(renderPanel, 0); }
   drawNeatline();
   drawEventAreas();
   drawMarkers();
@@ -2278,7 +3010,7 @@ function drawRoads() {
   }
 }
 
-function drawPlans() {
+function drawPlans(skip) {
   plansDrawn = new Set();
   const s = view.s;
   if (s < PLAN_S) return;
@@ -2289,6 +3021,7 @@ function drawPlans() {
     const R = settleR(st);
     if (R * s < 14) continue;
     if (st.x + R < VB[0] || st.x - R > VB[2] || st.y + R < VB[1] || st.y - R > VB[3]) continue;
+    if (skip) { plansDrawn.add(st.id); continue; }
     const key = st.x + '|' + st.y + '|' + st.pop + '|' + st.tier + '|' + roadsVer + '|' + strokesVer;
     const c = planCache.get(st.id);
     if (!(c && c.key === key)) { if (budget <= 0) { requestRender(); continue; } budget--; }
@@ -3086,7 +3819,7 @@ function marketHeader() {
     '<button type="button" data-mk="day" data-v="1" aria-label="Next day">Day ›</button>' +
     '<button type="button" data-mk="day" data-v="7" aria-label="Skip a week">Week »</button></div>' +
     (market.playing ? seg('mkspeed', market.speed, [[4000, 'Slow'], [1500, 'Normal'], [400, 'Fast']]).replace(/data-act=/g, 'data-mk=') : '') +
-    '<div class="seg mk-tabs" role="tablist">' + [['overview', 'Overview'], ['town', 'Town'], ['events', 'Events'], ['bounties', 'Bounties']].map(([k, l]) => '<button type="button" role="tab" data-mk="tab" data-v="' + k + '" aria-pressed="' + (market.tab === k) + '">' + l + '</button>').join('') + '</div>';
+    '<div class="seg mk-tabs" role="tablist">' + [['overview', 'Overview'], ['town', 'Town'], ['shop', 'Shop'], ['events', 'Events'], ['bounties', 'Bounties']].map(([k, l]) => '<button type="button" role="tab" data-mk="tab" data-v="' + k + '" aria-pressed="' + (market.tab === k) + '">' + l + '</button>').join('') + '</div>';
 }
 function evRow(e, day) {
   const left = e.end - day, startsIn = e.start - day;
@@ -3232,6 +3965,7 @@ function marketPanel() {
   const day = market.day;
   let body;
   if (market.tab === 'town') body = townTab(day);
+  else if (market.tab === 'shop') body = shopTab(day);
   else if (market.tab === 'events') body = eventsTab(day);
   else if (market.tab === 'bounties') body = bountiesTab(day);
   else body = overviewTab(day);
@@ -3278,7 +4012,7 @@ $('inspector').addEventListener('click', (ev) => {
     case 'day': advanceDays(+v); break;
     case 'play': setPlaying(!market.playing); break;
     case 'mkspeed': market.speed = +v; setPlaying(true); break;
-    case 'tab': if (v === market.tab && !(sel && sel.kind === 'event')) { panelMin = true; renderPanel(); break; } market.tab = v; if (v !== 'events' && sel && sel.kind === 'event') sel = null; if (v === 'town' && market.sid) sel = { kind: 'settle', id: market.sid }; renderPanel(); requestRender(); break;
+    case 'tab': if (v === market.tab && !(sel && sel.kind === 'event')) { panelMin = true; renderPanel(); break; } market.tab = v; if (v !== 'events' && sel && sel.kind === 'event') sel = null; if ((v === 'town' || v === 'shop') && market.sid) sel = { kind: 'settle', id: market.sid }; renderPanel(); requestRender(); break;
     case 'event': openEvent(findEvent(v)); break;
     case 'fly': flyToEvent(findEvent(v)); break;
     case 'town': selectTown(v, true); break;
@@ -4763,7 +5497,7 @@ const MON = {
   'Mage': ['Medium humanoid', 12, 40, '30 ft', '6', 'AC 15 with mage armor; fireball, counterspell, greater invisibility.'],
   'Assassin': ['Medium humanoid', 15, 78, '30 ft', '8', 'Assassinate; Evasion; poisoned blades.']
 };
-const XP_CR = { '0': 10, '1/8': 25, '1/4': 50, '1/2': 100, '1': 200, '2': 450, '3': 700, '4': 1100, '5': 1800, '6': 2300, '7': 2900, '8': 3900, '9': 5000, '10': 5900, '11': 7200, '12': 8400, '13': 10000, '14': 11500, '15': 13000, '16': 15000, '17': 18000, '18': 20000, '19': 22000, '20': 25000 };
+const XP_CR = { '0': 10, '1/8': 25, '1/4': 50, '1/2': 100, '1': 200, '2': 450, '3': 700, '4': 1100, '5': 1800, '6': 2300, '7': 2900, '8': 3900, '9': 5000, '10': 5900, '11': 7200, '12': 8400, '13': 10000, '14': 11500, '15': 13000, '16': 15000, '17': 18000, '18': 20000, '19': 22000, '20': 25000, '21': 33000, '22': 41000, '23': 50000, '24': 62000, '25': 75000, '26': 90000, '27': 105000, '28': 120000, '29': 135000, '30': 155000 };
 // DMG encounter XP thresholds per character level: easy, medium, hard, deadly
 const XP_THRESH = [null, [25, 50, 75, 100], [50, 100, 150, 200], [75, 150, 225, 400], [125, 250, 375, 500], [250, 500, 750, 1100], [300, 600, 900, 1400], [350, 750, 1100, 1700], [450, 900, 1400, 2100], [550, 1100, 1600, 2400], [600, 1200, 1900, 2800], [800, 1600, 2400, 3600], [1000, 2000, 3000, 4500], [1100, 2200, 3400, 5100], [1250, 2500, 3800, 5700], [1400, 2800, 4300, 6400], [1600, 3200, 4800, 7200], [2000, 3900, 5900, 8800], [2100, 4200, 6300, 9500], [2400, 4900, 7300, 10900], [2800, 5700, 8500, 12700]];
 const HIT_DIE = { Barbarian: 12, Fighter: 10, Paladin: 10, Ranger: 10, Bard: 8, Cleric: 8, Druid: 8, Monk: 8, Rogue: 8, Warlock: 8, Sorcerer: 6, Wizard: 6 };
@@ -4787,10 +5521,13 @@ function statLine(p) {
   const m = MON[p.stat];
   return m ? '<button type="button" class="link" data-mon="' + esc(p.stat) + '">' + esc(p.stat) + '</button> · AC ' + m[1] + ' · HP ' + m[2] + ' · CR ' + m[4] : esc(p.stat || 'Commoner');
 }
-function monLink(name) { return MON[name] ? '<button type="button" class="link" data-mon="' + esc(name) + '">' + esc(name) + '</button>' : extLink(AID.monster(name), name); }
+function monLink(name) { return monInfo(name) ? '<button type="button" class="link" data-mon="' + esc(name) + '">' + esc(name) + '</button>' : extLink(AID.monster(name), name); }
 function showMonster(name) {
-  const m = MON[name];
+  const m = monInfo(name);
   if (!m) return;
+  monCard = name;
+  if (!SRD.mons && !SRD.failed.mons) srdFetch('mons');
+  const full = SRD.monBy.get(name);
   const el = $('monPop');
   const lv = (gst().party.members || []).map((x) => x.level);
   const d = lv.length ? [1, 2, 4].map((n) => [n, difficulty(lv, m[4], n)]) : null;
@@ -4798,7 +5535,8 @@ function showMonster(name) {
     '<dl class="stats">' + stat('Armour class', m[1]) + stat('Hit points', m[2]) + stat('Challenge', m[4] + ' <small>(' + XP_CR[m[4]].toLocaleString('en-GB') + ' XP)</small>') + '</dl>' +
     '<p class="meta"><b>Speed</b> ' + esc(m[3]) + '</p><p>' + esc(m[5]) + '</p>' +
     (d ? '<section><h3>Against your party</h3><ul class="movers">' + d.map(([n, r]) => '<li><span>' + (n === 1 ? 'One' : n === 2 ? 'A pair' : 'Four') + '</span><span class="diff d' + r.k + '">' + r.label + '</span></li>').join('') + '</ul><p class="meta">Dungeon Master\'s Guide encounter thresholds for levels ' + lv.join(', ') + '.</p></section>' : '<p class="meta">Register your party on the Guilds tab to see how dangerous this is for them.</p>') +
-    '<p class="meta">Summary from the System Reference Document 5.1 (the free core of the Monster Manual). See the full stat block for actions.</p>' + '<p class="meta">' + extLink(AID.monster(name), 'Full Monster Manual entry on AideDD') + ' · ' + extLink(AID.monsters, 'Browse every monster') + '</p>';
+    (full ? statBlock(full) : SRD.failed.mons ? '' : '<p class="meta">Loading the full stat block…</p>') +
+    '<p class="meta">' + (full ? 'Stat block' : 'Summary') + ' from the System Reference Document 5.1 (the free core of the Monster Manual).</p>' + '<p class="meta">' + extLink(AID.monster(name), 'Full Monster Manual entry on AideDD') + ' · ' + extLink(AID.monsters, 'Browse every monster') + '</p>';
   el.hidden = false;
 }
 document.addEventListener('click', (ev) => {
@@ -6901,10 +7639,10 @@ function cellSpawns(cx, cy, lair, c) {
 const monState = () => (edits.monOff || {});
 function monGone(id, day) { const o = monState()[id]; return !!(o && o.d <= day); }
 function placedMon(p) {
-  const m = MON[p.name];
+  const m = monInfo(p.name);
   return { id: p.id, name: p.name, count: p.count, x: p.x, y: p.y, b: p.b, start: p.d, end: 1e9, kind: 'placed', rare: '', cr: (p.custom && p.custom.cr) || (m ? m[4] : '1'), placed: p };
 }
-function monStats(sp) { const m = MON[sp.name], c = sp.placed && sp.placed.custom; return { type: c ? c.type || 'creature' : m ? m[0] : 'creature', ac: c ? c.ac : m ? m[1] : 12, hp: c ? c.hp : m ? m[2] : 10, speed: m ? m[3] : '30 ft', cr: sp.cr, trait: m ? m[5] : '' }; }
+function monStats(sp) { const m = monInfo(sp.name), c = sp.placed && sp.placed.custom; return { type: c ? c.type || 'creature' : m ? m[0] : 'creature', ac: c ? c.ac : m ? m[1] : 12, hp: c ? c.hp : m ? m[2] : 10, speed: m ? m[3] : '30 ft', cr: sp.cr, trait: m ? m[5] : '' }; }
 function spawnsIn(x0, y0, x1, y1, day, all) {
   const out = [];
   const c0 = Math.max(0, Math.floor(x0 / MCELL)), c1 = Math.min(Math.ceil(W / MCELL) - 1, Math.floor(x1 / MCELL));
@@ -7029,9 +7767,10 @@ function monPlacedTab(day) {
 }
 function monBestiary() {
   const q = monUI.q.toLowerCase();
-  const names = Object.keys(MON).filter((n) => !q || n.toLowerCase().includes(q)).sort((a, b) => crNum(MON[a][4]) - crNum(MON[b][4]) || a.localeCompare(b));
+  if (!SRD.mons && !SRD.failed.mons) srdFetch('mons');
+  const names = Object.keys(MON).concat(Object.keys(MON_SRD)).filter((n) => !q || n.toLowerCase().includes(q)).sort((a, b) => crNum(monInfo(a)[4]) - crNum(monInfo(b)[4]) || a.localeCompare(b));
   let o = '<div class="row2"><div class="field"><label class="lab" for="mo-q">Find a creature</label><input id="mo-q" value="' + esc(monUI.q) + '" placeholder="Owlbear, goblin, dragon…" autocomplete="off"></div><div class="field"><label class="lab" for="mo-count">How many to place</label><input id="mo-count" type="number" min="1" max="50" value="' + monUI.count + '"></div></div>';
-  o += '<p class="small">' + names.length + ' creature' + (names.length === 1 ? '' : 's') + ', weakest first. Tap a name for its card.</p><ul class="best">' + names.slice(0, 150).map((n) => { const m = MON[n]; const hb = HABITAT_OF[n] ? [...HABITAT_OF[n]].map((b) => T.NAMES[b]).join(', ') : HAUNTS.includes(n) ? 'Ruins and dark places (rare)' : 'Towns and roads'; return '<li><i class="mdot" style="background:' + monCol({ name: n, cr: m[4] }) + '"></i><div class="bt"><div class="bn">' + monLink(n) + '<span class="crb">CR ' + m[4] + '</span></div><small>' + esc(m[0].charAt(0).toUpperCase() + m[0].slice(1)) + ' · AC ' + m[1] + ' · HP ' + m[2] + ' · ' + esc(m[3]) + '</small><small class="hab">' + esc(hb) + '</small></div><button type="button" class="btn sm" data-mo="place" data-v="' + esc(n) + '" aria-label="Place ' + esc(n) + ' on the map">Place</button></li>'; }).join('') + '</ul>';
+  o += '<p class="small">' + names.length + ' creature' + (names.length === 1 ? '' : 's') + ', weakest first' + (names.length > 150 ? ', first 150 shown: search to narrow' : '') + '. Tap a name for its card.' + (SRD.mons ? '' : SRD.failed.mons ? '' : ' Loading the full SRD list…') + '</p><ul class="best">' + names.slice(0, 150).map((n) => { const m = monInfo(n), sm = !MON[n] && SRD.monBy.get(n); const hb = HABITAT_OF[n] ? [...HABITAT_OF[n]].map((b) => T.NAMES[b]).join(', ') : HAUNTS.includes(n) ? 'Ruins and dark places (rare)' : sm ? (sm.hb || []).map((h) => HB_WORDS[h] || h).join(', ') + ' · SRD, placed by hand' : 'Towns and roads'; return '<li><i class="mdot" style="background:' + monCol({ name: n, cr: m[4] }) + '"></i><div class="bt"><div class="bn">' + monLink(n) + '<span class="crb">CR ' + m[4] + '</span></div><small>' + esc(m[0].charAt(0).toUpperCase() + m[0].slice(1)) + ' · AC ' + m[1] + ' · HP ' + m[2] + ' · ' + esc(m[3]) + '</small><small class="hab">' + esc(hb) + '</small></div><button type="button" class="btn sm" data-mo="place" data-v="' + esc(n) + '" aria-label="Place ' + esc(n) + ' on the map">Place</button></li>'; }).join('') + '</ul>';
   if (q && !names.length) o += '<p class="meta">No built-in card for "' + esc(monUI.q) + '". ' + extLink(AID.monster(monUI.q), 'Look it up on AideDD') + ' and add it as a custom creature below.</p>';
   o += '<details class="board"' + (q && !names.length ? ' open' : '') + '><summary><span>Custom creature</span><small>anything from the Monster Manual</small></summary><div class="pad grid">' +
     '<div class="field"><label class="lab" for="mo-cname">Name</label><input id="mo-cname" maxlength="60" value="' + esc(q && !names.length ? monUI.q : '') + '" placeholder="Beholder"></div>' +
@@ -7049,7 +7788,7 @@ function monDetail(sp, day) {
   h += '<div class="mk-body"><button type="button" class="link back" data-mo="back">‹ ' + (monUI.tab === 'placed' ? 'Placed & watched' : monUI.tab === 'bestiary' ? 'Bestiary' : 'Nearby') + '</button>';
   if (gone) h += '<p class="ready">' + (off.st === 'slain' ? 'Slain' : 'Driven off') + ' on ' + dateText(off.d) + (off.by ? ' by ' + esc(off.by) : '') + '. <button type="button" class="link" data-mo="restore" data-v="' + esc(sp.id) + '">Bring it back</button></p>';
   h += '<dl class="stats">' + stat('Armour class', st.ac) + stat('Hit points', st.hp + (sp.count > 1 ? ' each' : '')) + stat('Challenge', sp.cr + ' <small>(' + ((XP_CR[sp.cr] || 0) * sp.count).toLocaleString('en-GB') + ' XP)</small>') + '</dl>';
-  h += '<p class="small">' + (MON[sp.name] ? 'Creature card: ' + monLink(sp.name) + ' · ' : '') + extLink(AID.monster(sp.name), 'Full Monster Manual entry') + (st.trait ? '<br>' + esc(st.trait) : '') + '</p>';
+  h += '<p class="small">' + (monInfo(sp.name) ? 'Creature card: ' + monLink(sp.name) + ' · ' : '') + extLink(AID.monster(sp.name), 'Full Monster Manual entry') + (st.trait ? '<br>' + esc(st.trait) : '') + '</p>';
   const usual = HABITAT_OF[sp.name];
   h += '<ul class="facts"><li><span>Where</span><div>' + T.NAMES[sp.b] + (np ? ', ' + Math.round(np.d) + ' mi ' + dirWord(sp.x - np.s.x, sp.y - np.s.y) + ' of ' + tLink(np.s) : '') + (R ? ' · ' + rLink(R) : '') + ' <button type="button" class="link" data-mo="fly" data-v="' + esc(sp.id) + '">show on map</button></div></li>' +
     '<li><span>Habitat</span><div>' + (sp.rare === 'haunt' ? 'Ruins, tombs and dark places. Rarely seen in the open.' : usual ? [...usual].map((b) => T.NAMES[b]).join(', ') + (sp.rare === 'wanderer' || !usual.has(sp.b) ? ' · <b>far from its usual haunts</b>' : '') : 'Anywhere') + '</div></li>' +
@@ -7091,7 +7830,7 @@ $('inspector').addEventListener('click', (ev) => {
     case 'back': monUI.id = null; renderPanel(); return;
     case 'fly': flyToSpawn(v); return;
     case 'tomarket': setTool('market', true); market.tab = 'bounties'; if (monUI.sid) market.sid = monUI.sid; renderPanel(); return;
-    case 'place': { const n = Math.max(1, Math.min(50, +(($('mo-count') || {}).value) || monUI.count)); monUI.count = n; monUI.place = { name: v }; monUI.move = null; toast('Tap the map to place ' + (n > 1 ? n + ' × ' : '') + v + '.'); renderPanel(); return; }
+    case 'place': { const n = Math.max(1, Math.min(50, +(($('mo-count') || {}).value) || monUI.count)); monUI.count = n; monUI.place = { name: v }; if (!MON[v] && MON_SRD[v]) { const m = MON_SRD[v]; monUI.place.custom = { cr: m[4], ac: m[1], hp: m[2], type: m[0] }; } monUI.move = null; toast('Tap the map to place ' + (n > 1 ? n + ' × ' : '') + v + '.'); renderPanel(); return; }
     case 'placecustom': { const nm = (($('mo-cname') || {}).value || '').trim(); if (!nm) { toast('Give the creature a name first.'); return; } const n = Math.max(1, Math.min(50, +(($('mo-count') || {}).value) || 1)); monUI.count = n; monUI.place = { name: nm.slice(0, 60), custom: { cr: $('mo-ccr').value, ac: clamp(+$('mo-cac').value || 12, 1, 30), hp: clamp(+$('mo-chp').value || 10, 1, 999), type: 'creature' } }; toast('Tap the map to place ' + nm + '.'); renderPanel(); return; }
     case 'cancelplace': monUI.place = null; renderPanel(); return;
     case 'cancelmove': monUI.move = null; renderPanel(); return;
@@ -7247,7 +7986,8 @@ function afterChange(inv) {
   peopleInvalidate();
   if (inv.roads) roadsVer++;
   if (inv.strokes) strokesVer++;
-  if (inv.bb) invalidateTiles(inv.bb, inv.z0, inv.z1);
+  if (inv.bb) { invalidateTiles(inv.bb, inv.z0, inv.z1); pxInvalidate(inv.bb); }
+  if (inv.bm) pxInvalidate(inv.bm);
   if (inv.realms) invalidateTiles(null, 0, 9);
   if (sel && !selObj()) sel = null;
   renderPanel();
@@ -7427,6 +8167,7 @@ canvas.addEventListener('pointerdown', (e) => {
   anim = null;
   if (ptrs.size === 2) {
     strokeDraft = null;
+    if (twOp) twUp(true);
     if (drag) drag = null;
     const [a, b] = [...ptrs.values()];
     const cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
@@ -7439,6 +8180,7 @@ canvas.addEventListener('pointerdown', (e) => {
   gest = { type: 'press', x0: p.x, y0: p.y, lx: p.x, ly: p.y, moved: false, pan: panBtn, touch: e.pointerType === 'touch' };
   if (panBtn || e.button !== 0) return;
   if (tool === 'paint') { gest.type = 'paint'; startStroke(p); }
+  else if (tool === 'tiles') { if (twDown(p)) gest.type = 'tiles'; }
   else if (tool === 'explore' && sel && (sel.kind === 'settle' || sel.kind === 'label')) {
     const h = hitTest(p.x, p.y);
     if (h && h.kind === sel.kind && h.id === sel.id) { gest.type = 'drag'; drag = { kind: sel.kind, id: sel.id, X: p.x, Y: p.y, moved: false }; }
@@ -7447,7 +8189,7 @@ canvas.addEventListener('pointerdown', (e) => {
 canvas.addEventListener('pointermove', (e) => {
   const p = ptOf(e);
   if (!ptrs.has(e.pointerId)) {
-    if (e.pointerType === 'mouse') { hover = p; hoverInfo(p); if (tool === 'paint' || tool === 'road' || tool === 'measure') requestRender(); }
+    if (e.pointerType === 'mouse') { hover = p; hoverInfo(p); if (tool === 'paint' || tool === 'road' || tool === 'measure' || tool === 'tiles') requestRender(); }
     return;
   }
   ptrs.set(e.pointerId, p);
@@ -7466,6 +8208,7 @@ canvas.addEventListener('pointermove', (e) => {
   }
   if (!gest.moved && Math.hypot(p.x - gest.x0, p.y - gest.y0) > (gest.touch ? 9 : 4)) gest.moved = true;
   if (gest.type === 'paint') extendStroke(p);
+  else if (gest.type === 'tiles') twMove(p);
   else if (gest.type === 'drag') { if (gest.moved) { drag.moved = true; drag.X = p.x; drag.Y = p.y; requestRender(); } }
   else if (gest.moved) {
     view.x -= (p.x - gest.lx) / view.s; view.y -= (p.y - gest.ly) / view.s;
@@ -7486,8 +8229,9 @@ function endPointer(e) {
   if (ptrs.size > 0) return;
   const g = gest;
   gest = null;
-  if (e.type === 'pointercancel') { strokeDraft = null; drag = null; requestRender(); return; }
+  if (e.type === 'pointercancel') { strokeDraft = null; drag = null; if (twOp) twUp(true); requestRender(); return; }
   if (g.type === 'paint') { finishStroke(); return; }
+  if (g.type === 'tiles') { twUp(false); return; }
   if (g.type === 'drag') {
     const d = drag;
     drag = null;
@@ -7671,7 +8415,7 @@ window.addEventListener('keydown', (e) => {
   else if (e.key === 'ArrowRight') { view.x += pan; clampView(); requestRender(); e.preventDefault(); }
   else if (e.key === 'ArrowUp') { view.y -= pan; clampView(); requestRender(); e.preventDefault(); }
   else if (e.key === 'ArrowDown') { view.y += pan; clampView(); requestRender(); e.preventDefault(); }
-  const map = { b: 'monsters', h: 'heroes', g: 'guilds', n: 'people', k: 'market', v: 'explore', s: 'settle', r: 'road', p: 'paint', l: 'label', m: 'measure' };
+  const map = { b: 'monsters', h: 'heroes', g: 'guilds', n: 'people', k: 'market', v: 'explore', s: 'settle', r: 'road', p: 'paint', t: 'tiles', l: 'label', m: 'measure' };
   if (map[e.key.toLowerCase()]) setTool(map[e.key.toLowerCase()]);
 });
 window.addEventListener('keyup', (e) => { if (e.key === ' ') spaceDown = false; });
@@ -7776,7 +8520,8 @@ function renderPanel() {
       '<div class="swatches">' + BIOME_PAINT.map(([b, n]) => '<button type="button" class="sw" data-act="biome" data-v="' + b + '" aria-pressed="' + (paint.b === b) + '"><i style="background:' + SWATCH[b] + '"></i><span>' + n + '</span></button>').join('') + '</div>' +
       '<div class="field"><label class="lab" for="f-brush">Brush size</label><input id="f-brush" type="range" min="6" max="90" value="' + paint.px + '"><span class="meta" id="brushInfo">' + fmtDist(world) + ' across at this zoom</span></div>' +
       '<p class="hint">Zoom in before painting fine details such as a clearing or a pond. Restore returns the land to how it was generated.</p>';
-  } else if (tool === 'label') html = head('Add a label', 'Tap anywhere to pin a note such as "Dragon lair" or "The Weeping Bridge". Labels stay visible at every zoom.') + '<div class="field"><span class="lab">Size</span>' + seg('lsize', labelSize, [['s', 'Small'], ['m', 'Medium'], ['l', 'Large']]) + '</div>';
+  } else if (tool === 'tiles') html = tilesPanel();
+  else if (tool === 'label') html = head('Add a label', 'Tap anywhere to pin a note such as "Dragon lair" or "The Weeping Bridge". Labels stay visible at every zoom.') + '<div class="field"><span class="lab">Size</span>' + seg('lsize', labelSize, [['s', 'Small'], ['m', 'Medium'], ['l', 'Large']]) + '</div>';
   else if (tool === 'measure') {
     let res = '<p class="meta">Tap a start point, then an end point.</p>';
     if (measure && measure.b) { const d = Math.hypot(measure.b[0] - measure.a[0], measure.b[1] - measure.a[1]); res = '<div class="big">' + fmtDist(d) + '</div><p class="meta">' + travelText(d) + '. Fast pace covers 30 mi a day; slow pace 18 mi, but lets the party move stealthily.</p>'; }
@@ -7989,7 +8734,7 @@ $('worldBody').addEventListener('click', async (e) => {
     try { d = decodeMap(code); } catch (err) { toast('That map code could not be read. Check it was copied in full.'); return; }
     ask('Loading this code replaces your current map and all its edits.', 'Load code', () => { closePopovers(); if (Number.isFinite(+d.day)) market.day = Math.max(0, Math.round(+d.day)); regenerate(d.seed, false, Object.assign(blankEdits(), d.edits)); if (Array.isArray(d.heroes)) { let n = 0; for (const x of d.heroes) if (x && x.id && CLASSES5[x.cls] && RACES5[x.race] && !heroes.list.some((y) => y.id === x.id)) { heroes.list.push(fixHero(x)); n++; } if (n) { heroes.cur = heroes.cur || heroes.list[0].id; heroSave(); toast(n + ' hero' + (n > 1 ? 'es' : '') + ' loaded from the code.'); } } });
   } else if (w === 'clear') {
-    worldConfirm = { msg: 'This removes every settlement, road, label and paint stroke you have changed, and restores the generated world.', yes: 'Clear edits', run: () => { closePopovers(); regenerate(SEED, false); } };
+    worldConfirm = { msg: 'This removes every settlement, road, label, paint stroke and battle-map square you have changed, and restores the generated world.', yes: 'Clear edits', run: () => { closePopovers(); regenerate(SEED, false); } };
     renderWorldPop();
   }
 });
@@ -8008,7 +8753,7 @@ function searchItems(q) {
   for (const e of eventsWindow(market.day)) if (e.end > market.day && e.start <= market.day + 14 && e.name.toLowerCase().includes(q)) out.push({ kind: 'event', id: e.id, name: e.name, sub: EVT[e.type].name + (e.start > market.day ? ' · starts in ' + (e.start - market.day) + 'd' : ' · now'), rank: 4.5 });
   out.sort((a, b) => b.rank - a.rank || a.name.localeCompare(b.name));
   const res = out.slice(0, 7);
-  if (q.length >= 3) { const mon = Object.keys(MON).find((n) => n.toLowerCase() === q); res.push(mon ? { kind: 'mon', name: mon, sub: 'Creature card', rank: 0 } : { kind: 'ext', url: AID.monster(q), name: 'Look up "' + q + '"', sub: 'Monster Manual on AideDD ↗', rank: 0 }); }
+  if (q.length >= 3) { const mon = Object.keys(MON).concat(Object.keys(MON_SRD)).find((n) => n.toLowerCase() === q); res.push(mon ? { kind: 'mon', name: mon, sub: 'Creature card', rank: 0 } : { kind: 'ext', url: AID.monster(q), name: 'Look up "' + q + '"', sub: 'Monster Manual on AideDD ↗', rank: 0 }); }
   return res;
 }
 let searchList = [];
@@ -8037,6 +8782,435 @@ function goSearch(r) {
   flyTo(r.x, r.y, r.s);
 }
 
+// ================================================================ battle map editing (Tilewright tools)
+// The Tiles tool paints 5-ft squares, props and the walls, doors, windows and fences on grid lines.
+// Everything is kept in edits.bm as changes over what the world generates, chunk by chunk:
+// edits.bm['cx,cy'] = { t: {i: terrain}, p: {i: prop or -1}, h: {i: edge}, v: {i: edge} }, i = square within the chunk.
+const tw = { kind: 't', i: PX.ID.GRASS, mode: 'paint', brush: 1 };
+const TW_EDGES = [[1, 'Wall'], [2, 'Door'], [4, 'Window'], [3, 'Fence'], [0, 'Erase']];
+const TW_FLOORS = new Set([PX.ID.PLANKS, PX.ID.FLAG, PX.ID.ROCK, PX.ID.SAND, PX.ID.ROAD, PX.ID.SNOW, PX.ID.ICE]);
+let twOp = null, twWasActive = false;
+const twActive = () => pxAlpha() >= 0.5;
+const cellX = (px) => Math.floor(wxOf(px) * CELL), cellY = (py) => Math.floor(wyOf(py) * CELL);
+function bmSet(kind, cx, cy, v) {
+  if (!edits.bm) edits.bm = {};
+  const k = bmKey(cx, cy), i = bmIdx(cx, cy);
+  let c = edits.bm[k];
+  if (v === undefined) {
+    if (!c || !c[kind] || c[kind][i] === undefined) return false;
+    delete c[kind][i];
+    if (!Object.keys(c[kind]).length) delete c[kind];
+    if (!Object.keys(c).length) delete edits.bm[k];
+    return true;
+  }
+  if (!c) c = edits.bm[k] = {};
+  if (!c[kind]) c[kind] = {};
+  if (c[kind][i] === v) return false;
+  c[kind][i] = v;
+  return true;
+}
+// what is on the map now, worked out the same way the pixels are
+function twLookup() {
+  const m = new Map();
+  const lay = (cx, cy) => { const a = Math.floor(cx / PCS), b = Math.floor(cy / PCS), k = a + ',' + b; let L = m.get(k); if (!L) { L = pxLayout(a, b); m.set(k, L); } return L; };
+  return {
+    t(cx, cy) {
+      const L = lay(cx, cy), CW = L.N + 4, v = L.ov[(cy - L.Y0 + 2) * CW + cx - L.X0 + 2];
+      if (v < 253) return v;
+      const n = PX.naturalT(cx, cy, L.circ);
+      if (v === 255) return n;
+      return (n === PX.ID.DEEP || n === PX.ID.SHAL || n === PX.ID.MARSH || n === PX.ID.ICE) ? PX.ID.PLANKS : v === 254 ? PX.ID.ROAD : PX.ID.FLAG;
+    },
+    h(x, y) { const L = lay(x, y); return L.eh[(y - L.Y0 + 1) * (L.N + 2) + x - L.X0 + 1]; },
+    v(x, y) { const L = lay(x, y); return L.ev[(y - L.Y0 + 1) * (L.N + 2) + x - L.X0 + 1]; },
+  };
+}
+function twGrow(x0, y0, x1, y1) {
+  const o = twOp;
+  o.bb = o.bb ? [Math.min(o.bb[0], x0), Math.min(o.bb[1], y0), Math.max(o.bb[2], x1), Math.max(o.bb[3], y1)] : [x0, y0, x1, y1];
+  pxInvalidate([(x0 - 1) / CELL, (y0 - 1) / CELL, (x1 + 2) / CELL, (y1 + 2) / CELL]);
+}
+const twBB = (b) => [(b[0] - 1) / CELL, (b[1] - 1) / CELL, (b[2] + 2) / CELL, (b[3] + 2) / CELL];
+function twApply(cx, cy) {
+  if (tw.kind === 't') {
+    const n = tw.brush, o = -Math.floor((n - 1) / 2);
+    let ch = false;
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) ch = bmSet('t', cx + o + x, cy + o + y, tw.i === 'nat' ? undefined : tw.i) || ch;
+    if (ch) twGrow(cx + o, cy + o, cx + o + n - 1, cy + o + n - 1);
+  } else if (tw.kind === 'p') {
+    if (bmSet('p', cx, cy, tw.i === 'nat' ? undefined : tw.i === 'none' ? -1 : tw.i)) twGrow(cx, cy, cx, cy);
+  }
+}
+function lineCellsTw(a, b, fn) {
+  let [x0, y0] = a; const [x1, y1] = b, dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+  let e = dx + dy, guard = 0;
+  for (;;) { fn(x0, y0); if ((x0 === x1 && y0 === y1) || ++guard > 4000) break; const e2 = 2 * e; if (e2 >= dy) { e += dy; x0 += sx; } if (e2 <= dx) { e += dx; y0 += sy; } }
+}
+const vertexAt = (p) => [Math.round(wxOf(p.x) * CELL), Math.round(wyOf(p.y) * CELL)];
+function edgeAt(p) {
+  const fx = wxOf(p.x) * CELL, fy = wyOf(p.y) * CELL, dv = Math.abs(fx - Math.round(fx)), dh = Math.abs(fy - Math.round(fy));
+  return dh < dv ? { h: 1, x: Math.floor(fx), y: Math.round(fy) } : { h: 0, x: Math.round(fx), y: Math.floor(fy) };
+}
+function edgeRun(a, b) {
+  const out = [];
+  if (Math.abs(b[0] - a[0]) >= Math.abs(b[1] - a[1])) { for (let x = Math.min(a[0], b[0]); x < Math.max(a[0], b[0]); x++) out.push({ h: 1, x, y: a[1] }); }
+  else for (let y = Math.min(a[1], b[1]); y < Math.max(a[1], b[1]); y++) out.push({ h: 0, x: a[0], y });
+  return out;
+}
+function setEdge(e, v) { if (bmSet(e.h ? 'h' : 'v', e.x, e.y, v)) twGrow(e.x - 1, e.y - 1, e.x, e.y); }
+function twFill(cx, cy) {
+  if (tw.kind !== 't') { twApply(cx, cy); return; }
+  const Lk = twLookup(), from = Lk.t(cx, cy), to = tw.i === 'nat' ? null : tw.i;
+  if (to === from) return;
+  const st = [[cx, cy]], seen = new Set();
+  let n = 0, x0 = cx, y0 = cy, x1 = cx, y1 = cy;
+  while (st.length && n < 5000) {
+    const [x, y] = st.pop(), k = x + ',' + y;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    if (Lk.t(x, y) !== from) continue;
+    if (bmSet('t', x, y, to === null ? undefined : to)) n++;
+    x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+    const wall = (v) => v === 1 || v === 2 || v === 4;
+    if (!wall(Lk.v(x + 1, y))) st.push([x + 1, y]);
+    if (!wall(Lk.v(x, y))) st.push([x - 1, y]);
+    if (!wall(Lk.h(x, y + 1))) st.push([x, y + 1]);
+    if (!wall(Lk.h(x, y))) st.push([x, y - 1]);
+  }
+  twGrow(x0, y0, x1, y1);
+  if (n >= 5000) toast('Filled 5,000 squares, the most at once. Fill again to carry on.');
+}
+function twBuilding(a, b) {
+  const x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]), y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]);
+  if (x1 - x0 < 1 || y1 - y0 < 1) { toast('Drag out at least 2 × 2 squares for a building.'); return; }
+  const floor = tw.kind === 't' && TW_FLOORS.has(tw.i) ? tw.i : PX.ID.PLANKS;
+  for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
+    bmSet('t', x, y, floor); bmSet('p', x, y, -1);
+    if (x > x0) bmSet('v', x, y, 0);
+    if (y > y0) bmSet('h', x, y, 0);
+  }
+  for (let x = x0; x <= x1; x++) { bmSet('h', x, y0, 1); bmSet('h', x, y1 + 1, 1); }
+  for (let y = y0; y <= y1; y++) { bmSet('v', x0, y, 1); bmSet('v', x1 + 1, y, 1); }
+  bmSet('h', Math.floor((x0 + x1) / 2), y1 + 1, 2);
+  twGrow(x0 - 1, y0 - 1, x1 + 1, y1 + 1);
+}
+function twDown(p) {
+  if (!twActive()) return false;
+  const c = [cellX(p.x), cellY(p.y)];
+  twOp = { before: JSON.stringify(edits), bb: null };
+  if (tw.kind === 'e') twOp.edge = { a: vertexAt(p), b: vertexAt(p), single: edgeAt(p), moved: false };
+  else if (tw.mode === 'building') twOp.rect = { a: c, b: c };
+  else if (tw.mode === 'fill') { twFill(c[0], c[1]); twFinish('Fill with ' + twName().toLowerCase()); return true; }
+  else { twOp.last = c; twApply(c[0], c[1]); }
+  requestRender();
+  return true;
+}
+function twMove(p) {
+  if (!twOp) return;
+  const c = [cellX(p.x), cellY(p.y)];
+  if (twOp.edge) { const b = vertexAt(p); twOp.edge.b = b; if (b[0] !== twOp.edge.a[0] || b[1] !== twOp.edge.a[1]) twOp.edge.moved = true; }
+  else if (twOp.rect) twOp.rect.b = c;
+  else if (twOp.last && (c[0] !== twOp.last[0] || c[1] !== twOp.last[1])) { lineCellsTw(twOp.last, c, (x, y) => twApply(x, y)); twOp.last = c; }
+  requestRender();
+}
+function twUp(cancel) {
+  const o = twOp;
+  if (!o) return;
+  if (cancel) { edits = JSON.parse(o.before); twOp = null; if (o.bb) pxInvalidate(twBB(o.bb)); requestRender(); return; }
+  if (o.edge) {
+    const E = o.edge, v = tw.i;
+    if (E.moved) for (const e of edgeRun(E.a, E.b)) setEdge(e, v);
+    else { const Lk = twLookup(), cur = E.single.h ? Lk.h(E.single.x, E.single.y) : Lk.v(E.single.x, E.single.y); setEdge(E.single, v && cur === v ? 0 : v); }
+    twFinish(v ? (E.moved ? 'Build ' : 'Place ') + twName().toLowerCase() : 'Remove wall');
+  } else if (o.rect) { twBuilding(o.rect.a, o.rect.b); twFinish('Raise a building'); }
+  else twFinish((tw.kind === 'p' ? 'Place ' : 'Paint ') + twName().toLowerCase());
+}
+function twFinish(label) {
+  const o = twOp;
+  twOp = null;
+  if (!o) return;
+  const after = JSON.stringify(edits);
+  if (after === o.before || !o.bb) { requestRender(); return; }
+  const inv = { bm: twBB(o.bb) };
+  history.push({ before: o.before, after, inv, label });
+  if (history.length > 80) history.shift();
+  future = [];
+  afterChange(inv);
+}
+function twName() {
+  if (tw.kind === 't') return tw.i === 'nat' ? 'Natural ground' : PX.TER[tw.i].name;
+  if (tw.kind === 'p') return tw.i === 'nat' ? 'Natural props' : tw.i === 'none' ? 'No prop' : PX.PROPS[tw.i].name;
+  return (TW_EDGES.find((e) => e[0] === tw.i) || [0, 'Wall'])[1];
+}
+// little pictures for the palette, drawn once by the same renderer as the map
+const twSw = new Map();
+function twSwatch(kind, i) {
+  const k = kind + i;
+  if (twSw.has(k)) return twSw.get(k);
+  let url = '';
+  try {
+    const cv = mkCanvas(16, 16), g = cv.getContext('2d');
+    if (kind === 'e') {
+      const N = 2, CW = N + 4, RW = N + 2, job = { N, X0: 0, Y0: 0, ov: new Uint8Array(CW * CW).fill(PX.ID.GRASS), pr: new Int8Array(N * N).fill(-1), eh: new Uint8Array(RW * RW), ev: new Uint8Array(RW * RW), circ: new Float64Array(0) };
+      if (i) for (let x = 0; x < N; x++) job.eh[2 * RW + x + 1] = i;
+      cv.width = cv.height = 32;
+      g.putImageData(new ImageData(PX.render(job), 32, 32), 0, 0);
+    } else g.putImageData(new ImageData(PX.swatch(kind, i), 16, 16), 0, 0);
+    url = cv.toDataURL();
+  } catch (e) { url = ''; }
+  twSw.set(k, url);
+  return url;
+}
+function twButton(kind, i, name, extra) {
+  const on = tw.kind === kind && tw.i === i;
+  const img = typeof i === 'number' ? '<img src="' + twSwatch(kind, i) + '" alt="">' : '<span class="tw-x">' + (extra || '') + '</span>';
+  return '<button type="button" class="tw-b" data-tw="sel" data-k="' + kind + '" data-v="' + i + '" aria-pressed="' + on + '" title="' + esc(name) + '" aria-label="' + esc(name) + '">' + img + '</button>';
+}
+function tilesPanel() {
+  const T2 = PX.TER, order = [3, 14, 15, 16, 17, 4, 18, 2, 12, 1, 0, 13, 9, 11, 8, 5, 6, 10, 7];
+  let html = head('Battle map', 'Paint 5-ft squares, props, walls and doors on the battle map. Your changes save with the world and travel in its map code.');
+  if (!twActive()) html += '<p class="hint">Zoom in to the battle map to start painting squares.</p><div class="actions"><button type="button" class="btn primary" data-tw="zoom">Zoom to the battle map</button></div>';
+  html += '<div class="seg" role="group" aria-label="Tool">' + [['paint', 'Paint'], ['fill', 'Fill'], ['building', 'Building']].map(([k, l]) => '<button type="button" data-tw="mode" data-v="' + k + '" aria-pressed="' + (tw.mode === k) + '">' + l + '</button>').join('') + '</div>' +
+    '<section><h3>Terrain</h3><div class="tw-grid">' + order.map((i) => twButton('t', i, T2[i].name)).join('') + twButton('t', 'nat', 'Natural ground: what the world has here', '↺') + '</div></section>' +
+    '<section><h3>Props</h3><div class="tw-grid">' + PX.PROPS.map((p, i) => twButton('p', i, p.name)).join('') + twButton('p', 'none', 'No prop: clears a square', '∅') + twButton('p', 'nat', 'Natural props: trees and rocks as the world grows them', '↺') + '</div></section>' +
+    '<section><h3>Edge walls</h3><div class="tw-grid">' + TW_EDGES.map(([v, n]) => v ? twButton('e', v, n) : twButton('e', 0, 'Erase walls, doors and fences', '✕')).join('') + '</div></section>' +
+    '<p class="tw-cur">Selected: <b>' + esc(twName()) + '</b></p>';
+  if (tw.kind === 't' && tw.mode === 'paint') html += '<div class="field"><span class="lab">Brush</span>' + '<div class="seg">' + [1, 2, 3, 5].map((n) => '<button type="button" data-tw="brush" data-v="' + n + '" aria-pressed="' + (tw.brush === n) + '">' + n + ' × ' + n + '</button>').join('') + '</div></div>';
+  const how = tw.kind === 'e' ? 'Drag along the grid lines to build a run of ' + twName().toLowerCase() + 's; tap a line to place or remove one.'
+    : tw.mode === 'building' ? 'Drag out a rectangle to raise a building: floor, walls all round and a door on the south side. Pick a floor first if you want stone.'
+      : tw.mode === 'fill' ? 'Tap to fill a patch of matching ground. Walls and doors stop the fill.' : 'Drag to paint.';
+  html += '<p class="hint">' + how + ' Two fingers, right-drag or Space-drag move the map. Undo with Ctrl+Z.</p>';
+  return html;
+}
+$('inspector').addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-tw]');
+  if (!b) return;
+  const a = b.dataset.tw, v = b.dataset.v;
+  if (a === 'sel') { tw.kind = b.dataset.k; tw.i = v === 'nat' || v === 'none' ? v : +v; if (tw.kind === 'e') tw.mode = 'paint'; if (tw.kind === 'p' && tw.mode === 'building') tw.mode = 'paint'; }
+  else if (a === 'mode') { tw.mode = v; if (v === 'building' && tw.kind === 'e') { tw.kind = 't'; tw.i = PX.ID.PLANKS; } if (v === 'fill' && tw.kind !== 't') { tw.kind = 't'; tw.i = PX.ID.GRASS; } }
+  else if (a === 'brush') tw.brush = +v;
+  else if (a === 'zoom') { flyTo(view.x, view.y, Math.max(view.s, 16 * CELL), 500); }
+  renderPanel();
+  requestRender();
+});
+// hover square, brush, edge runs and building outlines
+function drawTilesOverlay() {
+  if (tool !== 'tiles' || !twActive()) return;
+  const q = 1 / CELL, px = (cx) => Math.round(sx(cx * q)), py = (cy) => Math.round(sy(cy * q));
+  ctx.save();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#e3b341';
+  if (twOp && twOp.edge) {
+    const E = twOp.edge;
+    ctx.beginPath();
+    if (E.moved) for (const e of edgeRun(E.a, E.b)) { ctx.moveTo(px(e.x), py(e.y)); ctx.lineTo(e.h ? px(e.x + 1) : px(e.x), e.h ? py(e.y) : py(e.y + 1)); }
+    ctx.lineWidth = 4; ctx.stroke();
+  } else if (twOp && twOp.rect) {
+    const a = twOp.rect.a, b = twOp.rect.b, x0 = Math.min(a[0], b[0]), x1 = Math.max(a[0], b[0]) + 1, y0 = Math.min(a[1], b[1]), y1 = Math.max(a[1], b[1]) + 1;
+    ctx.fillStyle = 'rgba(214,165,72,.18)'; ctx.fillRect(px(x0), py(y0), px(x1) - px(x0), py(y1) - py(y0));
+    ctx.setLineDash([6, 4]); ctx.strokeRect(px(x0), py(y0), px(x1) - px(x0), py(y1) - py(y0)); ctx.setLineDash([]);
+    ctx.font = '600 12px ' + 'Atkinson Hyperlegible, system-ui, sans-serif'; ctx.fillStyle = '#e3b341';
+    ctx.fillText((x1 - x0) * 5 + ' × ' + (y1 - y0) * 5 + ' ft', px(x0), py(y0) - 6);
+  } else if (hover) {
+    if (tw.kind === 'e') {
+      const e = edgeAt(hover);
+      ctx.beginPath(); ctx.moveTo(px(e.x), py(e.y)); ctx.lineTo(e.h ? px(e.x + 1) : px(e.x), e.h ? py(e.y) : py(e.y + 1)); ctx.lineWidth = 4; ctx.stroke();
+    } else {
+      const n = tw.kind === 't' && tw.mode === 'paint' ? tw.brush : 1, o = -Math.floor((n - 1) / 2), cx = cellX(hover.x) + o, cy = cellY(hover.y) + o;
+      ctx.strokeRect(px(cx) + 0.5, py(cy) + 0.5, px(cx + n) - px(cx) - 1, py(cy + n) - py(cy) - 1);
+    }
+  }
+  ctx.restore();
+}
+
+// ================================================================ the full System Reference Document lists
+// Every SRD 5.1 item (588) and monster (334), from data/ beside this page. They load the first time
+// something needs them, so opening the atlas stays quick; if they cannot load (the page opened
+// straight from a disk, say) the built-in lists carry on as before.
+const fixType = (t) => t + ((t.match(/\(/g) || []).length > (t.match(/\)/g) || []).length ? ')' : '');
+let monCard = null;
+market.shop = { q: '', cat: 'all', open: null };
+market.inn = { lodge: 'Modest', meal: 'Modest', nights: 1, guests: 4, horses: 0 };
+const SRD = { items: null, mons: null, monBy: new Map(), P: {}, failed: {} };
+const MON_SRD = {};          // creature cards for SRD monsters the built-in list lacks (never used for natural spawns)
+const monInfo = (n) => MON[n] || MON_SRD[n] || null;
+const HB_WORDS = { forest: 'Forests', ruins: 'Ruins and dungeons', grass: 'Grasslands', mountain: 'Mountains', urban: 'Towns and cities', planes: 'Other planes', desert: 'Deserts', marsh: 'Marshes', water: 'Seas and rivers', lava: 'Volcanic lands', snow: 'Arctic' };
+const crStr = (v) => (v === 0.125 ? '1/8' : v === 0.25 ? '1/4' : v === 0.5 ? '1/2' : String(v));
+const cap1 = (s) => String(s).charAt(0).toUpperCase() + String(s).slice(1);
+function srdFetch(kind) {
+  if (SRD.P[kind]) return SRD.P[kind];
+  const file = kind === 'items' ? 'data/srd_catalog.json' : 'data/srd_monsters.json';
+  SRD.P[kind] = fetch(file).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then((d) => { if (kind === 'items') srdItemsReady(d.items || []); else srdMonsReady(d.monsters || []); })
+    .catch(() => { SRD.failed[kind] = true; })
+    .then(() => { if (tool === 'market' || tool === 'monsters') renderPanel(); if (monCard && !$('monPop').hidden) showMonster(monCard); });
+  return SRD.P[kind];
+}
+function srdMonsReady(list) {
+  SRD.mons = list;
+  for (const m of list) {
+    SRD.monBy.set(m.n, m);
+    if (MON[m.n]) continue;
+    const first = (m.sa && m.sa[0]) || (m.ac2 && m.ac2[0]);
+    const trait = first ? first[0] + ': ' + String(first[1]).split('. ')[0].slice(0, 120) : '';
+    MON_SRD[m.n] = [m.sz.toLowerCase() + ' ' + m.t + (m.st ? ' (' + m.st + ')' : ''), parseInt(m.ac, 10) || 10, m.hp, m.sp, crStr(m.cr), trait];
+  }
+}
+// ---------- the full stat block on a creature card ----------
+function statBlock(m) {
+  const ab = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
+  const line = (k, v) => (v ? '<p class="sb-l"><b>' + k + '</b> ' + esc(v) + '</p>' : '');
+  const list = (title, arr) => (arr && arr.length ? '<h4>' + title + '</h4>' + arr.map(([n, t]) => '<p><b>' + esc(n) + '.</b> ' + esc(t) + '</p>').join('') : '');
+  return '<details class="sblock" open><summary>Full stat block</summary>' +
+    '<p class="sb-k">' + esc(cap1(m.sz) + ' ' + m.t + (m.st ? ' (' + m.st + ')' : '') + ', ' + m.al) + '</p>' +
+    line('Armour class', m.ac) + line('Hit points', m.hp + ' (' + m.hd + ')') + line('Speed', m.sp) +
+    '<table class="sb-ab"><tr>' + ab.map((a) => '<th>' + a + '</th>').join('') + '</tr><tr>' + m.ab.map((v) => '<td>' + v + ' <small>(' + sgn(modOf(v)) + ')</small></td>').join('') + '</tr></table>' +
+    line('Saving throws', m.sv) + line('Skills', m.sk) + line('Vulnerable to', m.vu) + line('Resists', m.re) + line('Immune to', m.im) + line('Condition immunities', m.ci) + line('Senses', m.se) + line('Languages', m.la) +
+    list('Traits', m.sa) + list('Actions', m.ac2) + list('Reactions', m.rx) + list('Legendary actions', m.lg) + '</details>';
+}
+
+// ---------- the full item list, priced in each town ----------
+const SHOP_CATS = [['all', 'All'], ['Weapons', 'Weapons'], ['Armor', 'Armour'], ['Gear', 'Gear'], ['Tools', 'Tools'], ['Mounts & travel', 'Mounts & travel'], ['Magic items', 'Magic items']];
+const MAGIC_BAND = { common: [50, 100], uncommon: [101, 500], rare: [501, 5000], 'very rare': [5001, 50000] };
+const MAGIC_TIER = { common: 2, uncommon: 3, rare: 4, 'very rare': 4 };
+const ITEM_ALIAS = { 'horse, riding': 'Riding horse', 'horse, draft': 'Draft horse', 'saddle, riding': 'Saddle, riding', 'animal feed (1 day)': 'Feed (per day)', 'leather armor': 'Leather armour', 'chain shirt': 'Chain shirt', 'chain mail': 'Chain mail', 'plate armor': 'Plate armour', 'rope, hempen (50 feet)': 'Rope, hempen (50 ft)', "healer's kit": "Healer's kit", 'arrow': 'Arrows (20)', 'tent, two-person': 'Tent, two-person', 'crossbow, light': 'Crossbow, light' };
+const SHIPS = /galley|keelboat|longship|rowboat|sailing ship|warship/i;
+function srdItemsReady(list) {
+  const goodsBy = new Map(GOODS.map((g) => [g.name.toLowerCase(), g]));
+  SRD.items = list.filter((x) => x.c === 'Magic items' || x.p > 0).map((x) => {
+    const lname = x.n.toLowerCase(), g = goodsBy.get(lname) || (ITEM_ALIAS[lname] ? GBY[ITEM_ALIAS[lname]] : null);
+    let base = x.p / 100, rarity = x.r ? x.r.toLowerCase() : null;
+    if (g) base = g.base;
+    else if (x.c === 'Magic items') {
+      const band = MAGIC_BAND[rarity];
+      if (band) { const h = T.hash(hashStr(x.id) & 0xffffff, 17, 5); base = Math.round(band[0] * Math.pow(band[1] / band[0], h)); if (/potion|scroll/i.test(x.t || '') || /^potion|^spell scroll|^ammunition/i.test(x.n)) base = Math.max(band[0] / 2, Math.round(base / 2)); }
+      else base = 0;
+    }
+    return { id: x.id, name: x.n, cat: x.c, unit: x.u && x.u !== 'each' ? x.u : '', desc: x.d || '', type: x.t || '', rarity, base, g, search: (x.n + ' ' + (x.t || '') + ' ' + (x.r || '')).toLowerCase() };
+  });
+}
+const levelCache = new Map();
+function priceLevels(s, day) {
+  const key = s.id + '|' + day + '|' + mkVer;
+  let v = levelCache.get(key);
+  if (v) return v;
+  const P = pricesFor(s, day);
+  const lvl = (fn) => { let lr = 0, n = 0; for (const g of GOODS) if (fn(g)) { lr += Math.log(P[g.i] / g.base); n++; } return n ? Math.exp(lr / n) : 1; };
+  v = {
+    arms: lvl((g) => g.cat === 'arms'), gear: lvl((g) => g.tags.includes('gear') || g.tags.includes('healing') && g.cat === 'trade'), crafted: lvl((g) => g.tags.includes('crafted')),
+    mount: lvl((g) => g.tags.includes('mount')), tack: lvl((g) => g.tags.includes('tack') || g.tags.includes('vehicle')), feed: lvl((g) => g.tags.includes('feed')), magic: lvl((g) => g.cat === 'magic'),
+    lodging: lvl((g) => g.tags.includes('lodging')), meal: lvl((g) => g.tags.includes('meal')), P,
+  };
+  levelCache.set(key, v);
+  if (levelCache.size > 400) levelCache.delete(levelCache.keys().next().value);
+  return v;
+}
+// local price and whether it is on sale here today
+function shopItem(it, s, day) {
+  const Lv = priceLevels(s, day);
+  if (it.g) return { gp: Lv.P[it.g.i], ok: inStock(s, it.g, day), why: s.tier < it.g.minTier ? 'Needs a larger market' : 'None in stock this week' };
+  if (it.cat === 'Magic items') {
+    if (!it.base) return { gp: 0, ok: false, why: it.rarity === 'artifact' ? 'An artifact: never for sale' : 'Legendary: never for sale' };
+    if (s.tier < MAGIC_TIER[it.rarity]) return { gp: it.base * Lv.magic, ok: false, why: 'Needs a ' + (MAGIC_TIER[it.rarity] >= 4 ? 'capital' : 'city') };
+    const L = localInfo(s), ok = T.hash(L.h & 0xffffff, (hashStr(it.id) & 0xfffff) + Math.floor(day / 7), 913) < STOCK_CHANCE[it.rarity];
+    return { gp: it.base * Lv.magic, ok, why: 'None in stock this week' };
+  }
+  let f = Lv.gear, ok = true, why = '';
+  const n = it.name;
+  if (it.cat === 'Weapons') { f = Lv.arms; if (/Martial/.test(it.desc) && s.tier < 2) { ok = false; why = 'Needs a town'; } }
+  else if (it.cat === 'Armor') { f = Lv.arms; if ((/Heavy/.test(it.desc) || it.base >= 200) && s.tier < 2) { ok = false; why = 'Needs a town'; } if (it.base >= 400 && s.tier < 3) { ok = false; why = 'Needs a city'; } }
+  else if (it.cat === 'Tools') f = Lv.crafted;
+  else if (it.cat === 'Mounts & travel') {
+    if (/feed|stabling/i.test(n)) f = Lv.feed;
+    else if (/barding|saddle|bit and|saddlebags|carriage|cart|chariot|sled|wagon/i.test(n)) { f = Lv.tack; if (/barding/i.test(n) && s.tier < 2) { ok = false; why = 'Needs a town'; } }
+    else if (SHIPS.test(n)) { f = Lv.tack; if (!isCoastal(s.x, s.y)) { ok = false; why = 'Only in ports'; } else if (it.base >= 10000 && s.tier < 3) { ok = false; why = 'Needs a city port'; } }
+    else f = Lv.mount;
+  }
+  return { gp: it.base * f, ok, why };
+}
+function shopRows() {
+  const q = (market.shop.q || '').trim().toLowerCase(), cat = market.shop.cat;
+  return SRD.items.filter((it) => (cat === 'all' || it.cat === cat) && (!q || it.search.includes(q)));
+}
+function shopListHtml(s, day) {
+  if (!SRD.items) return SRD.failed.items ? '<p class="meta">The full SRD item list could not load here. Open the atlas from its web address to see all 588 items; the Town tab still prices the everyday goods.</p>' : '<p class="meta">Loading the full SRD item list…</p>';
+  const rows = shopRows(), MAX = 160;
+  if (!rows.length) return '<p class="meta">Nothing matches "' + esc(market.shop.q) + '".</p>';
+  let h = '<p class="small">' + rows.length + ' item' + (rows.length === 1 ? '' : 's') + (rows.length > MAX ? ', first ' + MAX + ' shown. Search to narrow.' : '') + '</p><table class="shop-t"><thead><tr><th>Item</th><th class="num">Book</th><th class="num">Here</th></tr></thead><tbody>';
+  let lastCat = '';
+  for (const it of rows.slice(0, MAX)) {
+    if (market.shop.cat === 'all' && it.cat !== lastCat) { lastCat = it.cat; h += '<tr class="cat"><td colspan="3">' + esc((SHOP_CATS.find((c) => c[0] === it.cat) || [0, it.cat])[1]) + '</td></tr>'; }
+    const r = shopItem(it, s, day), open = market.shop.open === it.id;
+    const nm = it.cat === 'Magic items' ? extLink(AID.item(it.name), it.name) : esc(it.name);
+    h += '<tr class="item' + (r.ok ? '' : ' na') + '" data-shop="open" data-v="' + esc(it.id) + '" tabindex="0" aria-expanded="' + open + '"><td>' + nm + (it.unit ? ' <small>(' + esc(it.unit) + ')</small>' : '') + (it.rarity ? ' <em class="rar rr-' + it.rarity.replace(/\s/g, '') + '">' + esc(it.rarity) + '</em>' : '') +
+      (open ? '<small class="note">' + esc(it.type ? fixType(it.type) + '. ' : '') + esc(it.desc) + '</small>' : '') + '</td>' +
+      '<td class="num">' + (it.base ? money(it.base) : '—') + '</td><td class="num">' + (r.ok ? '<b>' + money(r.gp) + '</b>' : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
+  }
+  return h + '</tbody></table>';
+}
+
+// ---------- the inn bill ----------
+const INN_Q = ['Squalid', 'Poor', 'Modest', 'Comfortable', 'Wealthy', 'Aristocratic'];
+const INN_STAY = [0.07, 0.1, 0.5, 0.8, 2, 4], INN_MEAL = [0.03, 0.06, 0.3, 0.5, 0.8, 2], INN_TIER = [1, 1, 1, 2, 3, 3];
+function innBill(s, day) {
+  const F = market.inn, Lv = priceLevels(s, day);
+  const lq = INN_Q.indexOf(F.lodge), mq = INN_Q.indexOf(F.meal);
+  const stay = INN_STAY[lq] * Lv.lodging, meal = INN_MEAL[mq] * Lv.meal, stable = 0.5 * Math.sqrt(Lv.feed * Lv.lodging);
+  const n = F.nights, g = F.guests, hrs = F.horses;
+  const rows = [['Rooms', n * g * stay, g + ' × ' + n + ' night' + (n === 1 ? '' : 's') + ' at ' + money(stay)], ['Meals', n * g * meal, g + ' × ' + n + ' day' + (n === 1 ? '' : 's') + ' at ' + money(meal)]];
+  if (hrs) rows.push(['Stabling', n * hrs * stable, hrs + ' × ' + n + ' at ' + money(stable)]);
+  const warn = [];
+  if (s.tier < INN_TIER[lq]) warn.push(F.lodge + ' rooms are hard to find in a ' + TIERS[s.tier].name.toLowerCase() + '.');
+  if (s.tier < INN_TIER[mq]) warn.push(F.meal + ' meals are hard to find in a ' + TIERS[s.tier].name.toLowerCase() + '.');
+  return { rows, total: rows.reduce((a, r) => a + r[1], 0), warn };
+}
+function innHtml(s, day) {
+  const B = innBill(s, day);
+  return '<div class="inn-out"><ul class="breakdown">' + B.rows.map((r) => '<li><span>' + r[0] + ' <small>' + r[2] + '</small></span><b>' + money(r[1]) + '</b></li>').join('') + '</ul>' +
+    '<div class="inn-total"><span>Total bill</span><b>' + money(B.total) + '</b></div>' + (B.warn.length ? '<p class="meta">' + B.warn.join(' ') + '</p>' : '') + '</div>';
+}
+function shopTab(day) {
+  const s = market.sid ? SBY.get(market.sid) : null;
+  if (!s) return '<div class="empty-note"><p>Tap a town or city on the map to open its shops and inn.</p></div>';
+  if (!SRD.items && !SRD.failed.items) srdFetch('items');
+  const F = market.inn, sel1 = (id, cur) => '<select id="' + id + '" data-inn="' + id + '">' + INN_Q.map((q, i) => '<option value="' + q + '"' + (q === cur ? ' selected' : '') + (s.tier < INN_TIER[i] ? ' class="rare"' : '') + '>' + q + '</option>').join('') + '</select>';
+  const num = (id, v, max, lab) => '<div class="field"><label class="lab" for="' + id + '">' + lab + '</label><input id="' + id + '" data-inn="' + id + '" type="number" min="0" max="' + max + '" value="' + v + '"></div>';
+  let h = '<div class="town-h"><div><div class="eyebrow">' + TIERS[s.tier].name + ' · shops and inn</div><h3 class="town-name">' + tLink(s) + '</h3></div></div>';
+  h += '<section><h3>At the inn</h3><div class="row2"><div class="field"><label class="lab" for="inn-l">Lodging</label>' + sel1('inn-l', F.lodge) + '</div><div class="field"><label class="lab" for="inn-m">Meals</label>' + sel1('inn-m', F.meal) + '</div></div>' +
+    '<div class="row3">' + num('inn-n', F.nights, 365, 'Nights') + num('inn-g', F.guests, 50, 'Guests') + num('inn-h', F.horses, 50, 'Horses') + '</div><div id="innOut">' + innHtml(s, day) + '</div>' +
+    '<p class="hint">Player\'s Handbook lifestyle prices for an inn stay and a day\'s meals, at this town\'s prices today. Stabling is 5 sp a day before local costs.</p></section>';
+  h += '<section><h3>Everything for sale</h3><div class="field"><label class="lab" for="shop-q">Search 588 SRD items</label><input id="shop-q" type="search" value="' + esc(market.shop.q) + '" placeholder="Rope, longsword, potion…" autocomplete="off"></div>' +
+    '<div class="chips">' + SHOP_CATS.map(([k, l]) => '<button type="button" class="chip' + (market.shop.cat === k ? ' on' : '') + '" data-shop="cat" data-v="' + esc(k) + '">' + l + '</button>').join('') + '</div>' +
+    '<div id="shopList">' + shopListHtml(s, day) + '</div>' +
+    '<p class="hint">Rulebook prices from the System Reference Document 5.1, moved by this town\'s supply, season and events like the goods on the Town tab. Magic items without a rulebook price are estimates inside the Dungeon Master\'s Guide rarity bands; legendary items and artifacts are never sold. Tap an item for its description.</p></section>';
+  return h;
+}
+$('inspector').addEventListener('click', (ev) => {
+  if (ev.target.closest('a')) return;
+  const b = ev.target.closest('[data-shop]');
+  if (!b || tool !== 'market') return;
+  const a = b.dataset.shop, v = b.dataset.v;
+  if (a === 'cat') { market.shop.cat = v; market.shop.open = null; renderPanel(); }
+  else if (a === 'open') { market.shop.open = market.shop.open === v ? null : v; const s = market.sid ? SBY.get(market.sid) : null; if (s) $('shopList').innerHTML = shopListHtml(s, market.day); }
+});
+$('inspector').addEventListener('input', (ev) => {
+  const t = ev.target;
+  if (tool !== 'market') return;
+  const s = market.sid ? SBY.get(market.sid) : null;
+  if (!s) return;
+  if (t.id === 'shop-q') { market.shop.q = t.value.slice(0, 60); market.shop.open = null; const L = $('shopList'); if (L) L.innerHTML = shopListHtml(s, market.day); return; }
+  if (t.dataset && t.dataset.inn) {
+    const F = market.inn, k = t.dataset.inn;
+    if (k === 'inn-l') F.lodge = t.value; else if (k === 'inn-m') F.meal = t.value;
+    else { const v = clamp(Math.round(+t.value || 0), 0, k === 'inn-n' ? 365 : 50); if (k === 'inn-n') F.nights = v; else if (k === 'inn-g') F.guests = v; else F.horses = v; }
+    const o = $('innOut'); if (o) o.innerHTML = innHtml(s, market.day);
+  }
+});
+$('inspector').addEventListener('keydown', (ev) => {
+  const r = ev.target.closest && ev.target.closest('tr[data-shop]');
+  if (r && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); r.click(); }
+});
+
 // ---------------------------------------------------------------- persistence
 let saveTimer = 0;
 function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 500); }
@@ -8061,7 +9235,7 @@ function regenerate(seed, keepView, newEdits, restoreView) {
     edits = newEdits || blankEdits();
     history = []; future = [];
     tiles.clear(); planCache.clear(); geomCache.clear();
-    queue = [];
+    queue = []; pxChunks.clear(); pxQueue = [];
     roadsVer++; strokesVer++;
     sel = null; roadDraft = null; measure = null;
     applyEdits();
