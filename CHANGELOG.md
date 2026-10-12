@@ -6,6 +6,25 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-12 — v20 to v23: saving, live table, battle map, Shop, Market Ledger ideas
+*By: project owner and Sean (prepared with Claude)*
+
+- **index.html** — brings the site up to v23 of the main copy (it was still the 10 October first release):
+  - **v20:** safer saving with snapshots; DM and player modes; lasting town history; the 2024 rules option; accessibility.
+  - **v21:** a library of your worlds; protection when two tabs are open; stable worlds that survive updates; a live shared table on the Claude page (this GitHub copy keeps backup files and merging instead).
+  - **v22:** Sean's Tilewright look, the pixel-art battle map, the Tiles tool (T), and the full SRD lists. The SRD lists add a Shop tab with an inn bill, and 334 monsters with full stat blocks.
+  - **v23:** ideas from Sean and Adam's Market Ledger:
+    - everyday prices, shown in gold, silver and copper;
+    - parchment stat blocks;
+    - households, Around town now and a daily town Chronicle;
+    - Recent changes;
+    - guild colours and quest danger ratings;
+    - town wealth and defence.
+- **docs/world-atlas.md** — design notes updated to v23.
+- **ATTRIBUTION.md** — adds Tilewright, the Market Ledger, and the Atkinson Hyperlegible and Pixelify Sans fonts.
+- **backups/index_2026-10-12_v23.html** — a copy of this release.
+- The full version-by-version list is in docs/world-atlas.md and the project's main change log.
+
 ## 2026-10-10 — Tidy repository layout
 *By: project owner (prepared with Claude)*
 
