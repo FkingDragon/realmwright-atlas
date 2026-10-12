@@ -13,6 +13,7 @@ Players' own worlds are **not** stored here — they live in each person's brows
 | File | Date | Why |
 |---|---|---|
 | `index_2026-10-10_original.html` | 2026-10-10 | Original page exactly as built in Claude, before going on GitHub |
+| `index_2026-10-12_before-tilewright-style.html` | 2026-10-12 | Before the Tilewright work on branch `tilewright-style` |
 
 ## Restoring a backup
 

@@ -1,0 +1,132 @@
+/* 1. Replace the :root block with this */
+:root {
+  /* Tilewright palette: charcoal panels, lantern gold, parchment text */
+  --bg: #171a1f;
+  --panel: #20252c;
+  --panel-2: #272d35;
+  --line: #353c46;
+  --text: #e8e3d4;
+  --muted: #99a0a8;
+  --brass: #d6a548;
+  --brass-hi: #e3b341;
+  --oxblood: #c8603f;
+  --ink: #1b1f24;
+  --stage: #0f1215;
+  --f-display: 'Pixelify Sans', 'Courier New', monospace;
+  --f-ui: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --r: 10px;
+  color-scheme: dark;
+}
+
+/* 2. Append at the end of the main stylesheet */
+/* ---------------------------------------------------------------- Tilewright look
+   Flat charcoal cards, pixel headings in small caps, outlined buttons and
+   gold for whatever is switched on. Map labels keep their engraved serif. */
+body { font-size: 14px; }
+.panel { background: var(--panel); border-color: var(--line); box-shadow: 0 8px 24px rgba(0,0,0,.42); backdrop-filter: none; -webkit-backdrop-filter: none; }
+.plate::after { display: none; }
+.plate h1 { font: 700 21px/1.1 var(--f-display); color: var(--brass); letter-spacing: .01em; }
+.plate .meta-line { font-family: var(--f-display); font-size: 11px; letter-spacing: .1em; }
+.plate .meta-line b { color: var(--text); }
+.pop h2, .ihead h2, .mk-head h2, .town-name, .mb-open b, .loading .card div, .today, .disp b, .threat b { font-family: var(--f-display); font-weight: 500; }
+.pop h2 { font-size: 18px; color: var(--brass); }
+.ihead h2 { font-size: 22px; }
+.title-in { font-family: var(--f-display); font-weight: 500; font-size: 22px; }
+section h3, .mk-body h4, .lab, .stats dt, .board th, .scores thead th, .cbox span, .lvh, .facts li > span { font-family: var(--f-display); font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+section h3 { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.eyebrow { font-family: var(--f-display); font-size: 11px; letter-spacing: .14em; color: var(--brass); }
+.big, .cbox b, .ab b, .hpv, .rollbar .rc-t, .idx b, #zoomName { font-family: var(--f-display); font-weight: 500; }
+.big { color: var(--brass); }
+.sub, .small, .hook, .pop ol, .feats p, .spells details p { color: var(--text); }
+
+/* tool rail */
+.tool { color: var(--text); border-radius: 7px; }
+.tool span { font-family: var(--f-display); font-size: 11px; letter-spacing: .05em; }
+.tool:hover { background: var(--panel-2); }
+.tool[aria-pressed="true"] { background: var(--brass); border-color: var(--brass); color: var(--ink); }
+
+/* segmented controls and tabs */
+.seg { background: transparent; padding: 0; gap: 0; border-radius: 7px; overflow: hidden; }
+.seg button { border-radius: 0; border-right: 1px solid var(--line); color: var(--text); font-size: 13px; padding: 7px 4px; }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--brass); color: var(--ink); font-weight: 700; }
+.seg.mk-tabs { border-radius: 9px; }
+.seg.mk-tabs button { font-family: var(--f-display); font-size: 13px; letter-spacing: .06em; padding: 8px 4px; }
+.seg.mk-tabs button[aria-pressed="true"] { font-weight: 500; }
+
+/* buttons, chips, inputs */
+.btn, .mk-ctl button, .star-btn, .x, .zoomb button, .ibtn, .dice button { background: transparent; border-radius: 7px; }
+.btn { font-weight: 400; font-size: 13.5px; padding: 8px 12px; }
+.btn:hover:not(:disabled), .mk-ctl button:hover, .ibtn:hover, .x:hover, .zoomb button:hover, .star-btn:hover { border-color: var(--brass); }
+.btn.primary, .mk-ctl .play { background: var(--brass); border-color: var(--brass); color: var(--ink); font-weight: 700; }
+.btn.primary:hover:not(:disabled) { background: var(--brass-hi); border-color: var(--brass-hi); }
+.btn.danger:hover:not(:disabled) { border-color: #e5785f; color: #ffb7a6; }
+.ibtn { background: var(--panel); }
+.ibtn[aria-expanded="true"] { background: var(--brass); border-color: var(--brass); color: var(--ink); }
+.chip { background: transparent; color: var(--text); }
+.chip:hover:not(:disabled) { border-color: var(--brass); }
+.chip.on { background: var(--brass); border-color: var(--brass); color: var(--ink); font-weight: 700; }
+.chip.on small { color: var(--ink); }
+.sw[aria-pressed="true"], .opt.on { border-color: var(--brass); background: rgba(214,165,72,.14); }
+.field input:not([type="range"]), .field select, .field textarea, .pop textarea, .inline input, .pp-tools input, .pp-tools select, .relform select, .logform input, .pcform input, .pcform select, .hero-bar select, .scores select, .scores input, .asi select, .kitg select, .hp-ctl input, .mhp input { background: var(--bg); border-color: var(--line); border-radius: 6px; }
+.search input { background: var(--panel); border-radius: 9px; }
+.evlist button, .best li, .opt, .cbox, .ab { background: var(--panel-2); }
+.evlist button:hover, .best li:hover { border-color: var(--brass); }
+.link { color: var(--text); text-decoration-color: rgba(214,165,72,.55); text-underline-offset: 3px; }
+.link:hover { color: var(--brass-hi); }
+.ext { color: var(--brass-hi); }
+.stats div { background: var(--panel); }
+.hall { background: var(--panel-2); }
+.rung { color: var(--text); font-family: var(--f-display); font-size: 12px; letter-spacing: .04em; }
+.rollbar { background: var(--stage); }
+.loading { background: rgba(15,18,21,.78); }
+
+/* panels never squash their rows when space runs short; they scroll instead */
+.inspector { grid-auto-rows: max-content; }
+/* a taller tool rail: tighten it sooner on short screens */
+@media (min-width: 761px) and (max-height: 960px) { .tool { padding: 4px 0 3px; gap: 1px; } .tool span { font-size: 10px; } .tools { gap: 2px; } }
+@media (min-width: 761px) and (max-height: 820px) { .tool span { display: none; } .tool { padding: 6px 0; } }
+@media (max-width: 760px) {
+  .tool { min-width: 50px; flex: 1 0 50px; }
+  .tool span { font-size: 9.5px; letter-spacing: .02em; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+/* battle map palette */
+.tw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 5px; }
+.tw-b { aspect-ratio: 1; min-width: 0; padding: 3px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); cursor: pointer; display: grid; place-items: center; color: var(--muted); }
+.tw-b img { width: 100%; height: 100%; image-rendering: pixelated; display: block; border-radius: 3px; }
+.tw-b:hover { border-color: var(--brass); }
+.tw-b[aria-pressed="true"] { border-color: var(--brass); box-shadow: 0 0 0 2px var(--brass); }
+.tw-b:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 2px; }
+.tw-x { font: 500 18px var(--f-display); line-height: 1; }
+.tw-cur { margin: 0; font-size: 13px; color: var(--muted); } .tw-cur b { color: var(--text); font-weight: 700; }
+
+/* shop, inn bill and stat blocks */
+.shop-t { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.shop-t th { text-align: left; font: 500 11px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 6px 6px; border-bottom: 1px solid var(--line); }
+.shop-t th.num, .shop-t td.num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.shop-t td { padding: 7px 6px; border-bottom: 1px solid rgba(53,60,70,.6); vertical-align: top; }
+.shop-t tr.cat td { font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); padding-top: 14px; border-bottom: 1px solid var(--line); }
+.shop-t tr.item { cursor: pointer; }
+.shop-t tr.item:hover td, .shop-t tr.item:focus-visible td { background: var(--panel-2); }
+.shop-t tr.item:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: -2px; }
+.shop-t tr.na td { color: var(--muted); }
+.shop-t td small { color: var(--muted); font-size: 12px; }
+.shop-t .note { display: block; margin-top: 4px; line-height: 1.45; max-width: 60ch; }
+.shop-t .ext { color: var(--text); text-decoration-color: rgba(214,165,72,.55); }
+.rar.rr-common { color: #b9c2c9; } .rar.rr-uncommon { color: #79c08a; } .rar.rr-rare { color: #6fa8e8; } .rar.rr-veryrare { color: #b28ae8; } .rar.rr-legendary { color: #e3a341; } .rar.rr-artifact { color: #e5785f; }
+.breakdown { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+.breakdown li { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.breakdown small { color: var(--muted); font-size: 12px; }
+.breakdown b { font-weight: 400; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.inn-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; }
+.inn-total b { font: 500 22px var(--f-display); color: var(--brass); font-variant-numeric: tabular-nums; }
+.inn-out { display: grid; gap: 4px; }
+.sblock { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; font-size: 13px; }
+.sblock summary { cursor: pointer; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
+.sblock p { margin: 0; line-height: 1.45; }
+.sblock h4 { margin: 8px 0 2px; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 3px; }
+.sb-k { color: var(--muted); font-style: italic; }
+.sb-ab { width: 100%; border-collapse: collapse; margin: 4px 0; text-align: center; font-variant-numeric: tabular-nums; }
+.sb-ab th { font: 500 11px var(--f-display); letter-spacing: .08em; color: var(--muted); }
+.sb-ab td { font-size: 13px; padding: 2px 0; } .sb-ab small { color: var(--muted); }
+.pop.mon { max-height: calc(100% - 120px); overflow: auto; }

@@ -6,6 +6,18 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-12 — Tilewright features prepared on branch `tilewright-style` (not live)
+*By: project owner (prepared with Claude)*
+
+- Built from Sean's Tilewright and Market Ledger files: the Tilewright look, a pixel-art battle map, a **Tiles** editing tool, the full SRD item and monster lists, and an inn bill on a new Market → **Shop** tab.
+- Built on the 10 October atlas. The main copy is now v21 in the other Claude chat, so this work is **handed over** rather than merged: see **handover/HANDOVER.md**.
+- **index.html** (branch only) — all of the above, tested on the 10 October build
+- **handover/** — the new code as separate modules, the theme, a full patch and step-by-step notes for folding it into v21
+- **data/srd_catalog.json**, **data/srd_monsters.json** — SRD 5.1 items and monsters (CC BY 4.0), compiled by Sean
+- **legacy/tilewright.html** — Sean's original battle map, for reference
+- **backups/index_2026-10-12_before-tilewright-style.html** — copy taken before starting
+- The live site (`main`) is unchanged.
+
 ## 2026-10-10 — Tidy repository layout
 *By: project owner (prepared with Claude)*
 
