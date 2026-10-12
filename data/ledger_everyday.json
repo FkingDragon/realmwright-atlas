@@ -1,0 +1,264 @@
+{
+"source": "Market Ledger everyday prices (Sean and Adam), from Player's Handbook / SRD 5.1 lifestyle, food, lodging, services and hireling prices, plus a few of the ledger's own estimates. Prices in copper pieces.",
+"items": [
+{
+"n": "Meal, squalid",
+"c": "Food",
+"p": 1,
+"u": "per meal",
+"d": "Gruel and stale bread"
+},
+{
+"n": "Meal, poor",
+"c": "Food",
+"p": 2,
+"u": "per meal",
+"d": ""
+},
+{
+"n": "Meal, modest",
+"c": "Food",
+"p": 10,
+"u": "per meal",
+"d": "Stew, bread, a bit of meat"
+},
+{
+"n": "Meal, comfortable",
+"c": "Food",
+"p": 20,
+"u": "per meal",
+"d": ""
+},
+{
+"n": "Meal, wealthy",
+"c": "Food",
+"p": 30,
+"u": "per meal",
+"d": ""
+},
+{
+"n": "Meal, aristocratic",
+"c": "Food",
+"p": 70,
+"u": "per meal",
+"d": "Several courses, imported spices"
+},
+{
+"n": "Bread",
+"c": "Food",
+"p": 2,
+"u": "per loaf",
+"d": ""
+},
+{
+"n": "Cheese",
+"c": "Food",
+"p": 10,
+"u": "per hunk",
+"d": ""
+},
+{
+"n": "Meat",
+"c": "Food",
+"p": 30,
+"u": "per chunk",
+"d": ""
+},
+{
+"n": "Banquet",
+"c": "Food",
+"p": 1000,
+"u": "per guest",
+"d": ""
+},
+{
+"n": "Ale",
+"c": "Drink",
+"p": 4,
+"u": "per mug",
+"d": ""
+},
+{
+"n": "Ale",
+"c": "Drink",
+"p": 20,
+"u": "per gallon",
+"d": ""
+},
+{
+"n": "Mead",
+"c": "Drink",
+"p": 6,
+"u": "per tankard",
+"d": ""
+},
+{
+"n": "Wine, common",
+"c": "Drink",
+"p": 20,
+"u": "per pitcher",
+"d": ""
+},
+{
+"n": "Wine, fine",
+"c": "Drink",
+"p": 1000,
+"u": "per bottle",
+"d": ""
+},
+{
+"n": "Spirits",
+"c": "Drink",
+"p": 5,
+"u": "per shot",
+"d": ""
+},
+{
+"n": "Inn stay, squalid",
+"c": "Lodging",
+"p": 7,
+"u": "per night",
+"d": "A spot on the common-room floor"
+},
+{
+"n": "Inn stay, poor",
+"c": "Lodging",
+"p": 10,
+"u": "per night",
+"d": "Shared bunk"
+},
+{
+"n": "Inn stay, modest",
+"c": "Lodging",
+"p": 50,
+"u": "per night",
+"d": "Small private room"
+},
+{
+"n": "Inn stay, comfortable",
+"c": "Lodging",
+"p": 80,
+"u": "per night",
+"d": ""
+},
+{
+"n": "Inn stay, wealthy",
+"c": "Lodging",
+"p": 200,
+"u": "per night",
+"d": ""
+},
+{
+"n": "Inn stay, aristocratic",
+"c": "Lodging",
+"p": 400,
+"u": "per night",
+"d": "Suite with servants"
+},
+{
+"n": "Stabling",
+"c": "Lodging",
+"p": 50,
+"u": "per horse, per night",
+"d": "Includes feed"
+},
+{
+"n": "Hot bath",
+"c": "Lodging",
+"p": 5,
+"u": "each",
+"d": ""
+},
+{
+"n": "Coach between towns",
+"c": "Services",
+"p": 3,
+"u": "per mile",
+"d": ""
+},
+{
+"n": "Coach within a city",
+"c": "Services",
+"p": 1,
+"u": "per ride",
+"d": ""
+},
+{
+"n": "Messenger",
+"c": "Services",
+"p": 2,
+"u": "per mile",
+"d": ""
+},
+{
+"n": "Road or gate toll",
+"c": "Services",
+"p": 1,
+"u": "each",
+"d": ""
+},
+{
+"n": "Ship's passage",
+"c": "Services",
+"p": 10,
+"u": "per mile",
+"d": ""
+},
+{
+"n": "Healer's visit",
+"c": "Services",
+"p": 50,
+"u": "each",
+"d": "Mundane care, no magic"
+},
+{
+"n": "Scribe",
+"c": "Services",
+"p": 20,
+"u": "per letter",
+"d": ""
+},
+{
+"n": "Hireling, skilled",
+"c": "Wages",
+"p": 200,
+"u": "per day",
+"d": "Mason, mercenary, scribe"
+},
+{
+"n": "Hireling, untrained",
+"c": "Wages",
+"p": 20,
+"u": "per day",
+"d": "Porter, labourer"
+},
+{
+"n": "Town guard",
+"c": "Wages",
+"p": 50,
+"u": "per day",
+"d": ""
+},
+{
+"n": "Tavern server",
+"c": "Wages",
+"p": 30,
+"u": "per day",
+"d": "Plus tips"
+},
+{
+"n": "Blacksmith",
+"c": "Wages",
+"p": 100,
+"u": "per day",
+"d": ""
+},
+{
+"n": "Wilderness guide",
+"c": "Wages",
+"p": 50,
+"u": "per day",
+"d": ""
+}
+]
+}

@@ -121,12 +121,19 @@ section h3 { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(
 .inn-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; }
 .inn-total b { font: 500 22px var(--f-display); color: var(--brass); font-variant-numeric: tabular-nums; }
 .inn-out { display: grid; gap: 4px; }
-.sblock { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; font-size: 13px; }
+.sblock { display: grid; gap: 6px; font-size: 13px; }
 .sblock summary { cursor: pointer; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
-.sblock p { margin: 0; line-height: 1.45; }
-.sblock h4 { margin: 8px 0 2px; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 3px; }
-.sb-k { color: var(--muted); font-style: italic; }
-.sb-ab { width: 100%; border-collapse: collapse; margin: 4px 0; text-align: center; font-variant-numeric: tabular-nums; }
-.sb-ab th { font: 500 11px var(--f-display); letter-spacing: .08em; color: var(--muted); }
-.sb-ab td { font-size: 13px; padding: 2px 0; } .sb-ab small { color: var(--muted); }
+/* the old ledger's stat block: parchment, red rules, engraved headings */
+.statblock { background: #f1e6cc; color: #2a1d14; border-radius: 6px; padding: 12px 14px; line-height: 1.45; border-top: 4px solid #8e1b12; border-bottom: 4px solid #8e1b12; display: grid; gap: 3px; }
+.statblock p { margin: 0; }
+.statblock .sb-name { font: 400 24px/1.1 'IM Fell English', Georgia, serif; color: #7a1a10; }
+.statblock .sb-k { font-style: italic; padding-bottom: 6px; border-bottom: 2px solid #a8331f; margin-bottom: 4px; }
+.statblock .sb-l b { color: #7a1a10; }
+.statblock h4 { font: 400 17px 'IM Fell English', Georgia, serif; color: #7a1a10; margin: 10px 0 4px; border-bottom: 1px solid #a8331f; letter-spacing: 0; text-transform: none; padding: 0; }
+.statblock .sb-ab { width: 100%; border-collapse: collapse; margin: 6px 0; text-align: center; font-variant-numeric: tabular-nums; border-top: 2px solid #a8331f; border-bottom: 2px solid #a8331f; }
+.statblock .sb-ab th { font: 700 11px var(--f-ui); color: #7a1a10; padding-top: 4px; }
+.statblock .sb-ab td { font-size: 12.5px; padding: 0 0 4px; } .statblock .sb-ab small { color: #5a4636; }
+/* prices in their coins */
+.c-gp { color: #e3b341; } .c-sp { color: #b9c2c9; } .c-cp { color: #d0804f; }
+.c-gp b, .c-sp b, .c-cp b { font-weight: 700; }
 .pop.mon { max-height: calc(100% - 120px); overflow: auto; }

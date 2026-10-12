@@ -13,6 +13,7 @@ Everything here worked in the 10 October build. It was tested in Chromium at des
 | Tilewright look: colour tokens, fonts, controls | `5-tilewright-theme.css` | 132 lines |
 | Every change against the 10 October page, hooks included | `full-changes.patch` | — |
 | The SRD data (CC BY 4.0) | `../data/srd_catalog.json`, `../data/srd_monsters.json` | 118 KB + 430 KB |
+| The old ledger's everyday prices: 37 meals, drinks, lodgings, services and wages | `../data/ledger_everyday.json` | 4 KB |
 | Sean's original map, for reference | `../legacy/tilewright.html` | — |
 
 The owner's picks were these four, in this order of importance:
@@ -145,11 +146,13 @@ Pointer hooks:
   - the search box.
 - Placing an SRD-only creature stores `custom: {cr, ac, hp, type}`, so it survives even without the data file.
 - `XP_CR` gains CR 21–30.
-- Creature cards show the full stat block (`statBlock()`).
+- Creature cards show the full stat block (`statBlock()`) on the old ledger's parchment card: cream page, red rules, IM Fell headings.
 
 **Market → Shop tab.** The tabs become Overview · Town · **Shop** · Events · Bounties.
+- **Categories:** Food, Drink, Lodging, Services and Wages come from the old ledger's everyday list (`data/ledger_everyday.json`, loaded with the catalogue). Weapons, Armour, Gear, Tools, Mounts & travel and Magic items come from the SRD. That makes 625 items in all.
+- **Coin colours:** prices show in their coins, as on the old ledger: gold, silver and copper (`coinHtml()`; the classes are `.c-gp`, `.c-sp` and `.c-cp`, because `.sp` is already used by spell rows). The same treatment would suit the Town tab's price board.
 - **Inn bill:** lodging and meals by Player's Handbook lifestyle, nights, guests and horses, at today's local prices (`priceLevels()`). Pricier lodging and meals are flagged in small places.
-- **Item list:** all 588 SRD items with search and category chips.
+- **Item list:** all 625 items with search and category chips.
 - **Prices:** an item that matches a market good uses that good's price. Other items use the town's price level for similar goods.
 - **Availability:** martial weapons and heavy armour need towns or cities, ships need a port, and magic items need a city or capital and rotate weekly.
 - **Magic items with no rulebook price** get a deterministic estimate inside the Dungeon Master's Guide band, halved for potions and scrolls. Legendary items and artifacts are never sold.
@@ -173,3 +176,23 @@ Pointer hooks:
 3. Market → Shop in a village and in a capital: the inn total changes as you type, search filters, and tapping an item opens its description.
 4. Monsters → Bestiary: search "aboleth", open its card for the full stat block, place it, reload, and it is still there.
 5. Phone width (390 px): the toolbar labels don't overlap, and the Tiles palette fits.
+
+## 7. From Sean's full repository (Socratique/tilewright-ledger, private)
+
+Sean's repository has the ledger's sources (`_build/`), standalone builds (`dist/`) and patch history. Most of the ledger's features already exist in the atlas in a deeper form: townsfolk, guilds, quests, bestiary and market. These are the parts worth borrowing, beyond what is wired in above:
+
+- **Already folded in here:**
+  - the everyday price list;
+  - coin colours;
+  - the parchment stat block.
+- **People view ideas:**
+  - the roster grouped by household, under small-caps gold headings ("HOUSE ELWOOD");
+  - an hour-by-hour **Around town now** list by place;
+  - a town **Chronicle** written each day;
+  - a **Recent changes** feed of who changed what, with initials avatars.
+
+  These fit the atlas's People panel and the live shared world.
+- **Guild cards:** a coloured stripe down the left of each guild row and across the top of the open guild (`--gc` per guild); quest cards with danger chips (low, moderate, high, deadly).
+- **Town settings:** wealth (Poor, Modest, Prosperous, Rich) and defence (None, Town watch, Garrison, Fortress), which change how hard events hit a town. The atlas works these out itself, so they are optional.
+
+Keep that repository private: its `dist/Tilewright_Ledger.html` holds DM secrets from Sean and Adam's world.

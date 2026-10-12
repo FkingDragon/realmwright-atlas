@@ -6,6 +6,13 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-12 — More from Sean's full repository (branch `tilewright-style`)
+*By: project owner (prepared with Claude)*
+
+- **data/ledger_everyday.json** — 37 everyday prices from the old ledger: meals, drink, lodging, services and wages
+- **index.html** (branch only) — the Shop tab adds Food, Drink, Lodging, Services and Wages (625 items in all); prices show in gold, silver and copper; creature cards use the old ledger's parchment stat block
+- **handover/** — modules refreshed, plus notes on ledger ideas still worth borrowing
+
 ## 2026-10-12 — Tilewright features prepared on branch `tilewright-style` (not live)
 *By: project owner (prepared with Claude)*
 

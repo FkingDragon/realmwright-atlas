@@ -694,14 +694,21 @@ section h3 { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(
 .inn-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; }
 .inn-total b { font: 500 22px var(--f-display); color: var(--brass); font-variant-numeric: tabular-nums; }
 .inn-out { display: grid; gap: 4px; }
-.sblock { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; font-size: 13px; }
+.sblock { display: grid; gap: 6px; font-size: 13px; }
 .sblock summary { cursor: pointer; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
-.sblock p { margin: 0; line-height: 1.45; }
-.sblock h4 { margin: 8px 0 2px; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 3px; }
-.sb-k { color: var(--muted); font-style: italic; }
-.sb-ab { width: 100%; border-collapse: collapse; margin: 4px 0; text-align: center; font-variant-numeric: tabular-nums; }
-.sb-ab th { font: 500 11px var(--f-display); letter-spacing: .08em; color: var(--muted); }
-.sb-ab td { font-size: 13px; padding: 2px 0; } .sb-ab small { color: var(--muted); }
+/* the old ledger's stat block: parchment, red rules, engraved headings */
+.statblock { background: #f1e6cc; color: #2a1d14; border-radius: 6px; padding: 12px 14px; line-height: 1.45; border-top: 4px solid #8e1b12; border-bottom: 4px solid #8e1b12; display: grid; gap: 3px; }
+.statblock p { margin: 0; }
+.statblock .sb-name { font: 400 24px/1.1 'IM Fell English', Georgia, serif; color: #7a1a10; }
+.statblock .sb-k { font-style: italic; padding-bottom: 6px; border-bottom: 2px solid #a8331f; margin-bottom: 4px; }
+.statblock .sb-l b { color: #7a1a10; }
+.statblock h4 { font: 400 17px 'IM Fell English', Georgia, serif; color: #7a1a10; margin: 10px 0 4px; border-bottom: 1px solid #a8331f; letter-spacing: 0; text-transform: none; padding: 0; }
+.statblock .sb-ab { width: 100%; border-collapse: collapse; margin: 6px 0; text-align: center; font-variant-numeric: tabular-nums; border-top: 2px solid #a8331f; border-bottom: 2px solid #a8331f; }
+.statblock .sb-ab th { font: 700 11px var(--f-ui); color: #7a1a10; padding-top: 4px; }
+.statblock .sb-ab td { font-size: 12.5px; padding: 0 0 4px; } .statblock .sb-ab small { color: #5a4636; }
+/* prices in their coins */
+.c-gp { color: #e3b341; } .c-sp { color: #b9c2c9; } .c-cp { color: #d0804f; }
+.c-gp b, .c-sp b, .c-cp b { font-weight: 700; }
 .pop.mon { max-height: calc(100% - 120px); overflow: auto; }
 </style>
 
@@ -9039,9 +9046,9 @@ const crStr = (v) => (v === 0.125 ? '1/8' : v === 0.25 ? '1/4' : v === 0.5 ? '1/
 const cap1 = (s) => String(s).charAt(0).toUpperCase() + String(s).slice(1);
 function srdFetch(kind) {
   if (SRD.P[kind]) return SRD.P[kind];
-  const file = kind === 'items' ? 'data/srd_catalog.json' : 'data/srd_monsters.json';
-  SRD.P[kind] = fetch(file).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then((d) => { if (kind === 'items') srdItemsReady(d.items || []); else srdMonsReady(d.monsters || []); })
+  const get = (f) => fetch(f).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+  SRD.P[kind] = (kind === 'items' ? Promise.all([get('data/srd_catalog.json'), get('data/ledger_everyday.json').catch(() => ({ items: [] }))]) : get('data/srd_monsters.json'))
+    .then((d) => { if (kind === 'items') srdItemsReady((d[1].items || []).concat(d[0].items || [])); else srdMonsReady(d.monsters || []); })
     .catch(() => { SRD.failed[kind] = true; })
     .then(() => { if (tool === 'market' || tool === 'monsters') renderPanel(); if (monCard && !$('monPop').hidden) showMonster(monCard); });
   return SRD.P[kind];
@@ -9061,32 +9068,36 @@ function statBlock(m) {
   const ab = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
   const line = (k, v) => (v ? '<p class="sb-l"><b>' + k + '</b> ' + esc(v) + '</p>' : '');
   const list = (title, arr) => (arr && arr.length ? '<h4>' + title + '</h4>' + arr.map(([n, t]) => '<p><b>' + esc(n) + '.</b> ' + esc(t) + '</p>').join('') : '');
-  return '<details class="sblock" open><summary>Full stat block</summary>' +
+  return '<details class="sblock" open><summary>Full stat block</summary><div class="statblock"><p class="sb-name">' + esc(m.n) + '</p>' +
     '<p class="sb-k">' + esc(cap1(m.sz) + ' ' + m.t + (m.st ? ' (' + m.st + ')' : '') + ', ' + m.al) + '</p>' +
     line('Armour class', m.ac) + line('Hit points', m.hp + ' (' + m.hd + ')') + line('Speed', m.sp) +
     '<table class="sb-ab"><tr>' + ab.map((a) => '<th>' + a + '</th>').join('') + '</tr><tr>' + m.ab.map((v) => '<td>' + v + ' <small>(' + sgn(modOf(v)) + ')</small></td>').join('') + '</tr></table>' +
     line('Saving throws', m.sv) + line('Skills', m.sk) + line('Vulnerable to', m.vu) + line('Resists', m.re) + line('Immune to', m.im) + line('Condition immunities', m.ci) + line('Senses', m.se) + line('Languages', m.la) +
-    list('Traits', m.sa) + list('Actions', m.ac2) + list('Reactions', m.rx) + list('Legendary actions', m.lg) + '</details>';
+    list('Traits', m.sa) + list('Actions', m.ac2) + list('Reactions', m.rx) + list('Legendary actions', m.lg) + '</div></details>';
 }
 
 // ---------- the full item list, priced in each town ----------
-const SHOP_CATS = [['all', 'All'], ['Weapons', 'Weapons'], ['Armor', 'Armour'], ['Gear', 'Gear'], ['Tools', 'Tools'], ['Mounts & travel', 'Mounts & travel'], ['Magic items', 'Magic items']];
+const SHOP_CATS = [['all', 'All'], ['Food', 'Food'], ['Drink', 'Drink'], ['Lodging', 'Lodging'], ['Services', 'Services'], ['Wages', 'Wages'], ['Weapons', 'Weapons'], ['Armor', 'Armour'], ['Gear', 'Gear'], ['Tools', 'Tools'], ['Mounts & travel', 'Mounts & travel'], ['Magic items', 'Magic items']];
 const MAGIC_BAND = { common: [50, 100], uncommon: [101, 500], rare: [501, 5000], 'very rare': [5001, 50000] };
 const MAGIC_TIER = { common: 2, uncommon: 3, rare: 4, 'very rare': 4 };
 const ITEM_ALIAS = { 'horse, riding': 'Riding horse', 'horse, draft': 'Draft horse', 'saddle, riding': 'Saddle, riding', 'animal feed (1 day)': 'Feed (per day)', 'leather armor': 'Leather armour', 'chain shirt': 'Chain shirt', 'chain mail': 'Chain mail', 'plate armor': 'Plate armour', 'rope, hempen (50 feet)': 'Rope, hempen (50 ft)', "healer's kit": "Healer's kit", 'arrow': 'Arrows (20)', 'tent, two-person': 'Tent, two-person', 'crossbow, light': 'Crossbow, light' };
+const EVERYDAY = new Set(['Food', 'Drink', 'Lodging', 'Services', 'Wages']);
 const SHIPS = /galley|keelboat|longship|rowboat|sailing ship|warship/i;
 function srdItemsReady(list) {
   const goodsBy = new Map(GOODS.map((g) => [g.name.toLowerCase(), g]));
+  const seen = new Set();
+  list = list.filter((x) => { const k = x.c + '|' + x.n + '|' + (x.u || ''); if (seen.has(k)) return false; seen.add(k); return true; });
   SRD.items = list.filter((x) => x.c === 'Magic items' || x.p > 0).map((x) => {
-    const lname = x.n.toLowerCase(), g = goodsBy.get(lname) || (ITEM_ALIAS[lname] ? GBY[ITEM_ALIAS[lname]] : null);
+    const lname = x.n.toLowerCase(), g = EVERYDAY.has(x.c) ? null : goodsBy.get(lname) || (ITEM_ALIAS[lname] ? GBY[ITEM_ALIAS[lname]] : null);
     let base = x.p / 100, rarity = x.r ? x.r.toLowerCase() : null;
-    if (g) base = g.base;
+    const everyday = EVERYDAY.has(x.c);
+    if (g && !everyday) base = g.base;
     else if (x.c === 'Magic items') {
       const band = MAGIC_BAND[rarity];
       if (band) { const h = T.hash(hashStr(x.id) & 0xffffff, 17, 5); base = Math.round(band[0] * Math.pow(band[1] / band[0], h)); if (/potion|scroll/i.test(x.t || '') || /^potion|^spell scroll|^ammunition/i.test(x.n)) base = Math.max(band[0] / 2, Math.round(base / 2)); }
       else base = 0;
     }
-    return { id: x.id, name: x.n, cat: x.c, unit: x.u && x.u !== 'each' ? x.u : '', desc: x.d || '', type: x.t || '', rarity, base, g, search: (x.n + ' ' + (x.t || '') + ' ' + (x.r || '')).toLowerCase() };
+    return { id: x.id || 'lg~' + lname.replace(/[^a-z0-9]+/g, '-') + '~' + (x.u || ''), name: x.n, cat: x.c, unit: x.u && x.u !== 'each' ? x.u : '', desc: x.d || '', type: x.t || '', rarity, base, g, search: (x.n + ' ' + (x.t || '') + ' ' + (x.r || '')).toLowerCase() };
   });
 }
 const levelCache = new Map();
@@ -9099,7 +9110,7 @@ function priceLevels(s, day) {
   v = {
     arms: lvl((g) => g.cat === 'arms'), gear: lvl((g) => g.tags.includes('gear') || g.tags.includes('healing') && g.cat === 'trade'), crafted: lvl((g) => g.tags.includes('crafted')),
     mount: lvl((g) => g.tags.includes('mount')), tack: lvl((g) => g.tags.includes('tack') || g.tags.includes('vehicle')), feed: lvl((g) => g.tags.includes('feed')), magic: lvl((g) => g.cat === 'magic'),
-    lodging: lvl((g) => g.tags.includes('lodging')), meal: lvl((g) => g.tags.includes('meal')), P,
+    lodging: lvl((g) => g.tags.includes('lodging')), meal: lvl((g) => g.tags.includes('meal')), drink: lvl((g) => g.tags.includes('drink')), food: lvl((g) => g.cat === 'food' && g.tags.includes('food')), P,
   };
   levelCache.set(key, v);
   if (levelCache.size > 400) levelCache.delete(levelCache.keys().next().value);
@@ -9117,6 +9128,13 @@ function shopItem(it, s, day) {
   }
   let f = Lv.gear, ok = true, why = '';
   const n = it.name;
+  if (EVERYDAY.has(it.cat)) {
+    f = it.cat === 'Food' ? (/^meal|banquet/i.test(n) ? Lv.meal : Lv.food) : it.cat === 'Drink' ? Lv.drink : it.cat === 'Lodging' ? Lv.lodging : it.cat === 'Services' ? Math.sqrt(Lv.lodging * Lv.gear) : Math.sqrt(Lv.lodging * Lv.meal);
+    if (/aristocratic|wealthy|banquet|wine, fine/i.test(n) && s.tier < 2) { ok = false; why = 'Needs a town'; }
+    if (/ship's passage/i.test(n) && !isCoastal(s.x, s.y)) { ok = false; why = 'Only in ports'; }
+    if (/within a city/i.test(n) && s.tier < 3) { ok = false; why = 'Only in cities'; }
+    return { gp: it.base * f, ok, why };
+  }
   if (it.cat === 'Weapons') { f = Lv.arms; if (/Martial/.test(it.desc) && s.tier < 2) { ok = false; why = 'Needs a town'; } }
   else if (it.cat === 'Armor') { f = Lv.arms; if ((/Heavy/.test(it.desc) || it.base >= 200) && s.tier < 2) { ok = false; why = 'Needs a town'; } if (it.base >= 400 && s.tier < 3) { ok = false; why = 'Needs a city'; } }
   else if (it.cat === 'Tools') f = Lv.crafted;
@@ -9127,6 +9145,10 @@ function shopItem(it, s, day) {
     else f = Lv.mount;
   }
   return { gp: it.base * f, ok, why };
+}
+// prices in their coins: gold, silver and copper, as on the old ledger
+function coinHtml(gp) {
+  return esc(money(gp)).replace(/([\d,]+) (gp|sp|cp)/g, '<span class="c-$2"><b>$1</b> $2</span>');
 }
 function shopRows() {
   const q = (market.shop.q || '').trim().toLowerCase(), cat = market.shop.cat;
@@ -9144,7 +9166,7 @@ function shopListHtml(s, day) {
     const nm = it.cat === 'Magic items' ? extLink(AID.item(it.name), it.name) : esc(it.name);
     h += '<tr class="item' + (r.ok ? '' : ' na') + '" data-shop="open" data-v="' + esc(it.id) + '" tabindex="0" aria-expanded="' + open + '"><td>' + nm + (it.unit ? ' <small>(' + esc(it.unit) + ')</small>' : '') + (it.rarity ? ' <em class="rar rr-' + it.rarity.replace(/\s/g, '') + '">' + esc(it.rarity) + '</em>' : '') +
       (open ? '<small class="note">' + esc(it.type ? fixType(it.type) + '. ' : '') + esc(it.desc) + '</small>' : '') + '</td>' +
-      '<td class="num">' + (it.base ? money(it.base) : '—') + '</td><td class="num">' + (r.ok ? '<b>' + money(r.gp) + '</b>' : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
+      '<td class="num">' + (it.base ? coinHtml(it.base) : '—') + '</td><td class="num">' + (r.ok ? coinHtml(r.gp) : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
   }
   return h + '</tbody></table>';
 }
@@ -9166,8 +9188,8 @@ function innBill(s, day) {
 }
 function innHtml(s, day) {
   const B = innBill(s, day);
-  return '<div class="inn-out"><ul class="breakdown">' + B.rows.map((r) => '<li><span>' + r[0] + ' <small>' + r[2] + '</small></span><b>' + money(r[1]) + '</b></li>').join('') + '</ul>' +
-    '<div class="inn-total"><span>Total bill</span><b>' + money(B.total) + '</b></div>' + (B.warn.length ? '<p class="meta">' + B.warn.join(' ') + '</p>' : '') + '</div>';
+  return '<div class="inn-out"><ul class="breakdown">' + B.rows.map((r) => '<li><span>' + r[0] + ' <small>' + r[2] + '</small></span><b>' + coinHtml(r[1]) + '</b></li>').join('') + '</ul>' +
+    '<div class="inn-total"><span>Total bill</span><b>' + coinHtml(B.total) + '</b></div>' + (B.warn.length ? '<p class="meta">' + B.warn.join(' ') + '</p>' : '') + '</div>';
 }
 function shopTab(day) {
   const s = market.sid ? SBY.get(market.sid) : null;
@@ -9179,10 +9201,10 @@ function shopTab(day) {
   h += '<section><h3>At the inn</h3><div class="row2"><div class="field"><label class="lab" for="inn-l">Lodging</label>' + sel1('inn-l', F.lodge) + '</div><div class="field"><label class="lab" for="inn-m">Meals</label>' + sel1('inn-m', F.meal) + '</div></div>' +
     '<div class="row3">' + num('inn-n', F.nights, 365, 'Nights') + num('inn-g', F.guests, 50, 'Guests') + num('inn-h', F.horses, 50, 'Horses') + '</div><div id="innOut">' + innHtml(s, day) + '</div>' +
     '<p class="hint">Player\'s Handbook lifestyle prices for an inn stay and a day\'s meals, at this town\'s prices today. Stabling is 5 sp a day before local costs.</p></section>';
-  h += '<section><h3>Everything for sale</h3><div class="field"><label class="lab" for="shop-q">Search 588 SRD items</label><input id="shop-q" type="search" value="' + esc(market.shop.q) + '" placeholder="Rope, longsword, potion…" autocomplete="off"></div>' +
+  h += '<section><h3>Everything for sale</h3><div class="field"><label class="lab" for="shop-q">Search 625 items</label><input id="shop-q" type="search" value="' + esc(market.shop.q) + '" placeholder="Rope, longsword, potion…" autocomplete="off"></div>' +
     '<div class="chips">' + SHOP_CATS.map(([k, l]) => '<button type="button" class="chip' + (market.shop.cat === k ? ' on' : '') + '" data-shop="cat" data-v="' + esc(k) + '">' + l + '</button>').join('') + '</div>' +
     '<div id="shopList">' + shopListHtml(s, day) + '</div>' +
-    '<p class="hint">Rulebook prices from the System Reference Document 5.1, moved by this town\'s supply, season and events like the goods on the Town tab. Magic items without a rulebook price are estimates inside the Dungeon Master\'s Guide rarity bands; legendary items and artifacts are never sold. Tap an item for its description.</p></section>';
+    '<p class="hint">Rulebook prices from the System Reference Document 5.1 (food, drink, lodging, services and wages from the old Market Ledger\'s list), moved by this town\'s supply, season and events like the goods on the Town tab. Magic items without a rulebook price are estimates inside the Dungeon Master\'s Guide rarity bands; legendary items and artifacts are never sold. Tap an item for its description.</p></section>';
   return h;
 }
 $('inspector').addEventListener('click', (ev) => {

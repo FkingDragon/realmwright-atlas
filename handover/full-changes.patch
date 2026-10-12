@@ -1,5 +1,5 @@
 diff --git a/index.html b/index.html
-index e0f2e0c..384fc6c 100644
+index e0f2e0c..9d21394 100644
 --- a/index.html
 +++ b/index.html
 @@ -1,22 +1,24 @@
@@ -186,7 +186,7 @@ index e0f2e0c..384fc6c 100644
  .atk { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
  .atk li { display: flex; align-items: center; gap: 5px; border-bottom: 1px dotted #39434e; padding: 4px 0; }
  .atk li > div { flex: 1; min-width: 0; display: grid; } .atk small { color: var(--muted); font-size: 12px; }
-@@ -588,6 +591,118 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
+@@ -588,6 +591,125 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
    .toast { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 130px); }
  }
  @media (prefers-reduced-motion: reduce) { #scaleBar, #ladderMark { transition: none; } }
@@ -293,19 +293,26 @@ index e0f2e0c..384fc6c 100644
 +.inn-total { display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid var(--line); padding-top: 8px; margin-top: 6px; }
 +.inn-total b { font: 500 22px var(--f-display); color: var(--brass); font-variant-numeric: tabular-nums; }
 +.inn-out { display: grid; gap: 4px; }
-+.sblock { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: grid; gap: 4px; font-size: 13px; }
++.sblock { display: grid; gap: 6px; font-size: 13px; }
 +.sblock summary { cursor: pointer; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); }
-+.sblock p { margin: 0; line-height: 1.45; }
-+.sblock h4 { margin: 8px 0 2px; font: 500 12px var(--f-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 3px; }
-+.sb-k { color: var(--muted); font-style: italic; }
-+.sb-ab { width: 100%; border-collapse: collapse; margin: 4px 0; text-align: center; font-variant-numeric: tabular-nums; }
-+.sb-ab th { font: 500 11px var(--f-display); letter-spacing: .08em; color: var(--muted); }
-+.sb-ab td { font-size: 13px; padding: 2px 0; } .sb-ab small { color: var(--muted); }
++/* the old ledger's stat block: parchment, red rules, engraved headings */
++.statblock { background: #f1e6cc; color: #2a1d14; border-radius: 6px; padding: 12px 14px; line-height: 1.45; border-top: 4px solid #8e1b12; border-bottom: 4px solid #8e1b12; display: grid; gap: 3px; }
++.statblock p { margin: 0; }
++.statblock .sb-name { font: 400 24px/1.1 'IM Fell English', Georgia, serif; color: #7a1a10; }
++.statblock .sb-k { font-style: italic; padding-bottom: 6px; border-bottom: 2px solid #a8331f; margin-bottom: 4px; }
++.statblock .sb-l b { color: #7a1a10; }
++.statblock h4 { font: 400 17px 'IM Fell English', Georgia, serif; color: #7a1a10; margin: 10px 0 4px; border-bottom: 1px solid #a8331f; letter-spacing: 0; text-transform: none; padding: 0; }
++.statblock .sb-ab { width: 100%; border-collapse: collapse; margin: 6px 0; text-align: center; font-variant-numeric: tabular-nums; border-top: 2px solid #a8331f; border-bottom: 2px solid #a8331f; }
++.statblock .sb-ab th { font: 700 11px var(--f-ui); color: #7a1a10; padding-top: 4px; }
++.statblock .sb-ab td { font-size: 12.5px; padding: 0 0 4px; } .statblock .sb-ab small { color: #5a4636; }
++/* prices in their coins */
++.c-gp { color: #e3b341; } .c-sp { color: #b9c2c9; } .c-cp { color: #d0804f; }
++.c-gp b, .c-sp b, .c-cp b { font-weight: 700; }
 +.pop.mon { max-height: calc(100% - 120px); overflow: auto; }
  </style>
  
  <div id="app">
-@@ -628,15 +743,16 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
+@@ -628,15 +750,16 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
        <li><b>Zoom</b> with the mouse wheel, a pinch, or the ladder at bottom right. The world map becomes realms, then regions, then town streets, then a 5-ft battle grid.</li>
        <li><b>Explore</b>: tap a town to see its population, trades, folk and local wildlife. Tap a road to see its length and travel time.</li>
        <li><b>Settle</b>, <b>Road</b>, <b>Paint</b> and <b>Label</b> add your own places, routes, terrain and notes. Select something and drag it to move it.</li>
@@ -325,7 +332,7 @@ index e0f2e0c..384fc6c 100644
    </div>
  
    <nav class="tools panel" aria-label="Tools">
-@@ -649,6 +765,7 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
+@@ -649,6 +772,7 @@ button.cbox { cursor: pointer; } button.cbox:hover { border-color: var(--brass);
      <button type="button" class="tool" data-tool="settle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-6 8 6v8.5a.5.5 0 0 1-.5.5H15v-5H9v5H4.5a.5.5 0 0 1-.5-.5z"/></svg><span>Settle</span></button>
      <button type="button" class="tool" data-tool="road" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M7 21L10 3M17 21L14 3"/><path d="M12 6v2M12 11v2M12 16v2"/></svg><span>Road</span></button>
      <button type="button" class="tool" data-tool="paint" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M19 3.5a1.8 1.8 0 0 1 2.5 2.5L12 15.5 9 12.5z"/><path d="M8.5 14c-2.2 0-3.6 1.4-3.6 3.4 0 1.2-.6 2.2-1.9 2.9 3.4.6 7.5-.4 7.6-3.8"/></svg><span>Paint</span></button>
@@ -333,7 +340,7 @@ index e0f2e0c..384fc6c 100644
      <button type="button" class="tool" data-tool="label" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M3 12V4.5A1.5 1.5 0 0 1 4.5 3H12l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.4"/></svg><span>Label</span></button>
      <button type="button" class="tool" data-tool="measure" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 16.5L16.5 3 21 7.5 7.5 21z"/><path d="M7 12.5l2 2M10 9.5l1.5 1.5M13 6.5l2 2"/></svg><span>Measure</span></button>
      <hr>
-@@ -1040,6 +1157,352 @@ function terrainLib() {
+@@ -1040,6 +1164,352 @@ function terrainLib() {
  
  (() => {
  'use strict';
@@ -686,7 +693,7 @@ index e0f2e0c..384fc6c 100644
  const T = terrainLib();
  const W = T.W, H = T.H, BB = T.B;
  const FT = 1 / 5280;
-@@ -1104,7 +1567,7 @@ const STORE_KEY = 'atlas-world-v1';
+@@ -1104,7 +1574,7 @@ const STORE_KEY = 'atlas-world-v1';
  let SEED = 1847;
  let WORLD_NAME = '';
  let BASE = { settle: [], roads: [] };
@@ -695,7 +702,7 @@ index e0f2e0c..384fc6c 100644
  let edits = blankEdits();
  let history = [], future = [];
  let panelMin = false;
-@@ -1800,8 +2263,9 @@ function evictTiles() {
+@@ -1800,8 +2270,9 @@ function evictTiles() {
  
  function initWorkers() {
    try {
@@ -706,7 +713,7 @@ index e0f2e0c..384fc6c 100644
        'const px=T.renderTile(d.z,d.tx,d.ty,d.R,d.circ,d.caps,d.borders);postMessage({k:d.k,ver:d.ver,seed:d.seed,buf:px.buffer},[px.buffer]);};';
      const url = URL.createObjectURL(new Blob([src], { type: 'text/javascript' }));
      const n = Math.max(1, Math.min(4, (navigator.hardwareConcurrency || 4) - 1));
-@@ -1824,6 +2288,11 @@ function initWorkers() {
+@@ -1824,6 +2295,11 @@ function initWorkers() {
    } catch (e) { liveWorkers = 0; }
  }
  function nextJob() {
@@ -718,7 +725,7 @@ index e0f2e0c..384fc6c 100644
    while (queue.length) {
      const t = queue.shift();
      if (t.pend || (t.canvas && !t.stale) || tiles.get(t.k) !== t) continue;
-@@ -1832,6 +2301,7 @@ function nextJob() {
+@@ -1832,6 +2308,7 @@ function nextJob() {
    return null;
  }
  function jobMsg(t) {
@@ -726,7 +733,7 @@ index e0f2e0c..384fc6c 100644
    const TS = W / Math.pow(2, t.z), x0 = t.tx * TS, y0 = t.ty * TS, m = TS / RES * 2;
    return { k: t.k, ver: t.ver, z: t.z, tx: t.tx, ty: t.ty, R: RES, seed: SEED, circ: circlesIn(x0 - m, y0 - m, x0 + TS + m, y0 + TS + m), caps: CAPS.slice(), borders: layers.borders };
  }
-@@ -1855,13 +2325,14 @@ function pump() {
+@@ -1855,13 +2332,14 @@ function pump() {
    mainBusy = true; t.pend = true;
    setTimeout(() => {
      const d = jobMsg(t);
@@ -743,7 +750,7 @@ index e0f2e0c..384fc6c 100644
    const t = d.seed === SEED ? tiles.get(d.k) : null;
    if (t) {
      t.pend = false;
-@@ -1889,6 +2360,261 @@ function invalidateTiles(bb, zmin, zmax) {
+@@ -1889,6 +2367,261 @@ function invalidateTiles(bb, zmin, zmax) {
    requestRender();
  }
  
@@ -1005,7 +1012,7 @@ index e0f2e0c..384fc6c 100644
  // ---------------------------------------------------------------- tile decoration
  function decorate(g, t) {
    const z = t.z;
-@@ -2137,14 +2863,20 @@ let pendingPreview = null;
+@@ -2137,14 +2870,20 @@ let pendingPreview = null;
  
  function render() {
    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1030,7 +1037,7 @@ index e0f2e0c..384fc6c 100644
    drawNeatline();
    drawEventAreas();
    drawMarkers();
-@@ -2278,7 +3010,7 @@ function drawRoads() {
+@@ -2278,7 +3017,7 @@ function drawRoads() {
    }
  }
  
@@ -1039,7 +1046,7 @@ index e0f2e0c..384fc6c 100644
    plansDrawn = new Set();
    const s = view.s;
    if (s < PLAN_S) return;
-@@ -2289,6 +3021,7 @@ function drawPlans() {
+@@ -2289,6 +3028,7 @@ function drawPlans() {
      const R = settleR(st);
      if (R * s < 14) continue;
      if (st.x + R < VB[0] || st.x - R > VB[2] || st.y + R < VB[1] || st.y - R > VB[3]) continue;
@@ -1047,7 +1054,7 @@ index e0f2e0c..384fc6c 100644
      const key = st.x + '|' + st.y + '|' + st.pop + '|' + st.tier + '|' + roadsVer + '|' + strokesVer;
      const c = planCache.get(st.id);
      if (!(c && c.key === key)) { if (budget <= 0) { requestRender(); continue; } budget--; }
-@@ -3086,7 +3819,7 @@ function marketHeader() {
+@@ -3086,7 +3826,7 @@ function marketHeader() {
      '<button type="button" data-mk="day" data-v="1" aria-label="Next day">Day ›</button>' +
      '<button type="button" data-mk="day" data-v="7" aria-label="Skip a week">Week »</button></div>' +
      (market.playing ? seg('mkspeed', market.speed, [[4000, 'Slow'], [1500, 'Normal'], [400, 'Fast']]).replace(/data-act=/g, 'data-mk=') : '') +
@@ -1056,7 +1063,7 @@ index e0f2e0c..384fc6c 100644
  }
  function evRow(e, day) {
    const left = e.end - day, startsIn = e.start - day;
-@@ -3232,6 +3965,7 @@ function marketPanel() {
+@@ -3232,6 +3972,7 @@ function marketPanel() {
    const day = market.day;
    let body;
    if (market.tab === 'town') body = townTab(day);
@@ -1064,7 +1071,7 @@ index e0f2e0c..384fc6c 100644
    else if (market.tab === 'events') body = eventsTab(day);
    else if (market.tab === 'bounties') body = bountiesTab(day);
    else body = overviewTab(day);
-@@ -3278,7 +4012,7 @@ $('inspector').addEventListener('click', (ev) => {
+@@ -3278,7 +4019,7 @@ $('inspector').addEventListener('click', (ev) => {
      case 'day': advanceDays(+v); break;
      case 'play': setPlaying(!market.playing); break;
      case 'mkspeed': market.speed = +v; setPlaying(true); break;
@@ -1073,7 +1080,7 @@ index e0f2e0c..384fc6c 100644
      case 'event': openEvent(findEvent(v)); break;
      case 'fly': flyToEvent(findEvent(v)); break;
      case 'town': selectTown(v, true); break;
-@@ -4763,7 +5497,7 @@ const MON = {
+@@ -4763,7 +5504,7 @@ const MON = {
    'Mage': ['Medium humanoid', 12, 40, '30 ft', '6', 'AC 15 with mage armor; fireball, counterspell, greater invisibility.'],
    'Assassin': ['Medium humanoid', 15, 78, '30 ft', '8', 'Assassinate; Evasion; poisoned blades.']
  };
@@ -1082,7 +1089,7 @@ index e0f2e0c..384fc6c 100644
  // DMG encounter XP thresholds per character level: easy, medium, hard, deadly
  const XP_THRESH = [null, [25, 50, 75, 100], [50, 100, 150, 200], [75, 150, 225, 400], [125, 250, 375, 500], [250, 500, 750, 1100], [300, 600, 900, 1400], [350, 750, 1100, 1700], [450, 900, 1400, 2100], [550, 1100, 1600, 2400], [600, 1200, 1900, 2800], [800, 1600, 2400, 3600], [1000, 2000, 3000, 4500], [1100, 2200, 3400, 5100], [1250, 2500, 3800, 5700], [1400, 2800, 4300, 6400], [1600, 3200, 4800, 7200], [2000, 3900, 5900, 8800], [2100, 4200, 6300, 9500], [2400, 4900, 7300, 10900], [2800, 5700, 8500, 12700]];
  const HIT_DIE = { Barbarian: 12, Fighter: 10, Paladin: 10, Ranger: 10, Bard: 8, Cleric: 8, Druid: 8, Monk: 8, Rogue: 8, Warlock: 8, Sorcerer: 6, Wizard: 6 };
-@@ -4787,10 +5521,13 @@ function statLine(p) {
+@@ -4787,10 +5528,13 @@ function statLine(p) {
    const m = MON[p.stat];
    return m ? '<button type="button" class="link" data-mon="' + esc(p.stat) + '">' + esc(p.stat) + '</button> · AC ' + m[1] + ' · HP ' + m[2] + ' · CR ' + m[4] : esc(p.stat || 'Commoner');
  }
@@ -1098,7 +1105,7 @@ index e0f2e0c..384fc6c 100644
    const el = $('monPop');
    const lv = (gst().party.members || []).map((x) => x.level);
    const d = lv.length ? [1, 2, 4].map((n) => [n, difficulty(lv, m[4], n)]) : null;
-@@ -4798,7 +5535,8 @@ function showMonster(name) {
+@@ -4798,7 +5542,8 @@ function showMonster(name) {
      '<dl class="stats">' + stat('Armour class', m[1]) + stat('Hit points', m[2]) + stat('Challenge', m[4] + ' <small>(' + XP_CR[m[4]].toLocaleString('en-GB') + ' XP)</small>') + '</dl>' +
      '<p class="meta"><b>Speed</b> ' + esc(m[3]) + '</p><p>' + esc(m[5]) + '</p>' +
      (d ? '<section><h3>Against your party</h3><ul class="movers">' + d.map(([n, r]) => '<li><span>' + (n === 1 ? 'One' : n === 2 ? 'A pair' : 'Four') + '</span><span class="diff d' + r.k + '">' + r.label + '</span></li>').join('') + '</ul><p class="meta">Dungeon Master\'s Guide encounter thresholds for levels ' + lv.join(', ') + '.</p></section>' : '<p class="meta">Register your party on the Guilds tab to see how dangerous this is for them.</p>') +
@@ -1108,7 +1115,7 @@ index e0f2e0c..384fc6c 100644
    el.hidden = false;
  }
  document.addEventListener('click', (ev) => {
-@@ -6901,10 +7639,10 @@ function cellSpawns(cx, cy, lair, c) {
+@@ -6901,10 +7646,10 @@ function cellSpawns(cx, cy, lair, c) {
  const monState = () => (edits.monOff || {});
  function monGone(id, day) { const o = monState()[id]; return !!(o && o.d <= day); }
  function placedMon(p) {
@@ -1121,7 +1128,7 @@ index e0f2e0c..384fc6c 100644
  function spawnsIn(x0, y0, x1, y1, day, all) {
    const out = [];
    const c0 = Math.max(0, Math.floor(x0 / MCELL)), c1 = Math.min(Math.ceil(W / MCELL) - 1, Math.floor(x1 / MCELL));
-@@ -7029,9 +7767,10 @@ function monPlacedTab(day) {
+@@ -7029,9 +7774,10 @@ function monPlacedTab(day) {
  }
  function monBestiary() {
    const q = monUI.q.toLowerCase();
@@ -1134,7 +1141,7 @@ index e0f2e0c..384fc6c 100644
    if (q && !names.length) o += '<p class="meta">No built-in card for "' + esc(monUI.q) + '". ' + extLink(AID.monster(monUI.q), 'Look it up on AideDD') + ' and add it as a custom creature below.</p>';
    o += '<details class="board"' + (q && !names.length ? ' open' : '') + '><summary><span>Custom creature</span><small>anything from the Monster Manual</small></summary><div class="pad grid">' +
      '<div class="field"><label class="lab" for="mo-cname">Name</label><input id="mo-cname" maxlength="60" value="' + esc(q && !names.length ? monUI.q : '') + '" placeholder="Beholder"></div>' +
-@@ -7049,7 +7788,7 @@ function monDetail(sp, day) {
+@@ -7049,7 +7795,7 @@ function monDetail(sp, day) {
    h += '<div class="mk-body"><button type="button" class="link back" data-mo="back">‹ ' + (monUI.tab === 'placed' ? 'Placed & watched' : monUI.tab === 'bestiary' ? 'Bestiary' : 'Nearby') + '</button>';
    if (gone) h += '<p class="ready">' + (off.st === 'slain' ? 'Slain' : 'Driven off') + ' on ' + dateText(off.d) + (off.by ? ' by ' + esc(off.by) : '') + '. <button type="button" class="link" data-mo="restore" data-v="' + esc(sp.id) + '">Bring it back</button></p>';
    h += '<dl class="stats">' + stat('Armour class', st.ac) + stat('Hit points', st.hp + (sp.count > 1 ? ' each' : '')) + stat('Challenge', sp.cr + ' <small>(' + ((XP_CR[sp.cr] || 0) * sp.count).toLocaleString('en-GB') + ' XP)</small>') + '</dl>';
@@ -1143,7 +1150,7 @@ index e0f2e0c..384fc6c 100644
    const usual = HABITAT_OF[sp.name];
    h += '<ul class="facts"><li><span>Where</span><div>' + T.NAMES[sp.b] + (np ? ', ' + Math.round(np.d) + ' mi ' + dirWord(sp.x - np.s.x, sp.y - np.s.y) + ' of ' + tLink(np.s) : '') + (R ? ' · ' + rLink(R) : '') + ' <button type="button" class="link" data-mo="fly" data-v="' + esc(sp.id) + '">show on map</button></div></li>' +
      '<li><span>Habitat</span><div>' + (sp.rare === 'haunt' ? 'Ruins, tombs and dark places. Rarely seen in the open.' : usual ? [...usual].map((b) => T.NAMES[b]).join(', ') + (sp.rare === 'wanderer' || !usual.has(sp.b) ? ' · <b>far from its usual haunts</b>' : '') : 'Anywhere') + '</div></li>' +
-@@ -7091,7 +7830,7 @@ $('inspector').addEventListener('click', (ev) => {
+@@ -7091,7 +7837,7 @@ $('inspector').addEventListener('click', (ev) => {
      case 'back': monUI.id = null; renderPanel(); return;
      case 'fly': flyToSpawn(v); return;
      case 'tomarket': setTool('market', true); market.tab = 'bounties'; if (monUI.sid) market.sid = monUI.sid; renderPanel(); return;
@@ -1152,7 +1159,7 @@ index e0f2e0c..384fc6c 100644
      case 'placecustom': { const nm = (($('mo-cname') || {}).value || '').trim(); if (!nm) { toast('Give the creature a name first.'); return; } const n = Math.max(1, Math.min(50, +(($('mo-count') || {}).value) || 1)); monUI.count = n; monUI.place = { name: nm.slice(0, 60), custom: { cr: $('mo-ccr').value, ac: clamp(+$('mo-cac').value || 12, 1, 30), hp: clamp(+$('mo-chp').value || 10, 1, 999), type: 'creature' } }; toast('Tap the map to place ' + nm + '.'); renderPanel(); return; }
      case 'cancelplace': monUI.place = null; renderPanel(); return;
      case 'cancelmove': monUI.move = null; renderPanel(); return;
-@@ -7247,7 +7986,8 @@ function afterChange(inv) {
+@@ -7247,7 +7993,8 @@ function afterChange(inv) {
    peopleInvalidate();
    if (inv.roads) roadsVer++;
    if (inv.strokes) strokesVer++;
@@ -1162,7 +1169,7 @@ index e0f2e0c..384fc6c 100644
    if (inv.realms) invalidateTiles(null, 0, 9);
    if (sel && !selObj()) sel = null;
    renderPanel();
-@@ -7427,6 +8167,7 @@ canvas.addEventListener('pointerdown', (e) => {
+@@ -7427,6 +8174,7 @@ canvas.addEventListener('pointerdown', (e) => {
    anim = null;
    if (ptrs.size === 2) {
      strokeDraft = null;
@@ -1170,7 +1177,7 @@ index e0f2e0c..384fc6c 100644
      if (drag) drag = null;
      const [a, b] = [...ptrs.values()];
      const cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2;
-@@ -7439,6 +8180,7 @@ canvas.addEventListener('pointerdown', (e) => {
+@@ -7439,6 +8187,7 @@ canvas.addEventListener('pointerdown', (e) => {
    gest = { type: 'press', x0: p.x, y0: p.y, lx: p.x, ly: p.y, moved: false, pan: panBtn, touch: e.pointerType === 'touch' };
    if (panBtn || e.button !== 0) return;
    if (tool === 'paint') { gest.type = 'paint'; startStroke(p); }
@@ -1178,7 +1185,7 @@ index e0f2e0c..384fc6c 100644
    else if (tool === 'explore' && sel && (sel.kind === 'settle' || sel.kind === 'label')) {
      const h = hitTest(p.x, p.y);
      if (h && h.kind === sel.kind && h.id === sel.id) { gest.type = 'drag'; drag = { kind: sel.kind, id: sel.id, X: p.x, Y: p.y, moved: false }; }
-@@ -7447,7 +8189,7 @@ canvas.addEventListener('pointerdown', (e) => {
+@@ -7447,7 +8196,7 @@ canvas.addEventListener('pointerdown', (e) => {
  canvas.addEventListener('pointermove', (e) => {
    const p = ptOf(e);
    if (!ptrs.has(e.pointerId)) {
@@ -1187,7 +1194,7 @@ index e0f2e0c..384fc6c 100644
      return;
    }
    ptrs.set(e.pointerId, p);
-@@ -7466,6 +8208,7 @@ canvas.addEventListener('pointermove', (e) => {
+@@ -7466,6 +8215,7 @@ canvas.addEventListener('pointermove', (e) => {
    }
    if (!gest.moved && Math.hypot(p.x - gest.x0, p.y - gest.y0) > (gest.touch ? 9 : 4)) gest.moved = true;
    if (gest.type === 'paint') extendStroke(p);
@@ -1195,7 +1202,7 @@ index e0f2e0c..384fc6c 100644
    else if (gest.type === 'drag') { if (gest.moved) { drag.moved = true; drag.X = p.x; drag.Y = p.y; requestRender(); } }
    else if (gest.moved) {
      view.x -= (p.x - gest.lx) / view.s; view.y -= (p.y - gest.ly) / view.s;
-@@ -7486,8 +8229,9 @@ function endPointer(e) {
+@@ -7486,8 +8236,9 @@ function endPointer(e) {
    if (ptrs.size > 0) return;
    const g = gest;
    gest = null;
@@ -1206,7 +1213,7 @@ index e0f2e0c..384fc6c 100644
    if (g.type === 'drag') {
      const d = drag;
      drag = null;
-@@ -7671,7 +8415,7 @@ window.addEventListener('keydown', (e) => {
+@@ -7671,7 +8422,7 @@ window.addEventListener('keydown', (e) => {
    else if (e.key === 'ArrowRight') { view.x += pan; clampView(); requestRender(); e.preventDefault(); }
    else if (e.key === 'ArrowUp') { view.y -= pan; clampView(); requestRender(); e.preventDefault(); }
    else if (e.key === 'ArrowDown') { view.y += pan; clampView(); requestRender(); e.preventDefault(); }
@@ -1215,7 +1222,7 @@ index e0f2e0c..384fc6c 100644
    if (map[e.key.toLowerCase()]) setTool(map[e.key.toLowerCase()]);
  });
  window.addEventListener('keyup', (e) => { if (e.key === ' ') spaceDown = false; });
-@@ -7776,7 +8520,8 @@ function renderPanel() {
+@@ -7776,7 +8527,8 @@ function renderPanel() {
        '<div class="swatches">' + BIOME_PAINT.map(([b, n]) => '<button type="button" class="sw" data-act="biome" data-v="' + b + '" aria-pressed="' + (paint.b === b) + '"><i style="background:' + SWATCH[b] + '"></i><span>' + n + '</span></button>').join('') + '</div>' +
        '<div class="field"><label class="lab" for="f-brush">Brush size</label><input id="f-brush" type="range" min="6" max="90" value="' + paint.px + '"><span class="meta" id="brushInfo">' + fmtDist(world) + ' across at this zoom</span></div>' +
        '<p class="hint">Zoom in before painting fine details such as a clearing or a pond. Restore returns the land to how it was generated.</p>';
@@ -1225,7 +1232,7 @@ index e0f2e0c..384fc6c 100644
    else if (tool === 'measure') {
      let res = '<p class="meta">Tap a start point, then an end point.</p>';
      if (measure && measure.b) { const d = Math.hypot(measure.b[0] - measure.a[0], measure.b[1] - measure.a[1]); res = '<div class="big">' + fmtDist(d) + '</div><p class="meta">' + travelText(d) + '. Fast pace covers 30 mi a day; slow pace 18 mi, but lets the party move stealthily.</p>'; }
-@@ -7989,7 +8734,7 @@ $('worldBody').addEventListener('click', async (e) => {
+@@ -7989,7 +8741,7 @@ $('worldBody').addEventListener('click', async (e) => {
      try { d = decodeMap(code); } catch (err) { toast('That map code could not be read. Check it was copied in full.'); return; }
      ask('Loading this code replaces your current map and all its edits.', 'Load code', () => { closePopovers(); if (Number.isFinite(+d.day)) market.day = Math.max(0, Math.round(+d.day)); regenerate(d.seed, false, Object.assign(blankEdits(), d.edits)); if (Array.isArray(d.heroes)) { let n = 0; for (const x of d.heroes) if (x && x.id && CLASSES5[x.cls] && RACES5[x.race] && !heroes.list.some((y) => y.id === x.id)) { heroes.list.push(fixHero(x)); n++; } if (n) { heroes.cur = heroes.cur || heroes.list[0].id; heroSave(); toast(n + ' hero' + (n > 1 ? 'es' : '') + ' loaded from the code.'); } } });
    } else if (w === 'clear') {
@@ -1234,7 +1241,7 @@ index e0f2e0c..384fc6c 100644
      renderWorldPop();
    }
  });
-@@ -8008,7 +8753,7 @@ function searchItems(q) {
+@@ -8008,7 +8760,7 @@ function searchItems(q) {
    for (const e of eventsWindow(market.day)) if (e.end > market.day && e.start <= market.day + 14 && e.name.toLowerCase().includes(q)) out.push({ kind: 'event', id: e.id, name: e.name, sub: EVT[e.type].name + (e.start > market.day ? ' · starts in ' + (e.start - market.day) + 'd' : ' · now'), rank: 4.5 });
    out.sort((a, b) => b.rank - a.rank || a.name.localeCompare(b.name));
    const res = out.slice(0, 7);
@@ -1243,7 +1250,7 @@ index e0f2e0c..384fc6c 100644
    return res;
  }
  let searchList = [];
-@@ -8037,6 +8782,435 @@ function goSearch(r) {
+@@ -8037,6 +8789,450 @@ function goSearch(r) {
    flyTo(r.x, r.y, r.s);
  }
  
@@ -1504,9 +1511,9 @@ index e0f2e0c..384fc6c 100644
 +const cap1 = (s) => String(s).charAt(0).toUpperCase() + String(s).slice(1);
 +function srdFetch(kind) {
 +  if (SRD.P[kind]) return SRD.P[kind];
-+  const file = kind === 'items' ? 'data/srd_catalog.json' : 'data/srd_monsters.json';
-+  SRD.P[kind] = fetch(file).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-+    .then((d) => { if (kind === 'items') srdItemsReady(d.items || []); else srdMonsReady(d.monsters || []); })
++  const get = (f) => fetch(f).then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
++  SRD.P[kind] = (kind === 'items' ? Promise.all([get('data/srd_catalog.json'), get('data/ledger_everyday.json').catch(() => ({ items: [] }))]) : get('data/srd_monsters.json'))
++    .then((d) => { if (kind === 'items') srdItemsReady((d[1].items || []).concat(d[0].items || [])); else srdMonsReady(d.monsters || []); })
 +    .catch(() => { SRD.failed[kind] = true; })
 +    .then(() => { if (tool === 'market' || tool === 'monsters') renderPanel(); if (monCard && !$('monPop').hidden) showMonster(monCard); });
 +  return SRD.P[kind];
@@ -1526,32 +1533,36 @@ index e0f2e0c..384fc6c 100644
 +  const ab = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'];
 +  const line = (k, v) => (v ? '<p class="sb-l"><b>' + k + '</b> ' + esc(v) + '</p>' : '');
 +  const list = (title, arr) => (arr && arr.length ? '<h4>' + title + '</h4>' + arr.map(([n, t]) => '<p><b>' + esc(n) + '.</b> ' + esc(t) + '</p>').join('') : '');
-+  return '<details class="sblock" open><summary>Full stat block</summary>' +
++  return '<details class="sblock" open><summary>Full stat block</summary><div class="statblock"><p class="sb-name">' + esc(m.n) + '</p>' +
 +    '<p class="sb-k">' + esc(cap1(m.sz) + ' ' + m.t + (m.st ? ' (' + m.st + ')' : '') + ', ' + m.al) + '</p>' +
 +    line('Armour class', m.ac) + line('Hit points', m.hp + ' (' + m.hd + ')') + line('Speed', m.sp) +
 +    '<table class="sb-ab"><tr>' + ab.map((a) => '<th>' + a + '</th>').join('') + '</tr><tr>' + m.ab.map((v) => '<td>' + v + ' <small>(' + sgn(modOf(v)) + ')</small></td>').join('') + '</tr></table>' +
 +    line('Saving throws', m.sv) + line('Skills', m.sk) + line('Vulnerable to', m.vu) + line('Resists', m.re) + line('Immune to', m.im) + line('Condition immunities', m.ci) + line('Senses', m.se) + line('Languages', m.la) +
-+    list('Traits', m.sa) + list('Actions', m.ac2) + list('Reactions', m.rx) + list('Legendary actions', m.lg) + '</details>';
++    list('Traits', m.sa) + list('Actions', m.ac2) + list('Reactions', m.rx) + list('Legendary actions', m.lg) + '</div></details>';
 +}
 +
 +// ---------- the full item list, priced in each town ----------
-+const SHOP_CATS = [['all', 'All'], ['Weapons', 'Weapons'], ['Armor', 'Armour'], ['Gear', 'Gear'], ['Tools', 'Tools'], ['Mounts & travel', 'Mounts & travel'], ['Magic items', 'Magic items']];
++const SHOP_CATS = [['all', 'All'], ['Food', 'Food'], ['Drink', 'Drink'], ['Lodging', 'Lodging'], ['Services', 'Services'], ['Wages', 'Wages'], ['Weapons', 'Weapons'], ['Armor', 'Armour'], ['Gear', 'Gear'], ['Tools', 'Tools'], ['Mounts & travel', 'Mounts & travel'], ['Magic items', 'Magic items']];
 +const MAGIC_BAND = { common: [50, 100], uncommon: [101, 500], rare: [501, 5000], 'very rare': [5001, 50000] };
 +const MAGIC_TIER = { common: 2, uncommon: 3, rare: 4, 'very rare': 4 };
 +const ITEM_ALIAS = { 'horse, riding': 'Riding horse', 'horse, draft': 'Draft horse', 'saddle, riding': 'Saddle, riding', 'animal feed (1 day)': 'Feed (per day)', 'leather armor': 'Leather armour', 'chain shirt': 'Chain shirt', 'chain mail': 'Chain mail', 'plate armor': 'Plate armour', 'rope, hempen (50 feet)': 'Rope, hempen (50 ft)', "healer's kit": "Healer's kit", 'arrow': 'Arrows (20)', 'tent, two-person': 'Tent, two-person', 'crossbow, light': 'Crossbow, light' };
++const EVERYDAY = new Set(['Food', 'Drink', 'Lodging', 'Services', 'Wages']);
 +const SHIPS = /galley|keelboat|longship|rowboat|sailing ship|warship/i;
 +function srdItemsReady(list) {
 +  const goodsBy = new Map(GOODS.map((g) => [g.name.toLowerCase(), g]));
++  const seen = new Set();
++  list = list.filter((x) => { const k = x.c + '|' + x.n + '|' + (x.u || ''); if (seen.has(k)) return false; seen.add(k); return true; });
 +  SRD.items = list.filter((x) => x.c === 'Magic items' || x.p > 0).map((x) => {
-+    const lname = x.n.toLowerCase(), g = goodsBy.get(lname) || (ITEM_ALIAS[lname] ? GBY[ITEM_ALIAS[lname]] : null);
++    const lname = x.n.toLowerCase(), g = EVERYDAY.has(x.c) ? null : goodsBy.get(lname) || (ITEM_ALIAS[lname] ? GBY[ITEM_ALIAS[lname]] : null);
 +    let base = x.p / 100, rarity = x.r ? x.r.toLowerCase() : null;
-+    if (g) base = g.base;
++    const everyday = EVERYDAY.has(x.c);
++    if (g && !everyday) base = g.base;
 +    else if (x.c === 'Magic items') {
 +      const band = MAGIC_BAND[rarity];
 +      if (band) { const h = T.hash(hashStr(x.id) & 0xffffff, 17, 5); base = Math.round(band[0] * Math.pow(band[1] / band[0], h)); if (/potion|scroll/i.test(x.t || '') || /^potion|^spell scroll|^ammunition/i.test(x.n)) base = Math.max(band[0] / 2, Math.round(base / 2)); }
 +      else base = 0;
 +    }
-+    return { id: x.id, name: x.n, cat: x.c, unit: x.u && x.u !== 'each' ? x.u : '', desc: x.d || '', type: x.t || '', rarity, base, g, search: (x.n + ' ' + (x.t || '') + ' ' + (x.r || '')).toLowerCase() };
++    return { id: x.id || 'lg~' + lname.replace(/[^a-z0-9]+/g, '-') + '~' + (x.u || ''), name: x.n, cat: x.c, unit: x.u && x.u !== 'each' ? x.u : '', desc: x.d || '', type: x.t || '', rarity, base, g, search: (x.n + ' ' + (x.t || '') + ' ' + (x.r || '')).toLowerCase() };
 +  });
 +}
 +const levelCache = new Map();
@@ -1564,7 +1575,7 @@ index e0f2e0c..384fc6c 100644
 +  v = {
 +    arms: lvl((g) => g.cat === 'arms'), gear: lvl((g) => g.tags.includes('gear') || g.tags.includes('healing') && g.cat === 'trade'), crafted: lvl((g) => g.tags.includes('crafted')),
 +    mount: lvl((g) => g.tags.includes('mount')), tack: lvl((g) => g.tags.includes('tack') || g.tags.includes('vehicle')), feed: lvl((g) => g.tags.includes('feed')), magic: lvl((g) => g.cat === 'magic'),
-+    lodging: lvl((g) => g.tags.includes('lodging')), meal: lvl((g) => g.tags.includes('meal')), P,
++    lodging: lvl((g) => g.tags.includes('lodging')), meal: lvl((g) => g.tags.includes('meal')), drink: lvl((g) => g.tags.includes('drink')), food: lvl((g) => g.cat === 'food' && g.tags.includes('food')), P,
 +  };
 +  levelCache.set(key, v);
 +  if (levelCache.size > 400) levelCache.delete(levelCache.keys().next().value);
@@ -1582,6 +1593,13 @@ index e0f2e0c..384fc6c 100644
 +  }
 +  let f = Lv.gear, ok = true, why = '';
 +  const n = it.name;
++  if (EVERYDAY.has(it.cat)) {
++    f = it.cat === 'Food' ? (/^meal|banquet/i.test(n) ? Lv.meal : Lv.food) : it.cat === 'Drink' ? Lv.drink : it.cat === 'Lodging' ? Lv.lodging : it.cat === 'Services' ? Math.sqrt(Lv.lodging * Lv.gear) : Math.sqrt(Lv.lodging * Lv.meal);
++    if (/aristocratic|wealthy|banquet|wine, fine/i.test(n) && s.tier < 2) { ok = false; why = 'Needs a town'; }
++    if (/ship's passage/i.test(n) && !isCoastal(s.x, s.y)) { ok = false; why = 'Only in ports'; }
++    if (/within a city/i.test(n) && s.tier < 3) { ok = false; why = 'Only in cities'; }
++    return { gp: it.base * f, ok, why };
++  }
 +  if (it.cat === 'Weapons') { f = Lv.arms; if (/Martial/.test(it.desc) && s.tier < 2) { ok = false; why = 'Needs a town'; } }
 +  else if (it.cat === 'Armor') { f = Lv.arms; if ((/Heavy/.test(it.desc) || it.base >= 200) && s.tier < 2) { ok = false; why = 'Needs a town'; } if (it.base >= 400 && s.tier < 3) { ok = false; why = 'Needs a city'; } }
 +  else if (it.cat === 'Tools') f = Lv.crafted;
@@ -1592,6 +1610,10 @@ index e0f2e0c..384fc6c 100644
 +    else f = Lv.mount;
 +  }
 +  return { gp: it.base * f, ok, why };
++}
++// prices in their coins: gold, silver and copper, as on the old ledger
++function coinHtml(gp) {
++  return esc(money(gp)).replace(/([\d,]+) (gp|sp|cp)/g, '<span class="c-$2"><b>$1</b> $2</span>');
 +}
 +function shopRows() {
 +  const q = (market.shop.q || '').trim().toLowerCase(), cat = market.shop.cat;
@@ -1609,7 +1631,7 @@ index e0f2e0c..384fc6c 100644
 +    const nm = it.cat === 'Magic items' ? extLink(AID.item(it.name), it.name) : esc(it.name);
 +    h += '<tr class="item' + (r.ok ? '' : ' na') + '" data-shop="open" data-v="' + esc(it.id) + '" tabindex="0" aria-expanded="' + open + '"><td>' + nm + (it.unit ? ' <small>(' + esc(it.unit) + ')</small>' : '') + (it.rarity ? ' <em class="rar rr-' + it.rarity.replace(/\s/g, '') + '">' + esc(it.rarity) + '</em>' : '') +
 +      (open ? '<small class="note">' + esc(it.type ? fixType(it.type) + '. ' : '') + esc(it.desc) + '</small>' : '') + '</td>' +
-+      '<td class="num">' + (it.base ? money(it.base) : '—') + '</td><td class="num">' + (r.ok ? '<b>' + money(r.gp) + '</b>' : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
++      '<td class="num">' + (it.base ? coinHtml(it.base) : '—') + '</td><td class="num">' + (r.ok ? coinHtml(r.gp) : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
 +  }
 +  return h + '</tbody></table>';
 +}
@@ -1631,8 +1653,8 @@ index e0f2e0c..384fc6c 100644
 +}
 +function innHtml(s, day) {
 +  const B = innBill(s, day);
-+  return '<div class="inn-out"><ul class="breakdown">' + B.rows.map((r) => '<li><span>' + r[0] + ' <small>' + r[2] + '</small></span><b>' + money(r[1]) + '</b></li>').join('') + '</ul>' +
-+    '<div class="inn-total"><span>Total bill</span><b>' + money(B.total) + '</b></div>' + (B.warn.length ? '<p class="meta">' + B.warn.join(' ') + '</p>' : '') + '</div>';
++  return '<div class="inn-out"><ul class="breakdown">' + B.rows.map((r) => '<li><span>' + r[0] + ' <small>' + r[2] + '</small></span><b>' + coinHtml(r[1]) + '</b></li>').join('') + '</ul>' +
++    '<div class="inn-total"><span>Total bill</span><b>' + coinHtml(B.total) + '</b></div>' + (B.warn.length ? '<p class="meta">' + B.warn.join(' ') + '</p>' : '') + '</div>';
 +}
 +function shopTab(day) {
 +  const s = market.sid ? SBY.get(market.sid) : null;
@@ -1644,10 +1666,10 @@ index e0f2e0c..384fc6c 100644
 +  h += '<section><h3>At the inn</h3><div class="row2"><div class="field"><label class="lab" for="inn-l">Lodging</label>' + sel1('inn-l', F.lodge) + '</div><div class="field"><label class="lab" for="inn-m">Meals</label>' + sel1('inn-m', F.meal) + '</div></div>' +
 +    '<div class="row3">' + num('inn-n', F.nights, 365, 'Nights') + num('inn-g', F.guests, 50, 'Guests') + num('inn-h', F.horses, 50, 'Horses') + '</div><div id="innOut">' + innHtml(s, day) + '</div>' +
 +    '<p class="hint">Player\'s Handbook lifestyle prices for an inn stay and a day\'s meals, at this town\'s prices today. Stabling is 5 sp a day before local costs.</p></section>';
-+  h += '<section><h3>Everything for sale</h3><div class="field"><label class="lab" for="shop-q">Search 588 SRD items</label><input id="shop-q" type="search" value="' + esc(market.shop.q) + '" placeholder="Rope, longsword, potion…" autocomplete="off"></div>' +
++  h += '<section><h3>Everything for sale</h3><div class="field"><label class="lab" for="shop-q">Search 625 items</label><input id="shop-q" type="search" value="' + esc(market.shop.q) + '" placeholder="Rope, longsword, potion…" autocomplete="off"></div>' +
 +    '<div class="chips">' + SHOP_CATS.map(([k, l]) => '<button type="button" class="chip' + (market.shop.cat === k ? ' on' : '') + '" data-shop="cat" data-v="' + esc(k) + '">' + l + '</button>').join('') + '</div>' +
 +    '<div id="shopList">' + shopListHtml(s, day) + '</div>' +
-+    '<p class="hint">Rulebook prices from the System Reference Document 5.1, moved by this town\'s supply, season and events like the goods on the Town tab. Magic items without a rulebook price are estimates inside the Dungeon Master\'s Guide rarity bands; legendary items and artifacts are never sold. Tap an item for its description.</p></section>';
++    '<p class="hint">Rulebook prices from the System Reference Document 5.1 (food, drink, lodging, services and wages from the old Market Ledger\'s list), moved by this town\'s supply, season and events like the goods on the Town tab. Magic items without a rulebook price are estimates inside the Dungeon Master\'s Guide rarity bands; legendary items and artifacts are never sold. Tap an item for its description.</p></section>';
 +  return h;
 +}
 +$('inspector').addEventListener('click', (ev) => {
@@ -1679,7 +1701,7 @@ index e0f2e0c..384fc6c 100644
  // ---------------------------------------------------------------- persistence
  let saveTimer = 0;
  function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 500); }
-@@ -8061,7 +9235,7 @@ function regenerate(seed, keepView, newEdits, restoreView) {
+@@ -8061,7 +9257,7 @@ function regenerate(seed, keepView, newEdits, restoreView) {
      edits = newEdits || blankEdits();
      history = []; future = [];
      tiles.clear(); planCache.clear(); geomCache.clear();
