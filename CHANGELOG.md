@@ -6,6 +6,19 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-12 — v24: the atlas panel and a framed map
+*By: project owner (prepared with Claude)*
+
+- **index.html** — a new layout:
+  - the map sits in its own frame beside a docked side panel;
+  - the side panel drills down World › Realm › Place, and each place has Overview, Market, People and Guilds tabs, with breadcrumbs back up;
+  - the calendar is always at the top of the side panel;
+  - the map tools are along the top of the map;
+  - the side panel can be hidden;
+  - on phones the map is on top with the atlas below, and a handle resizes the two.
+- **docs/world-atlas.md** — layout notes added.
+- **backups/index_2026-10-12_v24.html** — a copy of this release.
+
 ## 2026-10-12 — v20 to v23: saving, live table, battle map, Shop, Market Ledger ideas
 *By: project owner and Sean (prepared with Claude)*
 

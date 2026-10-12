@@ -838,46 +838,189 @@ section h3 { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(
 .pop.mon { max-height: calc(100% - 120px); overflow: auto; }
 .pop.mon { max-height: calc(100% - 120px); overflow: auto; }
 
+
+/* ================================================================ v24 shell: a docked atlas panel beside a framed map
+   The side panel holds the calendar, search and a drill-down of World › Realm › Place, with each place's own tabs
+   (Overview, Market, People, Guilds). The map sits in its own frame with its tools along the top. */
+#app.shell { position: fixed; inset: 0; display: grid; grid-template-columns: var(--sidew, 420px) minmax(0, 1fr); background: var(--stage); }
+#app.shell.side-wide { --sidew: 560px; }
+#app.shell.side-off { grid-template-columns: 0 minmax(0, 1fr); }
+#app.shell.side-off #side { visibility: hidden; }
+#side { position: relative; display: flex; flex-direction: column; min-height: 0; min-width: 0; background: var(--bg); border-right: 1px solid var(--line); z-index: 5; }
+#side .side-top { padding: calc(env(safe-area-inset-top, 0px) + 12px) 14px 8px; display: grid; gap: 9px; border-bottom: 1px solid var(--line); }
+#side .side-row { display: flex; gap: 8px; align-items: center; min-width: 0; }
+#side .plate { flex: 1; min-width: 0; padding: 0; }
+#side .plate h1 { font-size: 20px; }
+#side .top-actions { display: flex; gap: 6px; flex: none; }
+#side .top-actions .ibtn { height: 36px; min-width: 36px; padding: 0 9px; }
+#side .top-actions .lbl { display: none; }
+#side .search { width: auto; margin: 0; }
+#side .search input { height: 38px; }
+#side .search svg { top: 10px; }
+.calbar { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.calbar .cal-d { flex: 1; min-width: 0; font: 500 14px var(--f-display); letter-spacing: .04em; color: var(--brass-hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.calbar .cal-d small { display: block; font: 400 11px var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.calbar button { height: 32px; padding: 0 10px; border: 1px solid var(--line); border-radius: 7px; background: transparent; cursor: pointer; font-size: 13px; white-space: nowrap; }
+.calbar button:hover { border-color: var(--brass); }
+.calbar button.on { background: var(--brass); border-color: var(--brass); color: var(--ink); font-weight: 700; }
+.sections { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+body.player .sections { grid-template-columns: repeat(2, 1fr); }
+#side .tool.sec { width: auto; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 7px; padding: 7px 4px; border: 0; border-right: 1px solid var(--line); border-radius: 0; color: var(--text); }
+#side .tool.sec:last-child { border-right: 0; }
+#side .tool.sec svg { width: 17px; height: 17px; }
+#side .tool.sec span { display: inline !important; position: static; width: auto; height: auto; clip: auto; font: 500 12.5px var(--f-display); letter-spacing: .06em; }
+#side .tool.sec[aria-pressed="true"] { background: var(--brass); color: var(--ink); }
+#side #inspector { position: relative; inset: auto; top: auto; right: auto; left: auto; bottom: auto; width: auto; max-height: none; flex: 1 1 auto; min-height: 0; overflow: auto; margin: 0; padding: 0 14px 28px; border: 0; border-radius: 0; box-shadow: none; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; display: block; z-index: auto; }
+#side #inspector > * + * { margin-top: 12px; }
+#side #inspector .side-body { display: grid; gap: 12px; align-content: start; grid-auto-rows: max-content; }
+#side #inspector .side-body > * { min-width: 0; }
+#side .x[data-act="close"], #side .x.mn, #side .pbar, #side .minbar { display: none !important; }
+/* the sticky place header: breadcrumbs, name and the place's tabs */
+.side-head { position: sticky; top: 0; z-index: 3; background: var(--bg); margin: 0 -14px; padding: 10px 14px 8px; border-bottom: 1px solid var(--line); display: grid; gap: 6px; }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; font-size: 12.5px; color: var(--muted); min-width: 0; }
+.crumbs button { background: none; border: 0; padding: 2px 4px; border-radius: 5px; cursor: pointer; color: var(--muted); font: inherit; }
+.crumbs button:hover { color: var(--brass-hi); background: var(--panel-2); }
+.crumbs .sep { opacity: .55; }
+.crumbs b { color: var(--text); font-weight: 600; padding: 2px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.ph-row { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.ph-row .grow { flex: 1; min-width: 0; }
+.ph-row h2 { margin: 0; font: 400 23px/1.15 var(--f-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ph-row .title-in { font-size: 23px; margin-left: -7px; }
+.ptabs { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.ptabs button { background: transparent; border: 0; border-right: 1px solid var(--line); padding: 8px 2px; cursor: pointer; color: var(--text); font: 500 13px var(--f-display); letter-spacing: .05em; }
+.ptabs button:last-child { border-right: 0; }
+.ptabs button:hover { background: var(--panel-2); }
+.ptabs button[aria-pressed="true"] { background: var(--brass); color: var(--ink); }
+.ptabs button:focus-visible, .crumbs button:focus-visible, .calbar button:focus-visible, .navlist button:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: -2px; }
+/* inside a place, the tool panels drop their own titles and calendars: the place header and the side bar carry them */
+#inspector.in-place .side-body > .mk-head, #inspector.in-place .side-body > .mk-ctl, #inspector.in-place .side-body > .mk-ctl + .seg:not(.mk-tabs), #inspector.in-place .side-body > .ihead { display: none !important; }
+#inspector.in-place .side-body > .mk-ctl ~ p.meta:first-of-type { display: none; }
+#inspector.in-place .town-h > div:first-child:not(:only-child) { display: none; }
+#inspector.in-place .town-h { justify-content: flex-end; }
+#inspector.in-place .seg.mk-tabs button[data-v="overview"][data-mk="tab"] { display: none; }
+#inspector.in-place .seg.mk-tabs:has(button[data-v="overview"][data-mk="tab"]) { grid-template-columns: repeat(4, 1fr); }
+/* lists of realms and places */
+.navlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.navlist button { width: 100%; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 10px; align-items: center; text-align: left; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); cursor: pointer; color: var(--text); }
+.navlist button:hover { border-color: var(--brass); background: var(--panel-2); }
+.navlist .sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; padding: 0; border: 0; }
+.navlist b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.navlist small { display: block; color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; }
+.navlist .num { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.navlist .chev { color: var(--muted); font-size: 18px; line-height: 1; }
+.navlist .here { color: var(--brass-hi); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.navgroup { display: flex; justify-content: space-between; align-items: baseline; margin: 14px 0 6px; }
+.navgroup h3 { margin: 0; border: 0; padding: 0; }
+.navgroup small { color: var(--muted); font-size: 12px; }
+.navtools { display: flex; gap: 6px; align-items: center; }
+.navtools input { flex: 1; min-width: 0; height: 34px; padding: 0 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 7px; box-sizing: border-box; }
+.navtools select { height: 34px; background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: 0 8px; }
+.tiles2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.tiles2 button { display: grid; gap: 2px; text-align: left; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); cursor: pointer; color: var(--text); }
+.tiles2 button:hover { border-color: var(--brass); }
+.tiles2 b { font: 500 14px var(--f-display); letter-spacing: .03em; }
+.tiles2 small { color: var(--muted); font-size: 12px; line-height: 1.3; }
+.editing-bar { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.editing-bar .eyebrow { margin: 0; }
+/* the framed map */
+#stage { position: relative; min-width: 0; min-height: 0; padding: 10px; box-sizing: border-box; }
+#frame { position: relative; width: 100%; height: 100%; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--stage); box-shadow: inset 0 0 0 1px rgba(214,165,72,.08), 0 10px 30px rgba(0,0,0,.35); }
+#frame #map { position: absolute; inset: 0; width: 100%; height: 100%; }
+#frame .maptools { position: absolute; top: 10px; left: 10px; transform: none; flex-direction: row; padding: 4px; gap: 2px; z-index: 4; max-width: calc(100% - 200px); overflow-x: auto; scrollbar-width: none; }
+#frame .maptools::-webkit-scrollbar { display: none; }
+#frame .maptools .tool { width: 54px; min-width: 0; flex: none; padding: 5px 0 4px; gap: 2px; }
+#frame .maptools .tool svg { width: 19px; height: 19px; }
+#frame .maptools .tool span { display: block !important; position: static; width: auto; height: auto; clip: auto; font-size: 10px; }
+#frame .maptools hr { border: 0; border-left: 1px solid var(--line); margin: 6px 3px; }
+.frame-tr { position: absolute; top: 10px; right: 10px; display: flex; gap: 6px; z-index: 4; }
+#frame .pop { top: 60px; right: 10px; }
+#frame .pop.mon { left: 10px; right: auto; top: 70px; max-height: calc(100% - 90px); }
+#frame .status { left: 10px; bottom: 10px; }
+#frame .ladder { right: 10px; bottom: 10px; }
+#frame .hover { bottom: 12px; max-width: calc(100% - 420px); }
+#frame .toast { top: 70px; }
+#side .pop { position: absolute; top: 58px; left: 10px; right: 10px; width: auto; max-height: calc(100% - 70px); z-index: 8; }
+.sheet-handle { display: none; }
+#frame .live-chip { position: absolute; top: 84px; bottom: auto; left: 50%; transform: translateX(-50%); }
+@media (max-width: 860px) { #frame .live-chip { top: 54px; } }
+#frame .mode-pill { position: absolute; bottom: 56px; top: auto; left: 50%; }
+/* phones and narrow windows: the map on top, the atlas below, with a handle to give either more room */
+@media (max-width: 860px) {
+  #app.shell { grid-template-columns: minmax(0, 1fr); grid-template-rows: var(--maph, 44%) minmax(0, 1fr); }
+  #app.shell.sheet-map { --maph: 72%; }
+  #app.shell.sheet-list { --maph: 22%; }
+  #app.shell.side-off { grid-template-columns: minmax(0, 1fr); }
+  #app.shell.side-off #side { visibility: visible; }
+  #side { grid-row: 2; border-right: 0; border-top: 1px solid var(--line); display: block; overflow: auto; overscroll-behavior: contain; }
+  #side #inspector { overflow: visible; }
+  #stage { grid-row: 1; padding: calc(env(safe-area-inset-top, 0px) + 6px) 6px 6px; }
+  #frame { border-radius: 10px; }
+  #side .side-top { padding: 8px 12px 8px; gap: 7px; }
+  #side .plate h1 { font-size: 16px; }
+  #side .plate .meta-line { font-size: 10.5px; }
+  #btnSide { display: none; }
+  #side #inspector { padding: 0 12px calc(env(safe-area-inset-bottom, 0px) + 24px); }
+  .side-head { margin: 0 -12px; padding: 8px 12px 7px; }
+  #frame .maptools { top: 6px; left: 6px; right: auto; bottom: auto; width: auto; height: auto; max-width: calc(100% - 64px); border-radius: 10px; border-width: 1px; padding: 3px; justify-content: flex-start; }
+  #side .side-row > *, #side .side-top > * { order: 0; }
+  #side .search { flex: none; width: auto; }
+  .calbar .cal-d { font-size: 13px; }
+  .calbar button { height: 30px; padding: 0 8px; font-size: 12.5px; }
+  #frame .maptools .tool { width: 46px; }
+  #frame .maptools .tool span { font-size: 9px; }
+  .frame-tr { top: 6px; right: 6px; }
+  .frame-tr .lbl { display: none; }
+  #frame .status { left: 6px; bottom: 6px; padding: 5px 8px; min-width: 0; }
+  #frame .ladder { right: 6px; bottom: 6px; padding: 5px; }
+  #frame .ladder .rungs { display: none; }
+  #frame .zoomb button { width: 34px; height: 34px; }
+  #frame .hover { display: none; }
+  #frame .pop { top: 52px; right: 6px; left: 6px; width: auto; max-height: calc(100% - 60px); }
+  #frame .pop.mon { left: 6px; right: 6px; top: 52px; }
+  .sheet-handle { display: block; position: absolute; left: 50%; bottom: 4px; transform: translateX(-50%); width: 64px; height: 18px; border: 0; background: transparent; cursor: pointer; z-index: 5; padding: 0; }
+  .sheet-handle i { display: block; width: 44px; height: 5px; margin: 0 auto; border-radius: 3px; background: rgba(232,227,212,.55); box-shadow: 0 1px 3px rgba(0,0,0,.5); }
+  .ph-row h2, .ph-row .title-in { font-size: 20px; }
+  #frame .mode-pill { bottom: 46px; top: auto; }
+  #side .tool.sec span { font-size: 11.5px; }
+}
+@media (min-width: 861px) and (max-height: 700px) { #frame .maptools .tool span { display: none !important; } #frame .maptools .tool { width: 40px; padding: 7px 0; } }
 </style>
 
-<div id="app">
-  <canvas id="map" tabindex="0" aria-label="Interactive world map. Drag to pan, scroll or pinch to zoom."></canvas>
-
-  <header class="top">
-    <div class="plate panel">
+<div id="app" class="shell">
+  <aside id="side" class="side" aria-label="Atlas">
+    <div class="side-top">
+      <div class="side-row">
+        <div class="plate">
       <h1 id="worldName">Charting…</h1>
       <div class="meta-line">Seed <b id="seedLabel">–</b> · <span id="zoomName">World</span></div>
     </div>
-    <div class="search">
+        <div class="top-actions">
+          <button type="button" class="ibtn" id="btnWorld" aria-expanded="false" aria-controls="worldPop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.7 2.6 4 5.6 4 9s-1.3 6.4-4 9c-2.7-2.6-4-5.6-4-9s1.3-6.4 4-9z"/></svg><span class="lbl">World</span></button>
+          <button type="button" class="ibtn" id="btnHelp" aria-expanded="false" aria-controls="helpPop" aria-label="How to use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1.1.9-1.1 1.6v.5"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></button>
+          <button type="button" class="ibtn" id="btnSide" aria-label="Hide the side panel" title="Hide the side panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M9.5 4.5v15M15.5 9.5L13 12l2.5 2.5"/></svg></button>
+        </div>
+      </div>
+      <div id="calBar" class="calbar" role="group" aria-label="Calendar"></div>
+      <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
       <input id="search" type="search" placeholder="Find a place or person" autocomplete="off" aria-label="Find a place or person">
       <div id="searchResults" class="results panel" hidden></div>
     </div>
-    <div class="top-actions">
-      <button type="button" class="ibtn" id="btnLayers" aria-expanded="false" aria-controls="layersPop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span class="lbl">Layers</span></button>
-      <button type="button" class="ibtn" id="btnWorld" aria-expanded="false" aria-controls="worldPop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.7 2.6 4 5.6 4 9s-1.3 6.4-4 9c-2.7-2.6-4-5.6-4-9s1.3-6.4 4-9z"/></svg><span class="lbl">World</span></button>
-      <button type="button" class="ibtn" id="btnHelp" aria-expanded="false" aria-controls="helpPop" aria-label="How to use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1.1.9-1.1 1.6v.5"/><circle cx="12" cy="17" r=".6" fill="currentColor"/></svg></button>
+      <nav class="sections" aria-label="Sections">
+        <button type="button" class="tool sec" data-tool="explore" data-go="places" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M3 6.5l6-2.5 6 2.5 6-2.5v13.5l-6 2.5-6-2.5-6 2.5z"/><path d="M9 4v13.5M15 6.5V20"/></svg><span>Places</span></button>
+        <button type="button" class="tool sec" data-tool="heroes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z"/><path d="M12 7.2l4.6 8H7.4z"/></svg><span>Heroes</span></button>
+        <button type="button" class="tool sec" data-tool="monsters" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 4.5c1.5 4 1.6 9.5-.5 15M11.5 3.5c1 4.5.8 11-1.2 17M16.5 4.5c.6 4.5-.2 10-2.6 15"/><path d="M19 8.5c.6 3.4-.4 7-2.6 10"/></svg><span>Monsters</span></button>
+      </nav>
     </div>
-  </header>
-
-  <div id="layersPop" class="pop panel" hidden>
-    <h2>Layers</h2>
-    <label class="check"><input type="checkbox" id="lay-borders"><span>Realm borders<small>Kingdom colours on the world and regional maps</small></span></label>
-    <label class="check"><input type="checkbox" id="lay-roads"><span>Roads<small>Highways, roads and trails</small></span></label>
-    <label class="check"><input type="checkbox" id="lay-events"><span>World events<small>Wars, bandits, famine, plague, trade booms, festivals and feasts</small></span></label>
-    <label class="check"><input type="checkbox" id="lay-monsters"><span>Monsters<small>Creature groups and lairs in their habitats, and the ones you place</small></span></label>
-    <label class="check"><input type="checkbox" id="lay-people"><span>Tracked people<small>A brass badge on towns where people you track live</small></span></label>
-    <label class="check"><input type="checkbox" id="lay-labels"><span>Place names<small>Settlement and realm names</small></span></label>
-    <label class="check"><input type="checkbox" id="lay-grid"><span>Battle grid<small>5-foot squares when zoomed right in</small></span></label>
-  </div>
+    <aside id="inspector" class="inspector" aria-live="polite"></aside>
   <div id="worldPop" class="pop panel" hidden><h2>World</h2><div id="worldBody"></div></div>
-  <div id="monPop" class="pop panel mon" hidden role="dialog" aria-label="Creature"></div>
   <div id="helpPop" class="pop panel" hidden>
     <h2>Using the atlas</h2>
     <ol>
       <li><b>Zoom</b> with the mouse wheel, a pinch, or the ladder at bottom right. The world map becomes realms, then regions, then town streets, then a pixel-art battle map with 5-ft squares, drawn for every town, road, coast and forest.</li>
-      <li><b>Explore</b>: tap a town to see its population, trades, folk and local wildlife. Tap a road to see its length and travel time.</li>
-      <li><b>Settle</b>, <b>Road</b>, <b>Paint</b> and <b>Label</b> add your own places, routes, terrain and notes. Select something and drag it to move it.</li>
+      <li><b>The side panel</b> is your atlas: start at the world's realms, open a realm to list its capital, cities, towns and villages, then open a place. Every place has its own <b>Overview</b>, <b>Market</b>, <b>People</b> and <b>Guilds</b> tabs, and the breadcrumbs at the top take you back up. Tapping a town on the map opens it here too. Hide the panel with the button beside Help to give the map the whole window; on a phone, the handle under the map gives either more room.</li>
+      <li><b>The calendar</b> sits at the top of the side panel: Play lets time run, or step a day or a week.</li>
+      <li><b>Map tools</b> sit along the top of the map: <b>Select</b>, then <b>Settle</b>, <b>Road</b>, <b>Paint</b>, <b>Tiles</b>, <b>Label</b> and <b>Measure</b> add your own places, routes, terrain, battle maps and notes. Their options open in the side panel; press Done when finished.</li>
       <li><b>Tiles</b> paints the battle map square by square: ground, props such as tables, beds and campfires, and walls, doors, windows and fences along the grid lines. Fill a patch, or drag out a whole building. Players see your changes; undo works per stroke.</li>
       <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill.</li>
       <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day.</li>
@@ -890,14 +1033,12 @@ section h3 { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(
     <p class="meta" style="margin-top:10px">Shortcuts: V explore, K market, N people, G guilds, H heroes, B monsters, S settle, R road, P paint, T tiles, L label, M measure, Delete removes the selection, Esc cancels.</p>
     <p class="meta">Rules, items and creatures include material from the System Reference Document 5.1 by Wizards of the Coast LLC, licensed under CC BY 4.0; the item and creature lists were compiled by Sean. Everyday prices, households, the town chronicle, the change feed, guild colours and town wealth and defence come from Sean and Adam's Market Ledger. Battle-map textures and the look come from Tilewright by Sean and Adam. Fonts: Atkinson Hyperlegible, IM Fell and Pixelify Sans, under the SIL Open Font License.</p>
   </div>
-
-  <nav class="tools panel" aria-label="Tools">
-    <button type="button" class="tool" data-tool="explore" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5L13 13l-4.5 2.5L11 11z"/></svg><span>Explore</span></button>
-    <button type="button" class="tool" data-tool="market" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v16M8 20h8M5 7h14"/><path d="M5 7l-2.5 6a2.5 2.5 0 0 0 5 0zM19 7l-2.5 6a2.5 2.5 0 0 0 5 0z"/></svg><span>Market</span></button>
-    <button type="button" class="tool" data-tool="people" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M16 14.2c2.9.3 5 2.5 5 5.8"/></svg><span>People</span></button>
-    <button type="button" class="tool" data-tool="guilds" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.3-7 10-4-1.7-7-5.4-7-10V6z"/><path d="M9 11.5l2 2 4-4"/></svg><span>Guilds</span></button>
-    <button type="button" class="tool" data-tool="heroes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z"/><path d="M12 7.2l4.6 8H7.4z"/><path d="M4 7.4l3.4 7.8M20 7.4l-3.4 7.8M12 2.8v4.4M7.4 15.2L12 21.2l4.6-6"/></svg><span>Heroes</span></button>
-    <button type="button" class="tool" data-tool="monsters" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 4.5c1.5 4 1.6 9.5-.5 15M11.5 3.5c1 4.5.8 11-1.2 17M16.5 4.5c.6 4.5-.2 10-2.6 15"/><path d="M19 8.5c.6 3.4-.4 7-2.6 10"/></svg><span>Monsters</span></button>
+  </aside>
+  <main id="stage" class="stage">
+    <div id="frame" class="frame">
+    <canvas id="map" tabindex="0" aria-label="Interactive world map. Drag to pan, scroll or pinch to zoom."></canvas>
+  <nav class="tools panel maptools" aria-label="Map tools">
+    <button type="button" class="tool" data-tool="explore" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5L13 13l-4.5 2.5L11 11z"/></svg><span>Select</span></button>
     <button type="button" class="tool" data-tool="settle" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-6 8 6v8.5a.5.5 0 0 1-.5.5H15v-5H9v5H4.5a.5.5 0 0 1-.5-.5z"/></svg><span>Settle</span></button>
     <button type="button" class="tool" data-tool="road" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M7 21L10 3M17 21L14 3"/><path d="M12 6v2M12 11v2M12 16v2"/></svg><span>Road</span></button>
     <button type="button" class="tool" data-tool="paint" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M19 3.5a1.8 1.8 0 0 1 2.5 2.5L12 15.5 9 12.5z"/><path d="M8.5 14c-2.2 0-3.6 1.4-3.6 3.4 0 1.2-.6 2.2-1.9 2.9 3.4.6 7.5-.4 7.6-3.8"/></svg><span>Paint</span></button>
@@ -908,9 +1049,21 @@ section h3 { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(
     <button type="button" class="tool" id="btnUndo" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span>Undo</span></button>
     <button type="button" class="tool" id="btnRedo" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg><span>Redo</span></button>
   </nav>
-
-  <aside id="inspector" class="inspector panel" hidden aria-live="polite"></aside>
-
+      <div class="frame-tr">
+        <button type="button" class="ibtn" id="btnSideOpen" hidden aria-label="Show the side panel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2"/><path d="M9.5 4.5v15M13 9.5l2.5 2.5L13 14.5"/></svg><span class="lbl">Atlas</span></button>
+        <button type="button" class="ibtn" id="btnLayers" aria-expanded="false" aria-controls="layersPop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></svg><span class="lbl">Layers</span></button>
+      </div>
+  <div id="layersPop" class="pop panel" hidden>
+    <h2>Layers</h2>
+    <label class="check"><input type="checkbox" id="lay-borders"><span>Realm borders<small>Kingdom colours on the world and regional maps</small></span></label>
+    <label class="check"><input type="checkbox" id="lay-roads"><span>Roads<small>Highways, roads and trails</small></span></label>
+    <label class="check"><input type="checkbox" id="lay-events"><span>World events<small>Wars, bandits, famine, plague, trade booms, festivals and feasts</small></span></label>
+    <label class="check"><input type="checkbox" id="lay-monsters"><span>Monsters<small>Creature groups and lairs in their habitats, and the ones you place</small></span></label>
+    <label class="check"><input type="checkbox" id="lay-people"><span>Tracked people<small>A brass badge on towns where people you track live</small></span></label>
+    <label class="check"><input type="checkbox" id="lay-labels"><span>Place names<small>Settlement and realm names</small></span></label>
+    <label class="check"><input type="checkbox" id="lay-grid"><span>Battle grid<small>5-foot squares when zoomed right in</small></span></label>
+  </div>
+  <div id="monPop" class="pop panel mon" hidden role="dialog" aria-label="Creature"></div>
   <div class="status panel">
     <div class="scale"><div id="scaleBar"></div><span id="scaleText"></span></div>
   </div>
@@ -929,6 +1082,9 @@ section h3 { font-size: 13px; color: var(--muted); border-bottom: 1px solid var(
   </div>
 
   <div id="toast" class="toast panel" role="status" hidden></div>
+      <button type="button" id="btnSheet" class="sheet-handle" aria-label="Resize the map and panel"><i></i></button>
+    </div>
+  </main>
   <div id="loading" class="loading"><div class="card panel"><div>Charting the world…</div><p>Raising mountains, founding towns, laying roads</p></div></div>
 </div>
 <script>
@@ -3266,6 +3422,7 @@ function marketPanel() {
 }
 function marketAfterRender() { if (tool === 'market' && market.tab === 'overview') wireChart(); }
 function refreshMarket() {
+  if ($('calDate')) $('calDate').firstChild.nodeValue = dateText(market.day);
   if (tool !== 'market') { requestRender(); return; }
   const a = document.activeElement;
   if (a && $('inspector').contains(a) && (a.tagName === 'INPUT' || a.tagName === 'SELECT' || a.tagName === 'TEXTAREA')) { const d = $('mkDate'); if (d) d.textContent = dateText(market.day); }
@@ -3286,6 +3443,7 @@ function setPlaying(on) {
   market.playing = on;
   clearInterval(marketTimer);
   if (on) marketTimer = setInterval(() => { if (!document.hidden) advanceDays(1); }, market.speed);
+  renderCal();
   if (tool === 'market') renderPanel();
 }
 function selectTown(id, fly) {
@@ -5140,7 +5298,8 @@ function goRealm(capId) {
   const R = REALMS.find((r) => r.cap.id === capId);
   if (!R) return;
   panelMin = false;
-  if (tool === 'explore') { sel = { kind: 'settle', id: capId }; renderPanel(); }
+  // the realm's page in the side bar lists its places (app30)
+  if (tool === 'explore') { navR = capId; navQ = ''; sel = null; renderPanel(); }
   flyVis(R.cx, R.cy, Math.max(minS, 0.9));
 }
 function goOrg(key, sid) {
@@ -10126,7 +10285,7 @@ async function sha(t) {
 const PLAYER_HIDDEN_TOOLS = ['settle', 'road', 'paint', 'tiles', 'label', 'monsters'];
 function applyMode() {
   document.body.classList.toggle('player', isPlayer());
-  if (!$('modePill')) { const el = document.createElement('div'); el.id = 'modePill'; el.className = 'mode-pill'; el.setAttribute('role', 'status'); el.textContent = 'Player view'; document.body.appendChild(el); }
+  if (!$('modePill')) { const el = document.createElement('div'); el.id = 'modePill'; el.className = 'mode-pill'; el.setAttribute('role', 'status'); el.textContent = 'Player view'; ($('frame') || document.body).appendChild(el); }
   if (isPlayer() && PLAYER_HIDDEN_TOOLS.includes(tool)) setTool('explore');
   if (isPlayer()) { sel = sel && sel.kind === 'settle' ? sel : null; }
   heatRast = null; placeCache.clear();
@@ -11228,7 +11387,7 @@ function shareMenuHtml() {
 function shareStatus() {
   let el = $('liveChip');
   if (!share.on) { if (el) el.hidden = true; return; }
-  if (!el) { el = document.createElement('div'); el.id = 'liveChip'; el.className = 'live-chip'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+  if (!el) { el = document.createElement('div'); el.id = 'liveChip'; el.className = 'live-chip'; el.setAttribute('role', 'status'); ($('frame') || document.body).appendChild(el); }
   const n = share.pending.size + share.inflight.size;
   el.className = 'live-chip' + (share.err ? ' bad' : n ? ' busy' : '');
   el.textContent = share.err ? 'Live: disconnected' : (share.admin ? 'Live' : 'Live from your DM') + (share.peers.length ? ' · ' + (share.peers.length + 1) + ' here' : '') + (n ? ' · sending…' : '');
@@ -12648,6 +12807,218 @@ function recentChangesHtml() {
   h += '<ul class="feed">' + rows.map((r) => { const nm = who(r); return '<li>' + avatarHtml(r.me ? 'me' : r.by, nm) + '<span><b>' + esc(nm) + '</b> ' + r.txt + (r.n > 1 ? ' <small>×' + r.n + '</small>' : '') + '<small class="when">' + ago(r.t) + '</small></span></li>'; }).join('') + '</ul></div>';
   return h;
 }
+// ================================================================ the atlas shell (v24): a docked side panel beside a framed map
+// The side panel is a drill-down: World › Realm › Place, and each place opens its own tabs (Overview, Market, People,
+// Guilds). It is built on top of the existing tool panels: which page shows is worked out from the same state the tools
+// already use (tool, sel, market.sid, people.sid), so map taps, links, search and shortcuts all land in the right place.
+let navR = null;            // the realm being browsed (its capital's id), kept while you move between its places
+let navQ = '', navSize = 'all', navMore = {};
+const realmIdx = (R) => REALMS.indexOf(R);
+const realmOfS = (s) => (s ? realmOf(s.x, s.y) : null);
+const realmHue = (R) => (hashStr(R.cap.id) >>> 0) % 360;
+const sizeWord = (s) => sizeOf(s).name;
+
+// which page the side panel is on
+function sideCtx() {
+  if (tool === 'market' && market.sid && market.tab !== 'overview' && SBY.get(market.sid)) return { kind: 'place', s: SBY.get(market.sid), tab: 'market' };
+  if (tool === 'people' && people.sid && people.tab !== 'tracked' && SBY.get(people.sid)) return { kind: 'place', s: SBY.get(people.sid), tab: 'people' };
+  if (tool === 'guilds') { const s = market.sid ? SBY.get(market.sid) : people.sid ? SBY.get(people.sid) : null; if (s) return { kind: 'place', s, tab: 'guilds' }; }
+  if (tool === 'explore' && sel && sel.kind === 'settle' && selObj()) return { kind: 'place', s: selObj(), tab: 'overview' };
+  const SECT = { market: 'Markets of the world', people: 'Tracked people', guilds: 'Guilds', heroes: 'Heroes', monsters: 'Monsters', settle: 'Editing · Settlements', road: 'Editing · Roads', paint: 'Editing · Terrain', tiles: 'Editing · Battle map', label: 'Editing · Labels', measure: 'Measure' };
+  if (tool === 'explore' && sel && sel.kind === 'road') return { kind: 'section', name: 'Road' };
+  if (tool === 'explore' && sel && sel.kind === 'label') return { kind: 'section', name: 'Label' };
+  if (tool === 'explore' && sel && sel.kind === 'event') return { kind: 'section', name: 'Event' };
+  if (tool !== 'explore') return { kind: 'section', name: SECT[tool] || tool, edit: ['settle', 'road', 'paint', 'tiles', 'label', 'measure'].includes(tool) };
+  const R = navR ? REALMS.find((r) => r.cap.id === navR) : null;
+  return R ? { kind: 'realm', R } : { kind: 'home' };
+}
+
+// ---------------------------------------------------------------- the calendar, always at hand
+function renderCal() {
+  const el = $('calBar');
+  if (!el) return;
+  const d = market.day, follow = campaign.shared && !campaign.admin;
+  el.innerHTML = '<div class="cal-d" id="calDate">' + dateText(d) + '<small>' + (follow ? 'Following your DM' : market.playing ? 'Time is running' : d % 7 === 6 ? 'Rest day' : 'Paused') + '</small></div>' +
+    (follow ? '' : '<button type="button" data-cal="-1" aria-label="Previous day">‹</button><button type="button" data-cal="play" class="' + (market.playing ? 'on' : '') + '" aria-pressed="' + market.playing + '">' + (market.playing ? 'Pause' : 'Play') + '</button><button type="button" data-cal="1" aria-label="Next day">Day ›</button><button type="button" data-cal="7" aria-label="Skip a week">Week »</button>');
+}
+$('calBar').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-cal]');
+  if (!b) return;
+  const v = b.dataset.cal;
+  if (v === 'play') setPlaying(!market.playing); else advanceDays(+v);
+  renderCal();
+  if (tool !== 'market') renderPanelSafe();
+});
+
+// ---------------------------------------------------------------- the header: breadcrumbs, the place's name and its tabs
+function crumbBtn(go, v, label) { return '<button type="button" data-nav="' + go + '"' + (v != null ? ' data-v="' + esc(v) + '"' : '') + '>' + esc(label) + '</button><span class="sep" aria-hidden="true">›</span>'; }
+function sideHead(c) {
+  let cr = '';
+  const world = WORLD_NAME || 'World';
+  if (c.kind === 'home') return '<div class="side-head"><nav class="crumbs" aria-label="Where you are"><b>' + esc(world) + '</b></nav></div>';
+  cr += crumbBtn('home', null, world);
+  if (c.kind === 'realm') return '<div class="side-head"><nav class="crumbs" aria-label="Where you are">' + cr + '<b>' + esc(c.R.name) + '</b></nav></div>';
+  if (c.kind === 'section') {
+    return '<div class="side-head"><nav class="crumbs" aria-label="Where you are">' + cr + '<b>' + esc(c.name) + '</b></nav>' + (c.edit ? '<div class="editing-bar"><span class="meta">Map tools are along the top of the map.</span><button type="button" class="btn sm primary" data-nav="done">Done</button></div>' : '') + '</div>';
+  }
+  const s = c.s, R = realmOfS(s);
+  if (R) cr += crumbBtn('realm', R.cap.id, R.name);
+  const npc = c.tab === 'people' && people.npc ? npcById(people.npc) : null;
+  const plc = c.tab === 'people' && people.place ? placeGet(s, people.place) : null;
+  if (npc || plc) cr += crumbBtn('place', s.id, s.name) + '<b>' + esc(npc ? npcName(npc) : plc.name) + '</b>';
+  else cr += '<b>' + esc(s.name) + '</b>';
+  const canRename = !isPlayer() && sel && sel.kind === 'settle' && sel.id === s.id;
+  const name = canRename ? '<input id="f-name" class="title-in" value="' + esc(s.name) + '" aria-label="Settlement name" maxlength="40">' : '<h2>' + esc(s.name) + '</h2>';
+  const party = gst().party.at === s.id ? ' · the party is here' : '';
+  const tabs = [['overview', 'Overview'], ['market', 'Market'], ['people', 'People'], ['guilds', 'Guilds']];
+  return '<div class="side-head"><nav class="crumbs" aria-label="Where you are">' + cr + '</nav>' +
+    '<div class="ph-row"><div class="grow"><div class="eyebrow">' + esc(sizeWord(s)) + ' · ' + fmtInt(popNow(s, market.day)) + ' people' + party + '</div>' + name + '</div>' +
+    '<button type="button" class="x locate" data-nav="fly" data-v="' + esc(s.id) + '" aria-label="Show on map" title="Show on map"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>' +
+    '<div class="ptabs" role="tablist" aria-label="' + esc(s.name) + '">' + tabs.map(([k, l]) => '<button type="button" role="tab" data-ptab="' + k + '" data-v="' + esc(s.id) + '" aria-pressed="' + (c.tab === k) + '">' + l + '</button>').join('') + '</div></div>';
+}
+
+// ---------------------------------------------------------------- World: the realms and what spans the whole world
+function homeHtml() {
+  const day = market.day;
+  let pop = 0;
+  for (const s of SET) pop += s.pop;
+  let h = '<section><p class="meta">' + fmtInt(SET.length) + ' settlements and about ' + fmtInt(pop) + ' people in ' + REALMS.length + ' realm' + (REALMS.length === 1 ? '' : 's') + '. Pick a realm, then a place, or tap the map.</p></section>';
+  const wars = activeOn(day).filter((e) => e.type === 'war');
+  h += '<section><div class="navgroup"><h3>Realms</h3><small>' + REALMS.length + '</small></div><ul class="navlist">' + REALMS.map((R) => {
+    const st = realmStats(R), atWar = wars.some((e) => REALMS[e.ai] === R || REALMS[e.bi] === R);
+    return '<li><button type="button" data-nav="realm" data-v="' + esc(R.cap.id) + '"><i class="sw" style="background:hsl(' + realmHue(R) + ' 45% 52%)"></i><span><b>' + esc(R.name) + '</b><small>Capital ' + esc(R.cap.name) + ' · ' + st.n + ' places' + (atWar ? ' · at war' : '') + '</small></span><span class="num">' + fmtInt(st.pop) + '</span><span class="chev" aria-hidden="true">›</span></button></li>';
+  }).join('') + '</ul></section>';
+  const tile = (go, v, b, sm) => '<button type="button" data-nav="' + go + '"' + (v ? ' data-v="' + v + '"' : '') + '><b>' + b + '</b><small>' + sm + '</small></button>';
+  h += '<section><h3>Across the world</h3><div class="tiles2">' +
+    tile('sect', 'markets', 'Markets', 'Prices everywhere, trade routes and what is moving them') +
+    tile('sect', 'events', 'Events', 'Wars, plague, famine, festivals and booms') +
+    tile('sect', 'tracked', 'Tracked people', 'Everyone the party has dealt with') +
+    tile('sect', 'heroes', 'Heroes', 'Your party, characters and the chronicle') +
+    (isPlayer() ? '' : tile('sect', 'monsters', 'Monsters', 'Creatures in the wild, lairs and the Bestiary')) +
+    tile('sect', 'party', 'The party', gst().party.at && SBY.get(gst().party.at) ? 'In ' + esc(SBY.get(gst().party.at).name) : 'Not placed on the map yet') +
+    '</div></section>';
+  return h;
+}
+// every realm's places, worked out in one pass and kept until the world changes
+let rstat = null, rstatKey = '';
+function realmStats(R) {
+  const key = mkVer + '|' + SET.length + '|' + REALMS.length;
+  if (!rstat || rstatKey !== key) {
+    rstat = new Map(REALMS.map((r) => [r, { list: [], n: 0, pop: 0 }]));
+    for (const s of SET) { const r = realmOfS(s), o = r && rstat.get(r); if (o) { o.list.push(s); o.n++; o.pop += s.pop; } }
+    rstatKey = key;
+  }
+  return rstat.get(R) || { list: [], n: 0, pop: 0 };
+}
+
+// ---------------------------------------------------------------- a realm: its places by size
+function placeRow(s) {
+  const party = gst().party.at === s.id;
+  return '<li><button type="button" data-nav="place" data-v="' + esc(s.id) + '"><i class="sw" style="background:' + (s.tier >= 4 ? 'var(--brass)' : s.tier === 3 ? '#cfc8b6' : s.tier === 2 ? '#99a0a8' : '#5d666f') + '"></i><span><b>' + esc(s.name) + '</b><small>' + esc(sizeWord(s)) + (s.coastal ? ' · coast' : '') + (party ? ' · <span class="here">party here</span>' : '') + '</small></span><span class="num">' + fmtInt(s.pop) + '</span><span class="chev" aria-hidden="true">›</span></button></li>';
+}
+function realmHtml(R) {
+  const st = realmStats(R), q = navQ.trim().toLowerCase();
+  const wars = activeOn(market.day).filter((e) => e.type === 'war' && (REALMS[e.ai] === R || REALMS[e.bi] === R));
+  let h = '<section><p class="meta">Capital ' + tLink(R.cap) + ' · ' + st.n + ' places · ' + fmtInt(st.pop) + ' people' + (wars.length ? ' · ' + wars.map((e) => eLink(e)).join(', ') : '') + '</p>' +
+    '<div class="navtools"><input id="nav-q" type="search" placeholder="Find a place in ' + esc(R.name) + '" value="' + esc(navQ) + '" aria-label="Find a place in this realm" autocomplete="off"><select id="nav-size" aria-label="Size"><option value="all">All sizes</option>' + [[4, 'Capital'], [3, 'Cities'], [2, 'Towns'], [1, 'Villages']].map(([t, l]) => '<option value="' + t + '"' + (String(navSize) === String(t) ? ' selected' : '') + '>' + l + '</option>').join('') + '</select></div></section>';
+  h += '<div id="navList">' + realmListHtml(R, st, q) + '</div>';
+  return h;
+}
+function realmListHtml(R, st, q) {
+  const groups = [[4, 'Capital'], [3, 'Cities'], [2, 'Towns'], [1, 'Villages and hamlets']];
+  let h = '', any = false;
+  for (const [t, label] of groups) {
+    if (navSize !== 'all' && +navSize !== t) continue;
+    const list = st.list.filter((s) => s.tier === t && (!q || s.name.toLowerCase().includes(q))).sort((a, b) => b.pop - a.pop);
+    if (!list.length) continue;
+    any = true;
+    const max = navMore[R.cap.id + t] ? list.length : 40;
+    h += '<section><div class="navgroup"><h3>' + label + '</h3><small>' + list.length + '</small></div><ul class="navlist">' + list.slice(0, max).map(placeRow).join('') + '</ul>' +
+      (list.length > max ? '<div class="actions"><button type="button" class="btn sm" data-nav="more" data-v="' + esc(R.cap.id + t) + '">Show all ' + list.length + '</button></div>' : '') + '</section>';
+  }
+  return any ? h : '<p class="meta">No place matches.</p>';
+}
+
+// ---------------------------------------------------------------- wrapping every panel in the shell
+function shellWrap(html) {
+  const c = sideCtx(), el = $('inspector');
+  el.classList.toggle('in-place', c.kind === 'place');
+  $('app').classList.toggle('side-wide', tool === 'heroes');
+  if (c.kind === 'home') html = homeHtml();
+  else if (c.kind === 'realm') html = realmHtml(c.R);
+  if (c.kind === 'place') navR = (realmOfS(c.s) || {}).cap ? realmOfS(c.s).cap.id : navR;
+  for (const b of document.querySelectorAll('#side .tool.sec')) b.setAttribute('aria-pressed', String(b.dataset.tool === 'explore' ? (tool === 'explore' && !(sel && sel.kind !== 'settle')) || (c.kind === 'place') : b.dataset.tool === tool));
+  return sideHead(c) + '<div class="side-body">' + (html || '') + '</div>';
+}
+function openPlace(sid, tab, fly) {
+  const s = SBY.get(sid);
+  if (!s) return;
+  const R = realmOfS(s);
+  if (R) navR = R.cap.id;
+  closePopovers();
+  sel = { kind: 'settle', id: sid };
+  if (tab === 'market') { market.sid = sid; setTool('market', true); if (market.tab === 'overview') market.tab = 'town'; }
+  else if (tab === 'people') { people.sid = sid; people.npc = null; people.place = null; if (people.tab === 'tracked') people.tab = 'residents'; setTool('people', true); }
+  else if (tab === 'guilds') { market.sid = sid; people.sid = sid; guildUI.q = null; guildUI.org = null; setTool('guilds', true); }
+  else setTool('explore', true);
+  renderPanel();
+  const box = $('inspector'); if (box) box.scrollTop = 0;
+  if (fly) { flyVis(s.x, s.y, view.s >= TOWN_ZOOM[s.tier] ? view.s : TOWN_ZOOM[s.tier]); pulseTown(s.id); }
+}
+function goHome() { navR = null; navQ = ''; sel = null; setTool('explore'); }
+function goRealmPage(capId) {
+  navR = capId; navQ = '';
+  sel = null; setTool('explore');
+  const R = REALMS.find((r) => r.cap.id === capId);
+  if (R) flyVis(R.cx, R.cy, Math.max(minS, 0.9));
+  const box = $('inspector'); if (box) box.scrollTop = 0;
+}
+$('inspector').addEventListener('click', (e) => {
+  const t = e.target.closest('[data-nav],[data-ptab]');
+  if (!t) return;
+  if (t.dataset.ptab) { openPlace(t.dataset.v, t.dataset.ptab, false); return; }
+  const go = t.dataset.nav, v = t.dataset.v;
+  if (go === 'home') goHome();
+  else if (go === 'realm') goRealmPage(v);
+  else if (go === 'place') { if (tool === 'people' && people.sid === v && (people.npc || people.place)) { people.npc = null; people.place = null; renderPanel(); } else openPlace(v, 'overview', true); }
+  else if (go === 'fly') { const s = SBY.get(v); if (s) { flyVis(s.x, s.y, view.s >= TOWN_ZOOM[s.tier] ? view.s : TOWN_ZOOM[s.tier]); pulseTown(s.id); } }
+  else if (go === 'done') { setTool('explore'); }
+  else if (go === 'more') { navMore[v] = true; renderPanel(); }
+  else if (go === 'sect') {
+    sel = null;
+    if (v === 'markets') { setTool('market'); market.tab = 'overview'; market.sid = null; renderPanel(); }
+    else if (v === 'events') { setTool('market'); market.sid = null; market.tab = 'events'; renderPanel(); }
+    else if (v === 'tracked') { setTool('people'); people.tab = 'tracked'; people.npc = null; renderPanel(); }
+    else if (v === 'heroes') setTool('heroes');
+    else if (v === 'monsters') setTool('monsters');
+    else if (v === 'party') { const at = gst().party.at; if (at && SBY.get(at)) openPlace(at, 'overview', true); else { setTool('heroes'); heroes.step = 'chron'; renderPanel(); } }
+  }
+});
+$('inspector').addEventListener('input', (e) => {
+  if (e.target.id !== 'nav-q') return;
+  navQ = e.target.value.slice(0, 40);
+  const c = sideCtx(), L = $('navList');
+  if (c.kind === 'realm' && L) L.innerHTML = realmListHtml(c.R, realmStats(c.R), navQ.trim().toLowerCase());
+});
+$('inspector').addEventListener('change', (e) => {
+  if (e.target.id !== 'nav-size') return;
+  navSize = e.target.value; renderPanel();
+});
+
+// ---------------------------------------------------------------- hiding the side panel, and the phone's map/list handle
+function setSide(on) {
+  $('app').classList.toggle('side-off', !on);
+  $('btnSideOpen').hidden = on;
+  try { localStorage.setItem('atlas-side', on ? '1' : '0'); } catch (e) { /* only a convenience */ }
+}
+$('btnSide').addEventListener('click', () => setSide(false));
+$('btnSideOpen').addEventListener('click', () => setSide(true));
+try { if (localStorage.getItem('atlas-side') === '0' && innerWidth > 860) setSide(false); } catch (e) { /* ignore */ }
+$('btnSheet').addEventListener('click', () => {
+  const a = $('app'), st = a.classList.contains('sheet-map') ? 'sheet-list' : a.classList.contains('sheet-list') ? '' : 'sheet-map';
+  a.classList.remove('sheet-map', 'sheet-list');
+  if (st) a.classList.add(st);
+});
 
 // ================================================================ tools & interaction state
 let tool = 'explore';
@@ -13247,13 +13618,11 @@ function renderPanel() {
     if (measure && measure.b) { const d = Math.hypot(measure.b[0] - measure.a[0], measure.b[1] - measure.a[1]); res = '<div class="big">' + fmtDist(d) + '</div><p class="meta">' + travelText(d) + '. Fast pace covers 30 mi a day; slow pace 18 mi, but lets the party move stealthily.</p>'; }
     html = head('Measure distance', 'Straight-line distance and overland travel time, using the Player\'s Handbook travel paces.') + res + (measure ? '<div class="actions"><button type="button" class="btn" data-act="clearmeasure">Clear</button></div>' : '');
   }
-  el.classList.toggle('wide', tool === 'market' || tool === 'people' || tool === 'guilds' || tool === 'monsters');
-  el.classList.toggle('hero', tool === 'heroes');
-  if (html) html = panelControls(html);
-  if (html && panelMin) html = minBar(html);
-  el.classList.toggle('min', !!html && panelMin);
-  el.innerHTML = html;
-  el.hidden = !html;
+  // v24: the panel lives in the docked side bar, always open, with breadcrumbs and place tabs (app30)
+  panelMin = false;
+  el.innerHTML = shellWrap(html);
+  el.hidden = false;
+  renderCal();
   marketAfterRender();
   peopleAfterRender();
 }
@@ -13375,8 +13744,8 @@ $('inspector').addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.t
 
 // ---------------------------------------------------------------- toolbar, zoom, ladder
 for (const b of document.querySelectorAll('.tool[data-tool]')) b.addEventListener('click', () => {
-  // pressing the open tab again folds its panel away (or brings it back)
-  if (b.dataset.tool === tool && !$('inspector').hidden) { panelMin = !panelMin; renderPanel(); return; }
+  // Places goes back to the list (the realm you were in, or the world); everything else opens its tool
+  if (b.dataset.go === 'places') { sel = null; setTool('explore'); const box = $('inspector'); if (box) box.scrollTop = 0; return; }
   setTool(b.dataset.tool);
 });
 $('btnUndo').addEventListener('click', undo);

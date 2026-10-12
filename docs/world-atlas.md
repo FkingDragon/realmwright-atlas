@@ -168,6 +168,17 @@ Relative-neighbourhood graph per tier: highways between cities/capitals (within 
   - defence factors 1.3, 1, 0.8 and 0.6 apply to war and bandits; Auto is a Garrison for capitals, a Town watch for towns and cities, and None for villages.
 - **Guild colours:** ORG_COL per organisation (--gc). questDanger() rates each quest low, moderate, high or deadly.
 
+## Layout: the atlas panel and the framed map (v24)
+- `#app.shell` is a grid: `#side` (420 px wide, 560 px for Heroes) beside `#stage > #frame`, which holds the canvas, map tools, Layers, scale, ladder, toasts, the creature card, the live chip and the mode pill.
+  - Below 860 px wide the grid becomes rows: the map on top at 44% of the height (72% or 22% with the handle), with the side panel below, scrolling as a whole.
+- The side panel's page comes from sideCtx():
+  - **Place:** market, people or guilds with a town, or Explore with a settlement selected. The tab is the tool, and its sub-tabs are the tool's own.
+  - **Section:** heroes, monsters, tracked people, world markets or events, or an editing tool.
+  - **Realm:** navR is set and nothing is selected.
+  - **Home:** otherwise.
+- **shellWrap(html):** adds a sticky header with breadcrumbs, and for a place its name (an editable title for the DM), size and population, a "show on map" button, and the Overview, Market, People and Guilds tabs. Inside a place, the tool panels' own titles and calendars are hidden.
+- **realmStats:** groups every settlement by realmOf() in one pass, cached per mkVer.
+
 ## Linked people & the map
 - Any person's name anywhere (residents, relationships, relationship web, guild halls and rosters, quest clients, organisation leaders and members, influence, market agendas, a settlement's Notable people, and the search box) opens their card and flies the map to them.
 - Each person has a place in their town plan: rulers at the keep, clergy at the temple, guild members at the hall, shopkeepers in the central streets, everyone else at a home. The person being viewed shows as a named brass pin; tracked people as brass pins; in People mode every resident shows as a pin coloured by role, and tapping a pin opens that person.
