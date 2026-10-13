@@ -90,7 +90,25 @@ Relative-neighbourhood graph per tier: highways between cities/capitals (within 
 ## Heroes: 2024 rules option (v20)
 - Per hero: rules '2014' (default, SRD 5.1) or '2024' (SRD 5.2). 2024: species Dragonborn, Dwarf, Elf (Drow/High/Wood lineages), Gnome (Forest/Rock), Goliath (six giant ancestries), Halfling, Human (extra origin feat, one skill), Orc, Tiefling (Abyssal/Chthonic/Infernal), all without ability increases and with two extra languages.
 - Backgrounds Acolyte (Int/Wis/Cha, Magic Initiate cleric), Criminal (Dex/Con/Int, Alert), Sage (Con/Int/Wis, Magic Initiate wizard), Soldier (Str/Dex/Con, Savage Attacker), Custom: +2/+1 or +1/+1/+1 to the three abilities. Origin feats Alert (+prof to initiative), Magic Initiate (2 cantrips, 1 first-level spell, chosen ability), Savage Attacker, Skilled (3 skills).
-- Weapon mastery for barbarian (2-4), fighter (3-6), paladin, ranger, rogue (2), shown on each attack; 2024 exhaustion (-2 per level to all d20 numbers, -5 ft per level, death at 6); subclass features from level 3. Other class features remain 2014.
+- Weapon mastery for barbarian (2-4), fighter (3-6), paladin, ranger, rogue (2), shown on each attack; 2024 exhaustion (-2 per level to all d20 numbers, -5 ft per level, death at 6); subclass features from level 3.
+- **2024 classes (v25, app31.js).** `CLS(h)` returns `CLASSES5[cls]` with the `C24` overlay for 2024 heroes. Each overlay holds:
+  - the features by level and the SRD 5.2 subclass;
+  - the always-prepared spells;
+  - the starting kit, with gp on each option, and `goldB`;
+  - the ASI levels (19 is the Epic Boon);
+  - the fighting styles, and the cast table.
+- Spell counts: 2024 casters use fixed prepared tables. Bard, sorcerer and warlock swap one spell on level-up ("known" mode). Cleric, druid, paladin, ranger and wizard prepare from a table. Paladins and rangers cast from level 1.
+- 2024 choices:
+  - cleric and druid `order`;
+  - `strike7`;
+  - druid `land24` (Arid, Polar, Temperate or Tropical);
+  - `boon` and `boonAb`;
+  - the 2024 invocations, where the pact boons are invocations (`pblade`, `pchain`, `ptome`);
+  - the 2024 Metamagic.
+- Abilities: ASIs cap at 20; the boon adds 1, up to 30; the barbarian and monk level-20 capstones reach 25.
+- Uses with rest type `'one'` (Rage, Channel Divinity, Wild Shape, Second Wind) refill fully on a long rest and by one on a short rest.
+- Gold is fixed in gold mode: class `goldB` plus 50.
+- Spell lists still follow SRD 5.1.
 
 ## Accessibility and testing (v20)
 - Monster danger by shape as well as colour (circle, diamond CR 5+, hexagon dragons); price rings carry arrows; viewport meta for phones; phone toolbar labels no longer overlap.
@@ -178,6 +196,24 @@ Relative-neighbourhood graph per tier: highways between cities/capitals (within 
   - **Home:** otherwise.
 - **shellWrap(html):** adds a sticky header with breadcrumbs, and for a place its name (an editable title for the DM), size and population, a "show on map" button, and the Overview, Market, People and Guilds tabs. Inside a place, the tool panels' own titles and calendars are hidden.
 - **realmStats:** groups every settlement by realmOf() in one pass, cached per mkVer.
+
+## Version 25 checks
+- **Live sharing:**
+  - writes that fail are kept in `share.unsent` and re-sent by `shareResync()` when the browser comes back online, every 60 s, or from **Try again now**;
+  - offline is detected from the browser's offline and online events;
+  - if another person changes the same key within 120 s of your change, a toast says whose change won (the last write is kept).
+- **Grief and occupation (app20):**
+  - `lossesOf(p, day)` lists family deaths;
+  - `griefToday` gives mourning for 7 days (the person stays home), then grave visits at the temple (30% of days up to day 30, 12% up to day 60);
+  - `occupiedToday` gives the occupation lines by job;
+  - the person page has a **Losses** section.
+- **Accessibility (app30):**
+  - skip links come first;
+  - `#srAnnounce` (polite) announces each page change;
+  - focus moves to the page heading on navigation;
+  - controls in bars are at least 24 px;
+  - phones held sideways use a side-by-side layout.
+- **Realms:** `realmAt` scales its border warp by distance to the nearest capital, so a capital always lies in its own realm. No existing place changes realm.
 
 ## Linked people & the map
 - Any person's name anywhere (residents, relationships, relationship web, guild halls and rosters, quest clients, organisation leaders and members, influence, market agendas, a settlement's Notable people, and the search box) opens their card and flies the map to them.

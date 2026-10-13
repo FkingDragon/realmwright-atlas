@@ -984,8 +984,33 @@ body.player .sections { grid-template-columns: repeat(2, 1fr); }
   #side .tool.sec span { font-size: 11.5px; }
 }
 @media (min-width: 861px) and (max-height: 700px) { #frame .maptools .tool span { display: none !important; } #frame .maptools .tool { width: 40px; padding: 7px 0; } }
+
+/* v25 accessibility: skip links, a quiet announcer, and comfortable targets */
+.skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--brass); color: var(--ink); font-weight: 700; padding: 10px 14px; border-radius: 8px; text-decoration: none; }
+.skip:focus { top: 8px; outline: 2px solid var(--text); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+#inspector:focus, .side-head [tabindex="-1"]:focus { outline: none; }
+.side-head [tabindex="-1"]:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 2px; border-radius: 4px; }
+.crumbs button { min-height: 26px; }
+@media (max-width: 860px) {
+  .sheet-handle { width: 88px; height: 30px; bottom: 0; }
+  .crumbs button { min-height: 32px; }
+  .calbar button { min-height: 34px; min-width: 34px; }
+}
+/* phones held sideways: the atlas beside the map, as on a desktop but narrower */
+@media (max-width: 960px) and (max-height: 520px) and (orientation: landscape) {
+  #app.shell { grid-template-columns: minmax(260px, 38%) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+  #side { grid-row: 1; grid-column: 1; border-top: 0; border-right: 1px solid var(--line); }
+  #stage { grid-row: 1; grid-column: 2; padding: 6px; }
+  .sheet-handle { display: none; }
+  #frame .maptools .tool span { display: none !important; }
+  #frame .maptools .tool { width: 38px; padding: 6px 0; }
+}
+@media (prefers-reduced-motion: reduce) { .skip { transition: none; } }
 </style>
 
+<a class="skip" href="#inspector">Skip to the atlas panel</a><a class="skip" href="#map">Skip to the map</a>
+<div id="srAnnounce" class="sr-only" role="status" aria-live="polite"></div>
 <div id="app" class="shell">
   <aside id="side" class="side" aria-label="Atlas">
     <div class="side-top">
@@ -1012,7 +1037,7 @@ body.player .sections { grid-template-columns: repeat(2, 1fr); }
         <button type="button" class="tool sec" data-tool="monsters" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 4.5c1.5 4 1.6 9.5-.5 15M11.5 3.5c1 4.5.8 11-1.2 17M16.5 4.5c.6 4.5-.2 10-2.6 15"/><path d="M19 8.5c.6 3.4-.4 7-2.6 10"/></svg><span>Monsters</span></button>
       </nav>
     </div>
-    <aside id="inspector" class="inspector" aria-live="polite"></aside>
+    <div id="inspector" class="inspector" role="region" aria-label="Atlas panel" tabindex="-1"></div>
   <div id="worldPop" class="pop panel" hidden><h2>World</h2><div id="worldBody"></div></div>
   <div id="helpPop" class="pop panel" hidden>
     <h2>Using the atlas</h2>
@@ -1032,6 +1057,7 @@ body.player .sections { grid-template-columns: repeat(2, 1fr); }
     </ol>
     <p class="meta" style="margin-top:10px">Shortcuts: V explore, K market, N people, G guilds, H heroes, B monsters, S settle, R road, P paint, T tiles, L label, M measure, Delete removes the selection, Esc cancels.</p>
     <p class="meta">Rules, items and creatures include material from the System Reference Document 5.1 by Wizards of the Coast LLC, licensed under CC BY 4.0; the item and creature lists were compiled by Sean. Everyday prices, households, the town chronicle, the change feed, guild colours and town wealth and defence come from Sean and Adam's Market Ledger. Battle-map textures and the look come from Tilewright by Sean and Adam. Fonts: Atkinson Hyperlegible, IM Fell and Pixelify Sans, under the SIL Open Font License.</p>
+    <p class="meta" id="helpVer"></p>
   </div>
   </aside>
   <main id="stage" class="stage">
@@ -1266,8 +1292,12 @@ function terrainLib() {
   // between their two realms (the perpendicular bisector), which stays a thin line however close two capitals are
   const _r = { i: -1, gap: 1e9, edge: 1e9 };
   function realmAt(x, y, caps) {
-    const rx = x + 55 * noise2(x * 0.0035 + 200, y * 0.0035 - 100) + 14 * noise2(x * 0.013 - 7, y * 0.013 + 3);
-    const ry = y + 55 * noise2(x * 0.0035 - 300, y * 0.0035 + 150) + 14 * noise2(x * 0.013 + 9, y * 0.013 - 5);
+    // the wiggle fades out within 90 units of a capital, so a capital always sits in its own realm (v25)
+    let d0 = 1e18;
+    for (let k = 0; k < caps.length; k += 2) { const dx = x - caps[k], dy = y - caps[k + 1], d = dx * dx + dy * dy; if (d < d0) d0 = d; }
+    const f = d0 >= 8100 ? 1 : Math.sqrt(d0) / 90;
+    const rx = x + f * (55 * noise2(x * 0.0035 + 200, y * 0.0035 - 100) + 14 * noise2(x * 0.013 - 7, y * 0.013 + 3));
+    const ry = y + f * (55 * noise2(x * 0.0035 - 300, y * 0.0035 + 150) + 14 * noise2(x * 0.013 + 9, y * 0.013 - 5));
     let d1 = 1e18, d2 = 1e18, i1 = -1, i2 = -1;
     for (let k = 0; k < caps.length; k += 2) {
       const dx = rx - caps[k], dy = ry - caps[k + 1];
@@ -3931,7 +3961,13 @@ function activity(p, day) {
       else if (p.group === 'underworld') ev = ev || (evId = e.id, 0) || 'Working the crowds of newcomers';
     }
   }
+  // a death in the family comes first in its first week, then shares the days with everything else (app20)
+  const gr = griefToday(p, s, day);
+  if (gr && /^In mourning/.test(gr.text)) return gr;
   if (ev) return { text: ev, tone: /Sick|Robbed|Worried|Queuing/.test(ev) ? 'warn' : 'event', ev: evId };
+  if (gr) return gr;
+  const oc = occupiedToday(p, s, day);
+  if (oc) return oc;
   if (day % 7 === 6) { const so = socialToday(p, s, day); if (so && !so.secret) return { text: so.text, tone: '', place: so.place, with: so.with }; const rr = routineAt(p, s, 'rest', h(5), h(15), day); return { text: rr.text, tone: '', place: rr.place }; }
   if (p.group === 'trade' && s && h(6) < 0.12) {
     const nb = neighbours(s);
@@ -4069,6 +4105,7 @@ function personView(p, day) {
   if (p.group === 'adventurer' && p.level) h += '<p class="meta">' + rankBadge(rankOf(p.merit)) + ' ' + p.merit.toLocaleString('en-GB') + ' merit' + (p.companyName ? ' · member of ' + (s ? oLink('adventurers', s.id, p.companyName) : esc(p.companyName)) : ' · works alone') + '</p>';
   h += influenceBlock(p);
   h += heroBondsFor(p);
+  h += lossesHtml(p, day);
   // relationships
   h += '<section><h3>Relationships (' + rels.length + ')</h3>' + egoGraph(p, rels);
   h += rels.length ? '<ul class="rels">' + rels.map((r) => '<li><i style="background:' + RGCOL[r.group] + '"></i><span>' + r.label + ' <button type="button" class="link" data-pp="npc" data-v="' + esc(r.o.id) + '">' + esc(npcName(r.o)) + '</button><small>' + esc(r.o.job) + (r.o.sid !== p.sid ? ' in ' + esc((SBY.get(r.o.sid) || {}).name || '') : '') + '</small></span>' + (r.custom ? '<button type="button" class="x sm" data-pp="unrel" data-v="' + esc(r.custom) + '" aria-label="Remove relationship">×</button>' : '') + '</li>').join('') + '</ul>' : '<p class="meta">No close ties yet.</p>';
@@ -5168,10 +5205,7 @@ function flyToPerson(p) {
   if (!L) return;
   const target = clamp(Math.min(vw, vh) * 0.3 / L.R, PLAN_S * 1.15, 9000);
   const ts = view.s > target && Math.hypot(view.x - L.x, view.y - L.y) * view.s < Math.min(vw, vh) * 0.4 ? view.s : target;
-  let oy = 0;
-  const ins = $('inspector');
-  if (vw < 760 && ins && !ins.hidden) oy = ins.offsetHeight / 2 / ts;
-  flyTo(L.x, L.y + oy, ts);
+  flyTo(L.x, L.y, ts);
 }
 // pins: the person you are looking at, the people you track, and in People mode everyone in the town
 function drawPeoplePins() {
@@ -5270,16 +5304,8 @@ function belongsTo(p, s) {
   return k && s && orgHere(s, k) ? oLink(k, s.id, label) : esc(label);
 }
 const TOWN_ZOOM = { 4: 2, 3: 4, 2: 12, 1: 30 };
-// keep the target clear of the panel: beside it on wide screens, above the bottom sheet on phones
-function flyVis(x, y, s) {
-  const ins = $('inspector');
-  let ox = 0, oy = 0;
-  if (ins && !ins.hidden && !ins.classList.contains('min')) {
-    if (vw < 760) oy = ins.offsetHeight / 2 / s;
-    else ox = Math.min(ins.offsetWidth + 24, vw / 3) / 2 / s;
-  }
-  flyTo(x + ox, y + oy, s);
-}
+// since v24 the panel sits beside the map rather than over it, so the target simply goes in the middle of the frame
+function flyVis(x, y, s) { flyTo(x, y, s); }
 function goTown(id) {
   const s = SBY.get(id);
   if (!s) return;
@@ -6080,7 +6106,7 @@ const CANTRIP_ATK = {
 // ================================================================ 2024 rules option (SRD 5.2) for heroes (v20)
 // Each hero can use the 2014 rules (SRD 5.1, the default) or the 2024 rules (SRD 5.2). The 2024 option changes what the
 // free SRD 5.2 changes for a new character: species, backgrounds with their ability increases and origin feats,
-// weapon mastery, exhaustion, and subclasses at level 3. Other class features keep their 2014 wording; the hero
+// weapon mastery, exhaustion, and subclasses at level 3. The 2024 class features themselves live in app31.js; the hero
 // page says so. Only SRD 5.2 content is built in (9 species, 4 backgrounds, 4 origin feats).
 const is24 = (h) => !!h && h.rules === '2024';
 const SRD52 = 'https://www.dndbeyond.com/srd';
@@ -6192,6 +6218,12 @@ function setRules(h, r) {
   h.sub = ''; h.raceAsi = []; h.raceSkills = []; h.raceLangs = []; h.raceCantrip = ''; h.tool = '';
   h.bgSkills = []; h.bgLangs = []; h.bgSwap = {}; h.removed = h.removed.filter((k) => !k.startsWith('b'));
   if (r === '2024') { h.exh = Math.min(h.exh || 0, 6); }
+  // class choices that differ between the editions
+  if (h.subclass && !subsOf(h).includes(h.subclass)) { h.subclass = ''; h.subNotes = ''; }
+  h.invocations = (h.invocations || []).filter((k) => invoTab(h)[k]); h.pact = r === '2024' ? '' : h.pact;
+  h.metamagic = (h.metamagic || []).filter((k) => metaTab(h)[k]);
+  if (h.style && CLS(h).style && !CLS(h).style[1].includes(h.style)) h.style = '';
+  h.kit = {}; h.picks = {}; h.goldRoll = 0;
   heroes.defRules = r;
 }
 // the Basics-step pieces that only the 2024 rules have
@@ -6221,7 +6253,7 @@ function basics24Html(h, D) {
 }
 function rulesNoteHtml(h) {
   return '<div class="field"><span class="lab">Rules</span><div class="seg" role="group">' + [['2014', '2014 (SRD 5.1)'], ['2024', '2024 (SRD 5.2)']].map(([k, l]) => '<button type="button" data-hr="rules" data-v="' + k + '" aria-pressed="' + ((h.rules || '2014') === k) + '">' + l + '</button>').join('') + '</div>' +
-    (is24(h) ? '<p class="small rules-note">2024 rules: species give no ability increases (your background does), backgrounds grant an origin feat, martial classes use weapon mastery, exhaustion is −2 per level to d20 tests and −5 ft speed, and every subclass starts at level 3. Other class features keep their 2014 wording here. Only free SRD 5.2 content is built in. ' + srdLink() + '</p>' : '<p class="small rules-note">The 2014 rules (SRD 5.1, plus Player\'s Handbook summaries). Switch to 2024 to use the newer free rules.</p>') + '</div>';
+    (is24(h) ? '<p class="small rules-note">2024 rules: species give no ability increases (your background does), backgrounds grant an origin feat, martial classes use weapon mastery, exhaustion is −2 per level to d20 tests and −5 ft speed, and every subclass starts at level 3. Classes use their 2024 features, spell counts, starting kits and a level 19 epic boon. Spell lists still follow SRD 5.1. Only free SRD 5.2 subclasses are built in. ' + srdLink() + '</p>' : '<p class="small rules-note">The 2014 rules (SRD 5.1, plus Player\'s Handbook summaries). Switch to 2024 to use the newer free rules.</p>') + '</div>';
 }
 const srdLink = () => '<a class="ext" href="' + SRD52 + '" target="_blank" rel="noopener noreferrer">SRD 5.2 rules<span aria-hidden="true"> ↗</span><span class="vh"> (opens the free rules in a new tab)</span></a>';
 const BG24_FOR = { fighter: 'soldier', barbarian: 'soldier', paladin: 'soldier', ranger: 'soldier', rogue: 'criminal', monk: 'criminal', cleric: 'acolyte', druid: 'acolyte', bard: 'acolyte', sorcerer: 'sage', warlock: 'sage', wizard: 'sage' };
@@ -6244,12 +6276,405 @@ function autoFill24(h, Q) {
     h[key] = M;
   }
 }
+// ================================================================ 2024 class features (SRD 5.2 / Player's Handbook 2024) (v25)
+// With the 2024 rules, each class uses its 2024 features, spell counts, starting equipment and level 19 epic boon.
+// CLS(h) gives the class table for a hero: the 2014 one, or the 2014 one with these 2024 changes laid over it.
+// The built-in subclass is the one in the free SRD 5.2; other subclasses work as in 2014 (the player lists the features).
+const PREP24 = {
+  full: [4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 16, 17, 17, 18, 18, 19, 20, 21, 22],
+  half: [2, 3, 4, 5, 6, 6, 7, 7, 9, 9, 10, 10, 11, 11, 12, 12, 14, 14, 15, 15],
+  sorc: [2, 4, 6, 7, 9, 10, 11, 12, 14, 15, 16, 16, 17, 17, 18, 18, 19, 20, 21, 22],
+  lock: [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15],
+  wiz: [4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 16, 17, 18, 19, 21, 22, 23, 24, 25]
+};
+const ASI24 = [4, 8, 12, 16];
+const MARTIAL_LIGHT = WEAPONS.filter((w) => w.cat.startsWith('martial') && w.props.includes('light')).map((w) => w.name);
+const MARTIAL_FINLIGHT = WEAPONS.filter((w) => w.cat.startsWith('martial') && (w.props.includes('light') || w.props.includes('finesse'))).map((w) => w.name);
+// a few 2024 starting-kit items the 2014 shop lacked
+for (const [name, cost, wt, note] of [['Quiver', 1, 1, 'Holds 20 arrows.'], ['Robe', 1, 4], ['Book (occult lore)', 25, 5, 'A book of forbidden lore; it can hold rituals.'], ['Arcane focus (orb)', 20, 3, 'An arcane spellcasting focus.'], ['Druidic focus (sprig of mistletoe)', 1, 0, 'A druidic spellcasting focus.']]) {
+  if (ITEM.has(name)) continue;
+  const g = { name, cost, wt, note: note || '', kind: 'gear' };
+  GEAR.push(g); ITEM.set(name, g);
+}
+const STYLES24 = Object.assign({}, STYLES, {
+  gwf: ['Great Weapon Fighting', 'With a two-handed or versatile melee weapon held in two hands, treat any 1 or 2 on a damage die as a 3.'],
+  protection: ['Protection', 'With a shield, use your reaction when a creature attacks an ally within 5 ft: that attack and the others against the ally have disadvantage until your next turn.'],
+  twf: ['Two-Weapon Fighting', 'Add your ability modifier to the damage of the extra attack from a Light weapon.'],
+  blessed: ['Blessed Warrior', 'Learn two cleric cantrips (Charisma is your ability for them). Swap one when you gain a paladin level.'],
+  druidic: ['Druidic Warrior', 'Learn two druid cantrips (Wisdom is your ability for them). Swap one when you gain a ranger level.']
+});
+const styleTab = (h) => (is24(h) ? STYLES24 : STYLES);
+const METAMAGIC24 = {
+  careful: ['Careful Spell', '1 point: up to your Cha mod creatures automatically succeed on the spell\'s save and take no damage if they would take half.'],
+  distant: ['Distant Spell', '1 point: double the range of a spell with a range of 5 ft or more; touch becomes 30 ft.'],
+  empowered: ['Empowered Spell', '1 point: reroll up to your Cha mod damage dice. Works alongside other Metamagic.'],
+  extended: ['Extended Spell', '1 point: double a duration of 1 minute or more (max 24 hours); advantage on its Concentration saves.'],
+  heightened: ['Heightened Spell', '2 points: one target has disadvantage on its saves against the spell.'],
+  quickened: ['Quickened Spell', '2 points: cast a one-action spell as a bonus action (not if you already cast a level 1+ spell this turn).'],
+  seeking: ['Seeking Spell', '1 point: reroll a missed spell attack roll. Works alongside other Metamagic.'],
+  subtle: ['Subtle Spell', '1 point: cast without verbal, somatic or material components that have no cost.'],
+  transmuted: ['Transmuted Spell', '1 point: change acid, cold, fire, lightning, poison or thunder damage to another of those types.'],
+  twinned: ['Twinned Spell', '1 point: when a spell can target one more creature by upcasting, raise its effective level by 1.']
+};
+const META_ORDER24 = ['quickened', 'twinned', 'subtle', 'careful', 'empowered', 'heightened', 'seeking', 'extended', 'distant', 'transmuted'];
+const metaTab = (h) => (is24(h) ? METAMAGIC24 : METAMAGIC);
+const metaN = (h, lv) => (is24(h) ? (lv >= 17 ? 6 : lv >= 10 ? 4 : lv >= 2 ? 2 : 0) : (lv >= 17 ? 4 : lv >= 10 ? 3 : lv >= 3 ? 2 : 0));
+// [name, what it does, warlock level needed, needs (pblade/pchain/ptome/thirsting, or eb for a damaging cantrip)]
+const INVOCATIONS24 = {
+  pblade: ['Pact of the Blade', 'Bonus action: conjure a pact weapon or bond with a magic weapon you touch. You are proficient with it, can use Charisma for its attacks and damage, and it can deal necrotic, psychic or radiant damage.', 1],
+  pchain: ['Pact of the Chain', 'Learn Find Familiar and cast it as a Magic action without a slot. The familiar can take a special form (imp, pseudodragon, quasit, skeleton, slaad tadpole, sphinx of wonder, sprite or venomous snake), and can attack with its reaction when you take the Attack action.', 1],
+  ptome: ['Pact of the Tome', 'A Book of Shadows holds three cantrips and two level 1 rituals from any class, always prepared. It can be your spellcasting focus.', 1],
+  armor: ['Armor of Shadows', 'Cast Mage Armor on yourself without a spell slot.', 1],
+  eldmind: ['Eldritch Mind', 'Advantage on Constitution saves to keep Concentration.', 1],
+  agonizing: ['Agonizing Blast', 'Add your Charisma modifier to the damage of a warlock damage cantrip (eldritch blast).', 2, 'eb'],
+  spear: ['Eldritch Spear', 'A warlock damage cantrip gets 30 ft more range per warlock level.', 2, 'eb'],
+  repelling: ['Repelling Blast', 'When a warlock damage cantrip hits a Large or smaller creature, push it up to 10 ft away.', 2, 'eb'],
+  devilsight: ["Devil's Sight", 'See normally in dim light and darkness, magical or not, within 120 ft.', 2],
+  vigor: ['Fiendish Vigor', 'Cast False Life on yourself without a slot, taking the maximum temporary hit points.', 2],
+  lessons: ['Lessons of the First Ones', 'Gain one origin feat of your choice (note it in your story).', 2],
+  mask: ['Mask of Many Faces', 'Cast Disguise Self without a slot.', 2],
+  misty: ['Misty Visions', 'Cast Silent Image without a slot.', 2],
+  leap: ['Otherworldly Leap', 'Cast Jump on yourself without a slot.', 2],
+  ascendant: ['Ascendant Step', 'Cast Levitate on yourself without a slot.', 5],
+  smite: ['Eldritch Smite', 'Once per turn when your pact weapon hits, spend a pact slot: +1d8 force plus 1d8 per slot level, and you can knock a Huge or smaller target prone.', 5, 'pblade'],
+  gaze: ['Gaze of Two Minds', 'Bonus action: touch a willing creature and perceive through its senses until your next turn ends; you can cast spells as if from its space.', 5],
+  depths: ['Gift of the Depths', 'Breathe underwater and swim at your speed; cast Water Breathing once per long rest without a slot.', 5],
+  chainmaster: ['Investment of the Chain Master', 'Your familiar gains a 40-ft fly or swim speed, its attacks deal necrotic or radiant damage, it uses your spell save DC, and it can attack as a bonus action command. Reaction: give it resistance to damage.', 5, 'pchain'],
+  myriad: ['Master of Myriad Forms', 'Cast Alter Self without a slot.', 5],
+  shadows: ['One with Shadows', 'In dim light or darkness, cast Invisibility on yourself without a slot.', 5],
+  thirsting: ['Thirsting Blade', 'Attack twice with your pact weapon when you take the Attack action.', 5, 'pblade'],
+  grave: ['Whispers of the Grave', 'Cast Speak with Dead without a slot.', 7],
+  protectors: ['Gift of the Protectors', 'Creatures who write their names in your Book of Shadows drop to 1 HP instead of 0, once each per long rest.', 9, 'ptome'],
+  lifedrinker: ['Lifedrinker', 'Once per turn your pact weapon deals +1d6 necrotic, psychic or radiant damage, and you can spend a hit die to heal.', 9, 'pblade'],
+  distant: ['Visions of Distant Realms', 'Cast Arcane Eye without a slot.', 9],
+  devouring: ['Devouring Blade', 'Thirsting Blade gives you three attacks with your pact weapon instead of two.', 12, 'thirsting'],
+  witchsight: ['Witch Sight', 'Truesight out to 30 ft.', 15]
+};
+const INVO_ORDER24 = ['armor', 'agonizing', 'devilsight', 'repelling', 'ptome', 'eldmind', 'spear', 'misty', 'mask', 'leap', 'ascendant', 'gaze', 'shadows', 'myriad', 'grave', 'depths', 'distant', 'witchsight', 'vigor'];
+const INV_N24 = [0, 1, 3, 3, 3, 5, 5, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10, 10];
+const invoTab = (h) => (is24(h) ? INVOCATIONS24 : INVOCATIONS);
+// the pacts a warlock has: one boon in 2014, invocations in 2024
+function hasPact(h, k) { return h.cls === 'warlock' && (is24(h) ? (h.invocations || []).includes('p' + k) : h.pact === k && (h.level | 0) >= 3); }
+// can this invocation be taken with the warlock's current choices?
+function invoOk(h, k, lv) {
+  const I = invoTab(h)[k]; if (!I) return false;
+  if (I[2] > lv) return false;
+  const need = I[3];
+  if (!need || need === 'eb') return true;
+  if (is24(h)) return need === 'thirsting' ? (h.invocations || []).includes('thirsting') : (h.invocations || []).includes(need);
+  return h.pact === need;
+}
+const EPIC_BOONS = {
+  combat: ['Boon of Combat Prowess', 'When you miss with an attack roll, you can hit instead. Once per turn.'],
+  dimensional: ['Boon of Dimensional Travel', 'After you take the Attack or Magic action, teleport up to 30 ft to a space you can see.'],
+  energy: ['Boon of Energy Resistance', 'Resistance to two damage types (acid, cold, fire, lightning, necrotic, poison, psychic, radiant or thunder); reaction: send damage of those types at another creature.'],
+  fate: ['Boon of Fate', 'When a creature within 60 ft fails or succeeds on a d20 test, roll 2d4 and add or subtract it. Once per initiative or rest.'],
+  fortitude: ['Boon of Fortitude', 'Your hit point maximum rises by 40. When you regain hit points, add your Con mod once per turn.'],
+  irresistible: ['Boon of Irresistible Offense', 'Your bludgeoning, piercing and slashing damage ignores resistance. On a natural 20, add damage equal to the ability you raised.', ['str', 'dex']],
+  recovery: ['Boon of Recovery', 'Once per long rest, when you would drop to 0 HP, drop to 1 and regain half your HP maximum. A pool of ten d10s you can spend to heal.'],
+  skill: ['Boon of Skill', 'Proficiency in every skill, and expertise in one.'],
+  speed: ['Boon of Speed', 'Speed +30 ft, and take Disengage as a bonus action.'],
+  recall: ['Boon of Spell Recall', 'Once per long rest, cast a level 1–4 spell you have prepared without spending the slot.', ['int', 'wis', 'cha']],
+  night: ['Boon of the Night Spirit', 'Bonus action: become invisible in dim light or darkness; there you resist all damage except psychic and radiant.'],
+  truesight: ['Boon of Truesight', 'Truesight out to 60 ft.']
+};
+const BOON_LV = 19;
+// 2024 Circle of the Land
+const LANDS24 = ['Arid', 'Polar', 'Temperate', 'Tropical'];
+const CIRCLE24 = {
+  Arid: [['Blur', 'Burning Hands', 'Fire Bolt'], ['Fireball'], ['Blight'], ['Wall of Stone']],
+  Polar: [['Fog Cloud', 'Hold Person', 'Ray of Frost'], ['Sleet Storm'], ['Ice Storm'], ['Cone of Cold']],
+  Temperate: [['Misty Step', 'Shocking Grasp', 'Sleep'], ['Lightning Bolt'], ['Freedom of Movement'], ['Tree Stride']],
+  Tropical: [['Acid Splash', 'Ray of Sickness', 'Web'], ['Stinking Cloud'], ['Polymorph'], ['Insect Plague']]
+};
+const SUBCLASSES24 = {
+  barbarian: ['Path of the Berserker', 'Path of the Wild Heart', 'Path of the World Tree', 'Path of the Zealot'], bard: ['College of Lore', 'College of Dance', 'College of Glamour', 'College of Valor'],
+  cleric: ['Life Domain', 'Light Domain', 'Trickery Domain', 'War Domain'], druid: ['Circle of the Land', 'Circle of the Moon', 'Circle of the Sea', 'Circle of the Stars'],
+  fighter: ['Champion', 'Battle Master', 'Eldritch Knight', 'Psi Warrior'], monk: ['Warrior of the Open Hand', 'Warrior of Mercy', 'Warrior of Shadow', 'Warrior of the Elements'],
+  paladin: ['Oath of Devotion', 'Oath of Glory', 'Oath of the Ancients', 'Oath of Vengeance'], ranger: ['Hunter', 'Beast Master', 'Fey Wanderer', 'Gloom Stalker'],
+  rogue: ['Thief', 'Arcane Trickster', 'Assassin', 'Soulknife'], sorcerer: ['Draconic Sorcery', 'Aberrant Sorcery', 'Clockwork Sorcery', 'Wild Magic Sorcery'],
+  warlock: ['Fiend Patron', 'Archfey Patron', 'Celestial Patron', 'Great Old One Patron'], wizard: ['Evoker', 'Abjurer', 'Diviner', 'Illusionist']
+};
+const subsOf = (h) => (is24(h) ? SUBCLASSES24 : SUBCLASSES)[h.cls] || [CLS(h).sub[1]];
+const castOf = (cls, o) => Object.assign({}, CLASSES5[cls].cast, o);
+const EB = [19, 'Epic Boon', 'An epic boon feat (chosen in the Class step), which also raises one ability by 1, to a maximum of 30.'];
+const C24 = {
+  barbarian: { sub: ['Barbarian Subclass', 'Path of the Berserker', 3], asi: ASI24, goldB: 75,
+    kit: [[{ l: "Greataxe, four handaxes, explorer's pack and 15 gp", i: ['Greataxe', 'Handaxe x4', "Explorer's pack"], gp: 15 }]],
+    feats: [[1, 'Rage', 'Bonus action, not in heavy armour: advantage on Strength checks and saves, extra damage on Strength attacks, resistance to bludgeoning, piercing and slashing. It lasts until the end of your next turn and extends each turn you attack, force a save or use a bonus action to extend it, up to 10 minutes. No spells or Concentration while raging.'],
+      [1, 'Unarmored Defense', 'Without armour, your AC is 10 + Dex mod + Con mod (a shield still counts).'],
+      [2, 'Danger Sense', 'Advantage on Dexterity saves unless you are incapacitated.'], [2, 'Reckless Attack', 'On your first attack each turn, take advantage on Strength attacks until your next turn; attacks against you have advantage too.'],
+      [3, 'Primal Knowledge', 'One more Barbarian skill. While raging, you can make Acrobatics, Intimidation, Perception, Stealth and Survival checks as Strength checks.'],
+      [5, 'Extra Attack', 'Attack twice when you take the Attack action.'], [5, 'Fast Movement', '+10 ft speed when not wearing heavy armour.'],
+      [7, 'Feral Instinct', 'Advantage on initiative rolls.'], [7, 'Instinctive Pounce', 'When you enter your rage, move up to half your speed.'],
+      [9, 'Brutal Strike', 'When you attack recklessly, give up the advantage on one Strength attack: on a hit it deals +1d10 and either pushes the target 15 ft (Forceful Blow) or cuts its speed by 15 ft (Hamstring Blow).'],
+      [11, 'Relentless Rage', 'While raging, dropping to 0 HP lets you make a DC 10 Con save (rising by 5 each time) to stand back up with HP equal to twice your barbarian level.'],
+      [13, 'Improved Brutal Strike', 'New Brutal Strike options: Staggering Blow (disadvantage on its next save, no opportunity attacks) and Sundering Blow (+5 to the next ally\'s attack on it).'],
+      [15, 'Persistent Rage', 'When you roll initiative, regain all your rages (once per long rest). Your rage lasts 10 minutes without needing to be extended.'],
+      [17, 'Improved Brutal Strike', 'Brutal Strike deals +2d10 and applies two different effects.'], [18, 'Indomitable Might', 'If a Strength check or save total is less than your Strength score, use the score instead.'],
+      EB, [20, 'Primal Champion', 'Strength and Constitution rise by 4, to a maximum of 25.']],
+    subFeats: [[3, 'Frenzy', 'While raging, the first time you hit with a reckless Strength attack on your turn, deal extra damage: a number of d6s equal to your Rage damage bonus.'], [6, 'Mindless Rage', 'Immune to charmed and frightened while raging; entering the rage ends them.'],
+      [10, 'Retaliation', 'Reaction: when a creature within 5 ft damages you, make a melee attack against it.'], [14, 'Intimidating Presence', 'Bonus action: creatures of your choice in a 30-ft emanation make a Wis save (DC 8 + Str mod + proficiency) or are frightened for 1 minute. Once per long rest, or spend a rage to use it again.']] },
+  bard: { sub: ['Bard Subclass', 'College of Lore', 3], weapons: ['simple'], asi: ASI24, goldB: 90,
+    cast: castOf('bard', { mode: 'known', known: PREP24.full }),
+    kit: [[{ l: "Leather armour, two daggers, an instrument, entertainer's pack and 19 gp", i: ['Leather armour', 'Dagger x2', '@instrument', "Entertainer's pack"], gp: 19 }]],
+    feats: [[1, 'Bardic Inspiration', 'Bonus action: give a creature within 60 ft a Bardic Inspiration die (d6, d8 at 5th, d10 at 10th, d12 at 15th) to add to a failed d20 test within the next hour. Uses equal to your Cha mod per long rest.'],
+      [1, 'Spellcasting', 'You cast bard spells using Charisma; an instrument is your focus. When you gain a level you can swap one prepared spell.'],
+      [2, 'Expertise', 'Expertise in two of your skills (two more at 9th level).'], [2, 'Jack of All Trades', 'Add half your proficiency bonus to ability checks that don\'t already use it.'],
+      [5, 'Font of Inspiration', 'Bardic Inspiration also returns on a short rest, and you can spend a spell slot to regain a use.'], [7, 'Countercharm', 'Reaction: when a creature within 30 ft fails a save against charm or fright, let it reroll with advantage.'],
+      [10, 'Magical Secrets', 'Your prepared spells can come from the bard, cleric, druid and wizard lists.'], [18, 'Superior Inspiration', 'When you roll initiative, regain Bardic Inspiration up to two uses.'], EB,
+      [20, 'Words of Creation', 'Power Word Heal and Power Word Kill are always prepared, and each can target a second creature within 10 ft of the first.']],
+    subFeats: [[3, 'Bonus Proficiencies', 'Proficiency in three skills of your choice.'], [3, 'Cutting Words', 'Reaction: when a creature within 60 ft hits, succeeds on a check or deals damage, spend a Bardic Inspiration die to subtract it.'],
+      [6, 'Magical Discoveries', 'Learn two spells from the cleric, druid or wizard lists; they are always prepared.'], [14, 'Peerless Skill', 'When you fail an ability check or attack roll, add a Bardic Inspiration die; it is spent only if you then succeed.']] },
+  cleric: { sub: ['Cleric Subclass', 'Life Domain', 3], subArmor: null, asi: ASI24, goldB: 110,
+    cast: castOf('cleric', { prep: PREP24.full }),
+    extra: { 3: ['Aid', 'Bless', 'Cure Wounds', 'Lesser Restoration'], 5: ['Mass Healing Word', 'Revivify'], 7: ['Aura of Life', 'Death Ward'], 9: ['Greater Restoration', 'Mass Cure Wounds'] },
+    kit: [[{ l: "Chain shirt, shield, mace, holy symbol, priest's pack and 7 gp", i: ['Chain shirt', 'Shield', 'Mace', 'Holy symbol', "Priest's pack"], gp: 7 }]],
+    feats: [[1, 'Spellcasting', 'You prepare cleric spells (see the Spells step) and cast them using Wisdom; a holy symbol is your focus. Change your list after a long rest.'],
+      [1, 'Divine Order', 'Protector (martial weapons and heavy armour) or Thaumaturge (one more cantrip, and add your Wis mod to Arcana and Religion checks). Chosen below.'],
+      [2, 'Channel Divinity', 'Two uses (three at 6th, four at 18th); one returns on a short rest, all on a long rest. Divine Spark: heal or deal radiant or necrotic damage of 1d8 + Wis mod (2d8 at 7th, 3d8 at 13th, 4d8 at 18th). Turn Undead: undead within 30 ft make a Wis save or are frightened and incapacitated for 1 minute.'],
+      [5, 'Sear Undead', 'Turn Undead also deals radiant damage: roll a number of d8s equal to your Wis mod.'],
+      [7, 'Blessed Strikes', 'Divine Strike (once per turn, +1d8 necrotic or radiant on a weapon hit, 2d8 at 14th) or Potent Spellcasting (add your Wis mod to cleric cantrip damage). Chosen below.'],
+      [10, 'Divine Intervention', 'Once per long rest, cast any cleric spell of 5th level or lower as a Magic action without a slot or components.'], EB,
+      [20, 'Greater Divine Intervention', 'Divine Intervention can cast Wish. Afterwards you must wait 2d4 long rests to use Divine Intervention again.']],
+    subFeats: [[3, 'Disciple of Life', 'Healing from your level 1+ spells adds 2 + the spell slot\'s level.'], [3, 'Life Domain Spells', 'Aid, Bless, Cure Wounds and Lesser Restoration are always prepared; more at 5th, 7th and 9th.'],
+      [3, 'Preserve Life', 'Channel Divinity: share out healing equal to five times your cleric level among bloodied creatures within 30 ft (up to half their maximum).'],
+      [6, 'Blessed Healer', 'When a spell you cast with a slot heals another creature, you regain 2 + the slot\'s level.'], [17, 'Supreme Healing', 'Healing dice from your spells and Channel Divinity always roll their highest number.']] },
+  druid: { sub: ['Druid Subclass', 'Circle of the Land', 3], armor: ['light', 'shield'], weapons: ['simple'], noMetal: false, asi: ASI24, goldB: 50,
+    cast: castOf('druid', { prep: PREP24.full, focus: 'Druidic focus (quarterstaff)' }),
+    kit: [[{ l: "Leather armour, shield, sickle, quarterstaff (your druidic focus), explorer's pack, herbalism kit and 9 gp", i: ['Leather armour', 'Shield', 'Sickle', 'Quarterstaff', "Explorer's pack", 'Herbalism kit'], gp: 9 }]],
+    feats: [[1, 'Druidic', 'You know Druidic, and Speak with Animals is always prepared.'], [1, 'Spellcasting', 'You prepare druid spells (see the Spells step) and cast them using Wisdom. Change your list after a long rest.'],
+      [1, 'Primal Order', 'Magician (one more cantrip, and add your Wis mod to Arcana and Nature checks) or Warden (martial weapons and medium armour). Chosen below.'],
+      [2, 'Wild Shape', 'Bonus action: take the shape of a beast form you know, for half your druid level in hours. Two uses (three at 6th, four at 17th); one returns on a short rest. You know four forms (six at 4th, eight at 8th); max CR 1/4, then 1/2 at 4th and 1 at 8th; no flying until 8th. You gain temporary HP equal to your druid level.'],
+      [2, 'Wild Companion', 'Spend a spell slot or a Wild Shape use to cast Find Familiar without components; the familiar is fey.'],
+      [5, 'Wild Resurgence', 'Once per turn, spend a spell slot for a Wild Shape use; once per long rest, spend a Wild Shape use for a level 1 slot.'],
+      [7, 'Elemental Fury', 'Potent Spellcasting (add your Wis mod to druid cantrip damage) or Primal Strike (once per turn, +1d8 cold, fire, lightning or thunder on an attack hit; 2d8 at 15th). Chosen below.'],
+      [18, 'Beast Spells', 'Cast spells in Wild Shape, except ones with a costly or consumed material component.'], EB,
+      [20, 'Archdruid', 'Regain a Wild Shape use on initiative if you have none; turn slots of Wild Shape into spell slots; you age ten times more slowly.']],
+    subFeats: [[3, 'Circle of the Land Spells', 'Your chosen land gives spells that are always prepared (chosen below); more at 5th, 7th and 9th.'],
+      [3, "Land's Aid", 'Magic action: spend a Wild Shape use; creatures in a 10-ft sphere within 60 ft make a Con save or take 2d6 necrotic (half on a save), and one creature regains 2d6 HP. 3d6 at 10th, 4d6 at 14th.'],
+      [6, 'Natural Recovery', 'Cast one land spell once per long rest without a slot; once per long rest during a short rest, regain slots totalling half your druid level.'],
+      [10, "Nature's Ward", 'Immune to poisoned; resistance to the damage type of your land.'], [14, "Nature's Sanctuary", 'Magic action: spend a Wild Shape use to raise a 15-ft cube of spectral trees for 1 minute: half cover, and your allies share your Nature\'s Ward resistance.']] },
+  fighter: { sub: ['Fighter Subclass', 'Champion', 3], asi: [4, 6, 8, 12, 14, 16], goldB: 155, skills: [2, ['Acrobatics', 'Animal Handling', 'Athletics', 'History', 'Insight', 'Intimidation', 'Persuasion', 'Perception', 'Survival']],
+    kit: [[{ l: "Option A: chain mail, greatsword, flail, 8 javelins, dungeoneer's pack and 4 gp", i: ['Chain mail', 'Greatsword', 'Flail', 'Javelin x8', "Dungeoneer's pack"], gp: 4 },
+      { l: "Option B: studded leather, scimitar, shortsword, longbow, 20 arrows, quiver, dungeoneer's pack and 11 gp", i: ['Studded leather armour', 'Scimitar', 'Shortsword', 'Longbow', 'Arrows (20)', 'Quiver', "Dungeoneer's pack"], gp: 11 }]],
+    feats: [[1, 'Fighting Style', 'A fighting style feat (chosen below).'], [1, 'Second Wind', 'Bonus action: regain 1d10 + fighter level HP. Two uses (three at 4th, four at 10th); one returns on a short rest, all on a long rest.'],
+      [2, 'Action Surge', 'Take one more action on your turn (not the Magic action). Once per short rest; twice before a rest from 17th.'], [2, 'Tactical Mind', 'When you fail an ability check, spend a Second Wind use to add 1d10; it isn\'t spent if you still fail.'],
+      [5, 'Extra Attack', 'Attack twice when you take the Attack action.'], [5, 'Tactical Shift', 'When you use Second Wind, move up to half your speed without provoking opportunity attacks.'],
+      [9, 'Indomitable', 'Reroll a failed save, adding your fighter level. Once per long rest (twice at 13th, three times at 17th).'], [9, 'Tactical Master', 'When you attack with a weapon whose mastery you use, you can swap its mastery for Push, Sap or Slow for that attack.'],
+      [11, 'Two Extra Attacks', 'Attack three times when you take the Attack action.'], [13, 'Studied Attacks', 'If you miss a creature, you have advantage on your next attack against it before the end of your next turn.'],
+      EB, [20, 'Three Extra Attacks', 'Attack four times when you take the Attack action.']],
+    subFeats: [[3, 'Improved Critical', 'Your weapon and unarmed attacks score a critical hit on a 19 or 20.'], [3, 'Remarkable Athlete', 'Advantage on initiative and Athletics checks. After a critical hit, move up to half your speed without provoking opportunity attacks.'],
+      [7, 'Additional Fighting Style', 'Gain a second fighting style feat.'], [10, 'Heroic Warrior', 'At the start of each of your turns in combat, gain Heroic Inspiration if you lack it.'],
+      [15, 'Superior Critical', 'Your weapon and unarmed attacks score a critical hit on an 18–20.'], [18, 'Survivor', 'Advantage on death saves (a roll of 18–20 counts as a 20). While bloodied, regain 5 + Con mod HP at the start of each turn.']] },
+  monk: { sub: ['Monk Subclass', 'Warrior of the Open Hand', 3], weapons: ['simple'].concat(MARTIAL_LIGHT), asi: ASI24, goldB: 50,
+    kit: [[{ l: "Spear, five daggers, a tool or instrument, explorer's pack and 11 gp", i: ['Spear', 'Dagger x5', '@instrument', "Explorer's pack"], gp: 11 }]],
+    feats: [[1, 'Martial Arts', 'With unarmed strikes and monk weapons (simple melee and Light martial melee): a martial arts die (d6, d8 at 5th, d10 at 11th, d12 at 17th), Dex for attacks, and a bonus-action unarmed strike.'],
+      [1, 'Unarmored Defense', 'Without armour or a shield, your AC is 10 + Dex mod + Wis mod.'],
+      [2, "Monk's Focus", 'Focus points equal to your monk level, back on a short rest. Flurry of Blows (two bonus unarmed strikes), Patient Defense (Disengage free, or Disengage and Dodge for a point), Step of the Wind (Dash free, or Disengage and Dash with doubled jump for a point).'],
+      [2, 'Unarmored Movement', '+10 ft speed without armour or a shield (+15 at 6th, +20 at 10th, +25 at 14th, +30 at 18th).'], [2, 'Uncanny Metabolism', 'When you roll initiative, regain all focus points and heal a martial arts die + monk level. Once per long rest.'],
+      [3, 'Deflect Attacks', 'Reaction: reduce bludgeoning, piercing or slashing attack damage by 1d10 + Dex mod + monk level; at 0, spend a point to redirect it.'],
+      [4, 'Slow Fall', 'Reaction: reduce falling damage by five times your monk level.'], [5, 'Extra Attack', 'Attack twice when you take the Attack action.'],
+      [5, 'Stunning Strike', 'Once per turn on a hit, spend a point: Con save or stunned until your next turn (on a success, speed halved and the next attack has advantage).'],
+      [6, 'Empowered Strikes', 'Unarmed strikes can deal force damage.'], [7, 'Evasion', 'Take no damage on a successful Dex save for half, and half on a failure.'],
+      [9, 'Acrobatic Movement', 'Move along vertical surfaces and across liquids on your turn.'], [10, 'Heightened Focus', 'Flurry of Blows makes three strikes; Patient Defense and Step of the Wind add temporary HP or carrying an ally.'],
+      [10, 'Self-Restoration', 'End charmed, frightened or poisoned on yourself at the end of your turn; no exhaustion from hunger or thirst.'], [13, 'Deflect Energy', 'Deflect Attacks works on any damage type.'],
+      [14, 'Disciplined Survivor', 'Proficiency in all saves; spend a point to reroll a failed save.'], [15, 'Perfect Focus', 'When you roll initiative with 3 or fewer points, regain up to 4.'],
+      [18, 'Superior Defense', 'Spend 3 points: resistance to all damage except force for 1 minute.'], EB, [20, 'Body and Mind', 'Dexterity and Wisdom rise by 4, to a maximum of 25.']],
+    subFeats: [[3, 'Open Hand Technique', 'When Flurry of Blows hits: Addle (no reactions), Push (Str save or pushed 15 ft) or Topple (Dex save or prone).'], [6, 'Wholeness of Body', 'Bonus action: heal a martial arts die + Wis mod. Uses equal to your Wis mod per long rest.'],
+      [11, 'Fleet Step', 'After any other bonus action, use Step of the Wind.'], [17, 'Quivering Palm', 'Spend 4 points on a hit to start lethal vibrations; later end them for 10d12 force (Con save for half).']] },
+  paladin: { sub: ['Paladin Subclass', 'Oath of Devotion', 3], asi: ASI24, goldB: 150, style: [2, ['defense', 'dueling', 'gwf', 'protection', 'blessed']],
+    cast: castOf('paladin', { from: 1, prep: PREP24.half }),
+    extra: { 3: ['Protection from Evil and Good', 'Shield of Faith'], 5: ['Aid', 'Zone of Truth'], 9: ['Beacon of Hope', 'Dispel Magic'], 13: ['Freedom of Movement', 'Guardian of Faith'], 17: ['Commune', 'Flame Strike'] },
+    kit: [[{ l: "Chain mail, shield, longsword, six javelins, holy symbol, priest's pack and 9 gp", i: ['Chain mail', 'Shield', 'Longsword', 'Javelin x6', 'Holy symbol', "Priest's pack"], gp: 9 }]],
+    feats: [[1, 'Lay on Hands', 'Bonus action: touch to restore HP from a pool of five times your paladin level (per long rest), or spend 5 to end the poisoned condition.'],
+      [1, 'Spellcasting', 'You prepare paladin spells (see the Spells step) and cast them using Charisma. Swap one after each long rest.'],
+      [2, 'Fighting Style', 'A fighting style feat, or Blessed Warrior (two cleric cantrips). Chosen below.'], [2, "Paladin's Smite", 'Divine Smite is always prepared, and you can cast it once per long rest without a slot. On a melee hit: +2d8 radiant, +1d8 per slot level above 1st, +1d8 more against fiends and undead.'],
+      [3, 'Channel Divinity', 'Two uses (three at 11th); one returns on a short rest. Divine Sense: for 10 minutes, sense celestials, fiends and undead within 60 ft.'],
+      [5, 'Extra Attack', 'Attack twice when you take the Attack action.'], [5, 'Faithful Steed', 'Find Steed is always prepared; cast it once per long rest without a slot.'],
+      [6, 'Aura of Protection', 'You and allies in a 10-ft emanation add your Cha mod (min +1) to saving throws (30 ft at 18th).'],
+      [9, 'Abjure Foes', 'Channel Divinity: up to your Cha mod creatures within 60 ft make a Wis save or are frightened for 1 minute, taking only one kind of action each turn.'],
+      [10, 'Aura of Courage', 'You and allies in your aura can\'t be frightened.'], [11, 'Radiant Strikes', 'Melee weapon and unarmed hits deal +1d8 radiant.'],
+      [14, 'Restoring Touch', 'Lay on Hands can also end blinded, charmed, deafened, frightened, paralyzed or stunned (5 points each).'], [18, 'Aura Expansion', 'Your auras reach 30 ft.'], EB],
+    subFeats: [[3, 'Oath of Devotion Spells', 'Protection from Evil and Good and Shield of Faith are always prepared; more at 5th, 9th, 13th and 17th.'], [3, 'Sacred Weapon', 'Channel Divinity when you take the Attack action: for 10 minutes add your Cha mod (min +1) to attack rolls; the weapon sheds light and deals radiant if you like.'],
+      [7, 'Aura of Devotion', 'You and allies in your aura are immune to charmed; a charm ends when they enter it.'], [15, 'Smite of Protection', 'When you cast Divine Smite, you and allies in your aura have half cover until your next turn.'],
+      [20, 'Holy Nimbus', 'Bonus action, once per long rest (or a level 5 slot): for 10 minutes enemies starting their turn in your aura take radiant damage equal to Cha mod + proficiency; you have advantage on saves against fiends and undead.']] },
+  ranger: { sub: ['Ranger Subclass', 'Hunter', 3], asi: ASI24, goldB: 150, favored: false, style: [2, ['archery', 'defense', 'dueling', 'twf', 'druidic']],
+    cast: castOf('ranger', { from: 1, mode: 'prepared', prep: PREP24.half, known: null, focus: 'Druidic focus (sprig of mistletoe)' }),
+    kit: [[{ l: "Studded leather, scimitar, shortsword, longbow, 20 arrows, quiver, sprig of mistletoe, explorer's pack and 7 gp", i: ['Studded leather armour', 'Scimitar', 'Shortsword', 'Longbow', 'Arrows (20)', 'Quiver', 'Druidic focus (sprig of mistletoe)', "Explorer's pack"], gp: 7 }]],
+    feats: [[1, 'Spellcasting', 'You prepare ranger spells (see the Spells step) and cast them using Wisdom. Swap one after each long rest.'],
+      [1, 'Favored Enemy', "Hunter's Mark is always prepared, and you can cast it without a slot a few times per long rest (2, rising to 6 by 17th)."],
+      [2, 'Deft Explorer', 'Expertise in one of your skills, and two languages of your choice.'], [2, 'Fighting Style', 'A fighting style feat, or Druidic Warrior (two druid cantrips). Chosen below.'],
+      [5, 'Extra Attack', 'Attack twice when you take the Attack action.'], [6, 'Roving', '+10 ft speed when not in heavy armour, and climb and swim speeds equal to your speed.'],
+      [9, 'Expertise', 'Expertise in two more of your skills.'], [10, 'Tireless', 'Magic action: gain 1d8 + Wis mod temporary HP (Wis mod uses per long rest). Short rests lower your exhaustion by 1.'],
+      [13, 'Relentless Hunter', "Taking damage can't break your Concentration on Hunter's Mark."], [14, "Nature's Veil", 'Bonus action: become invisible until the end of your next turn. Wis mod uses per long rest.'],
+      [17, 'Precise Hunter', "Advantage on attacks against the target of your Hunter's Mark."], [18, 'Feral Senses', 'Blindsight 30 ft.'], EB,
+      [20, 'Foe Slayer', "Hunter's Mark deals a d10 instead of a d6."]],
+    subFeats: [[3, "Hunter's Lore", "While a creature is marked by your Hunter's Mark, you know its immunities, resistances and vulnerabilities."], [3, "Hunter's Prey", 'Colossus Slayer (once per turn, +1d8 to a creature missing HP) or Horde Breaker (one more attack against a creature next to your target). Swap on a rest.'],
+      [7, 'Defensive Tactics', 'Escape the Horde (opportunity attacks against you have disadvantage) or Multiattack Defense (after a creature hits you, its other attacks have disadvantage).'],
+      [11, 'Superior Hunter\'s Prey', "Once per turn when you damage the target of your Hunter's Mark, deal the mark's damage to a second creature within 30 ft of it."],
+      [15, "Superior Hunter's Defense", 'Reaction when you take damage: resistance to that and further damage of its type until the end of the turn.']] },
+  rogue: { sub: ['Rogue Subclass', 'Thief', 3], weapons: ['simple'].concat(MARTIAL_FINLIGHT), asi: [4, 8, 10, 12, 16], goldB: 100,
+    skills: [4, ['Acrobatics', 'Athletics', 'Deception', 'Insight', 'Intimidation', 'Investigation', 'Perception', 'Persuasion', 'Sleight of Hand', 'Stealth']],
+    kit: [[{ l: "Leather armour, two daggers, shortsword, shortbow, 20 arrows, quiver, thieves' tools, burglar's pack and 8 gp", i: ['Leather armour', 'Dagger x2', 'Shortsword', 'Shortbow', 'Arrows (20)', 'Quiver', "Thieves' tools", "Burglar's pack"], gp: 8 }]],
+    feats: [[1, 'Expertise', 'Expertise in two of your skills (two more at 6th).'], [1, 'Sneak Attack', 'Once per turn, deal extra damage when you hit with a Finesse or ranged weapon and have advantage, or an ally is next to the target.'],
+      [1, "Thieves' Cant", "You know Thieves' Cant and one more language."],
+      [2, 'Cunning Action', 'Dash, Disengage or Hide as a bonus action.'], [3, 'Steady Aim', 'Bonus action, if you haven\'t moved: advantage on your next attack this turn; your speed is 0 until the turn ends.'],
+      [5, 'Cunning Strike', 'Trade Sneak Attack dice for an effect: Poison (1d6, Con save or poisoned), Trip (1d6, Dex save or prone) or Withdraw (1d6, move half speed freely).'],
+      [5, 'Uncanny Dodge', 'Reaction: halve the damage of an attack that hits you.'], [7, 'Evasion', 'Take no damage on a successful Dex save for half, and half on a failure.'],
+      [7, 'Reliable Talent', 'Treat a d20 roll of 9 or lower as a 10 on any ability check using a skill or tool you are proficient with.'],
+      [11, 'Improved Cunning Strike', 'Use up to two Cunning Strike effects on one hit.'], [14, 'Devious Strikes', 'New Cunning Strikes: Daze (2d6), Knock Out (6d6) and Obscure (3d6).'],
+      [15, 'Slippery Mind', 'Proficiency in Wisdom and Charisma saves.'], [18, 'Elusive', 'No attack roll has advantage against you unless you are incapacitated.'], EB,
+      [20, 'Stroke of Luck', 'Turn a failed d20 test into a 20. Once per short rest.']],
+    subFeats: [[3, 'Fast Hands', 'Cunning Action can also make a Sleight of Hand check, use thieves\' tools, or take the Use an Object action.'], [3, 'Second-Story Work', 'Climb speed equal to your speed; use Dex instead of Str for jump distance.'],
+      [9, 'Supreme Sneak', 'New Cunning Strike: Stealth Attack (1d6) keeps you hidden if you were hidden.'], [13, 'Use Magic Device', 'Attune to four magic items, use any spell scroll, and sometimes save charges.'],
+      [17, "Thief's Reflexes", 'Take two turns in the first round of combat: one at your initiative and one at initiative minus 10.']] },
+  sorcerer: { sub: ['Sorcerer Subclass', 'Draconic Sorcery', 3], weapons: ['simple'], asi: ASI24, goldB: 50, dragon: true,
+    cast: castOf('sorcerer', { known: PREP24.sorc }),
+    extra: { 3: ['Alter Self', 'Chromatic Orb', 'Command', "Dragon's Breath"], 5: ['Fear', 'Fly'], 7: ['Arcane Eye', 'Charm Monster'], 9: ['Legend Lore', 'Summon Dragon'] },
+    kit: [[{ l: "Spear, two daggers, arcane focus (crystal), dungeoneer's pack and 28 gp", i: ['Spear', 'Dagger x2', 'Arcane focus (crystal)', "Dungeoneer's pack"], gp: 28 }]],
+    feats: [[1, 'Spellcasting', 'You cast sorcerer spells using Charisma. When you gain a level you can swap one prepared spell.'],
+      [1, 'Innate Sorcery', 'Bonus action: for 1 minute your spell save DC rises by 1 and you have advantage on sorcerer spell attacks. Twice per long rest.'],
+      [2, 'Font of Magic', 'Sorcery points equal to your sorcerer level, back on a long rest. Turn points into slots (2 for 1st, 3 for 2nd, 5 for 3rd, 6 for 4th, 7 for 5th) or slots into points.'],
+      [2, 'Metamagic', 'Two Metamagic options (four at 10th, six at 17th). Swap one when you gain a level.'], [5, 'Sorcerous Restoration', 'On a short rest, regain sorcery points up to half your sorcerer level. Once per long rest.'],
+      [7, 'Sorcery Incarnate', 'With no Innate Sorcery uses left, spend 2 points to use it; while it is active, use two Metamagic options on one spell.'], EB,
+      [20, 'Arcane Apotheosis', 'While Innate Sorcery is active, one Metamagic option each turn costs no points.']],
+    subFeats: [[3, 'Draconic Resilience', 'Your HP maximum rises by 3, then by 1 each sorcerer level. Without armour your AC is 10 + Dex mod + Cha mod.'], [3, 'Draconic Spells', "Alter Self, Chromatic Orb, Command and Dragon's Breath are always prepared; more at 5th, 7th and 9th."],
+      [6, 'Elemental Affinity', 'Resistance to your draconic damage type, and add your Cha mod to one damage roll of a sorcerer spell of that type.'],
+      [14, 'Dragon Wings', 'Bonus action: fly at 60 ft for 1 hour. Once per long rest, or spend 3 sorcery points.'], [18, 'Dragon Companion', 'Cast Summon Dragon without a material component, and once per long rest without a slot; it can last up to 1 minute without Concentration.']] },
+  warlock: { sub: ['Warlock Subclass', 'Fiend Patron', 3], asi: ASI24, goldB: 100, expanded: null,
+    cast: castOf('warlock', { known: PREP24.lock }),
+    extra: { 3: ['Burning Hands', 'Command', 'Scorching Ray', 'Suggestion'], 5: ['Fireball', 'Stinking Cloud'], 7: ['Fire Shield', 'Wall of Fire'], 9: ['Geas', 'Insect Plague'] },
+    kit: [[{ l: "Leather armour, sickle, two daggers, arcane focus (orb), book of occult lore, scholar's pack and 15 gp", i: ['Leather armour', 'Sickle', 'Dagger x2', 'Arcane focus (orb)', 'Book (occult lore)', "Scholar's pack"], gp: 15 }]],
+    feats: [[1, 'Eldritch Invocations', 'Fragments of forbidden knowledge, pact boons among them (chosen below). One at 1st, three at 2nd, rising to ten.'],
+      [1, 'Pact Magic', 'A few spell slots, all of your highest level; they return on a short rest. Charisma is your ability. Swap one spell when you gain a level.'],
+      [2, 'Magical Cunning', 'Once per long rest, a 1-minute rite regains up to half your pact slots (all of them at 20th).'], [9, 'Contact Patron', 'Contact Other Plane is always prepared; once per long rest cast it without a slot and succeed on its save.'],
+      [11, 'Mystic Arcanum', 'Cast one level 6 spell once per long rest without a slot (level 7 at 13th, 8 at 15th, 9 at 17th).'], EB,
+      [20, 'Eldritch Master', 'Magical Cunning regains all your pact slots.']],
+    subFeats: [[3, "Dark One's Blessing", 'When an enemy within 10 ft of you drops to 0 HP, gain temporary HP equal to your Cha mod + warlock level.'], [3, 'Fiend Spells', 'Burning Hands, Command, Scorching Ray and Suggestion are always prepared; more at 5th, 7th and 9th.'],
+      [6, "Dark One's Own Luck", 'Add a d10 to an ability check or save. Uses equal to your Cha mod per long rest, once per roll.'], [10, 'Fiendish Resilience', 'After each rest, choose a damage type other than force to resist.'],
+      [14, 'Hurl Through Hell', 'Once per turn on an attack hit: Cha save or the target is banished through the lower planes until your next turn, then takes 8d10 psychic. Once per long rest, or spend a pact slot.']] },
+  wizard: { sub: ['Wizard Subclass', 'Evoker', 3], weapons: ['simple'], asi: ASI24, goldB: 55, skills: [2, ['Arcana', 'History', 'Insight', 'Investigation', 'Medicine', 'Nature', 'Religion']],
+    cast: castOf('wizard', { prep: PREP24.wiz }),
+    kit: [[{ l: "Two daggers, quarterstaff (your arcane focus), robe, spellbook, scholar's pack and 5 gp", i: ['Dagger x2', 'Quarterstaff', 'Robe', 'Spellbook', "Scholar's pack"], gp: 5 }]],
+    feats: [[1, 'Spellcasting', 'Your spellbook holds six level 1 spells, plus two each level. Prepare some of them after a long rest (see the Spells step) and cast using Intelligence.'],
+      [1, 'Ritual Adept', 'Cast any ritual in your spellbook as a ritual without preparing it.'], [1, 'Arcane Recovery', 'Once per day on a short rest, recover slots totalling half your wizard level (rounded up), none 6th or higher.'],
+      [2, 'Scholar', 'Expertise in one of Arcana, History, Investigation, Medicine, Nature or Religion that you are proficient in.'], [5, 'Memorize Spell', 'On a short rest, swap one prepared spell for another in your book.'],
+      [18, 'Spell Mastery', 'Choose a level 1 and a level 2 spell in your book that take an action: cast them at their lowest level without a slot.'], EB,
+      [20, 'Signature Spells', 'Two level 3 spells are always prepared; cast each once per short rest without a slot.']],
+    subFeats: [[3, 'Evocation Savant', 'Add two evocation spells to your book for free, and one more each time you gain access to a new slot level.'], [3, 'Potent Cantrip', 'When a creature avoids your damage cantrip, it still takes half damage.'],
+      [6, 'Sculpt Spells', 'Choose up to 1 + the spell\'s level creatures to succeed automatically on your evocation saves and take no damage.'], [10, 'Empowered Evocation', 'Add your Int mod to one damage roll of a wizard evocation spell.'],
+      [14, 'Overchannel', 'Deal maximum damage with a level 1–5 wizard spell. Each further use before a long rest deals necrotic damage to you.']] }
+};
+const CLS24_CACHE = {};
+// the class table for this hero: the 2014 one, or the 2024 one laid over it
+function CLS(h) {
+  const base = CLASSES5[h && h.cls] || CLASSES5.fighter;
+  if (!is24(h)) return base;
+  return CLS24_CACHE[h.cls] || (CLS24_CACHE[h.cls] = Object.assign({}, base, C24[h.cls] || {}));
+}
+// the gold that comes with the 2024 class kit (Option A or B) or the plain gold choice
+function kitGp24(h) { const C = CLS(h); let g = 0; (C.kit || []).forEach((grp, i) => { const o = grp[Math.min((h.kit || {})[i] || 0, grp.length - 1)]; g += o.gp || 0; }); return g; }
+// expertise count by rules and level
+function expN24(h, lv) {
+  const c = h.cls;
+  let n = c === 'rogue' ? (lv >= 6 ? 4 : 2) : c === 'bard' ? (lv >= 9 ? 4 : lv >= 2 ? 2 : 0) : c === 'ranger' ? (lv >= 9 ? 3 : lv >= 2 ? 1 : 0) : c === 'wizard' ? (lv >= 2 ? 1 : 0) : 0;
+  if (lv >= BOON_LV && h.boon === 'skill') n += 1;
+  return n;
+}
+const SCHOLAR = ['Arcana', 'History', 'Investigation', 'Medicine', 'Nature', 'Religion'];
+// limited-use features with the 2024 rules
+function uses24(h, D, U) {
+  const lv = D.lv, srd = D.srd, wis = Math.max(1, D.mod.wis), cha = Math.max(1, D.mod.cha);
+  switch (h.cls) {
+    case 'barbarian':
+      U('rage', 'Rage', [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6][lv - 1], 'one', 'Rage damage +' + (lv >= 16 ? 4 : lv >= 9 ? 3 : 2));
+      if (lv >= 15) U('persist', 'Persistent Rage', 1, 'long', 'regain all rages on initiative');
+      if (lv >= 14 && srd) U('presence', 'Intimidating Presence', 1, 'long', 'or spend a rage');
+      break;
+    case 'bard': U('insp', 'Bardic Inspiration', cha, lv >= 5 ? 'short' : 'long', 'd' + (lv >= 15 ? 12 : lv >= 10 ? 10 : lv >= 5 ? 8 : 6)); break;
+    case 'cleric':
+      if (lv >= 2) U('channel', 'Channel Divinity', lv >= 18 ? 4 : lv >= 6 ? 3 : 2, 'one', 'Divine Spark ' + (lv >= 18 ? 4 : lv >= 13 ? 3 : lv >= 7 ? 2 : 1) + 'd8+' + D.mod.wis + (srd && lv >= 3 ? '; Preserve Life ' + 5 * lv + ' HP' : ''));
+      if (lv >= 10) U('interv', 'Divine Intervention', 1, 'long', lv >= 20 ? 'can cast Wish' : '');
+      break;
+    case 'druid':
+      if (lv >= 2) U('wild', 'Wild Shape', lv >= 17 ? 4 : lv >= 6 ? 3 : 2, 'one', (lv >= 8 ? 8 : lv >= 4 ? 6 : 4) + ' forms, max CR ' + (lv >= 8 ? '1, flying' : lv >= 4 ? '1/2' : '1/4') + ', ' + Math.max(1, Math.floor(lv / 2)) + ' h');
+      if (lv >= 5) U('resurge', 'Wild Resurgence (slot)', 1, 'long', 'Wild Shape use into a level 1 slot');
+      if (lv >= 6 && srd) U('natrec', 'Natural Recovery', 1, 'long', Math.ceil(lv / 2) + ' slot levels on a short rest');
+      if (lv >= 6 && srd) U('landfree', 'Free land spell', 1, 'long');
+      break;
+    case 'fighter':
+      U('second', 'Second Wind', lv >= 10 ? 4 : lv >= 4 ? 3 : 2, 'one', '1d10+' + lv);
+      if (lv >= 2) U('surge', 'Action Surge', lv >= 17 ? 2 : 1, 'short');
+      if (lv >= 9) U('indom', 'Indomitable', lv >= 17 ? 3 : lv >= 13 ? 2 : 1, 'long', '+' + lv + ' to the reroll');
+      break;
+    case 'monk':
+      if (lv >= 2) { U('ki', 'Focus points', lv, 'short', 'Save DC ' + (8 + D.pb + D.mod.wis)); U('metab', 'Uncanny Metabolism', 1, 'long'); }
+      if (lv >= 6 && srd) U('whole', 'Wholeness of Body', wis, 'long', '1' + (lv >= 17 ? 'd12' : lv >= 11 ? 'd10' : lv >= 5 ? 'd8' : 'd6') + '+' + D.mod.wis + ' HP');
+      break;
+    case 'paladin':
+      U('lay', 'Lay on Hands pool', 5 * lv, 'long', 'HP');
+      if (lv >= 2) U('smite', "Paladin's Smite (free)", 1, 'long', 'Divine Smite without a slot');
+      if (lv >= 3) U('channel', 'Channel Divinity', lv >= 11 ? 3 : 2, 'one', 'Divine Sense' + (srd ? ', Sacred Weapon' : '') + (lv >= 9 ? ', Abjure Foes' : ''));
+      if (lv >= 5) U('steed', 'Faithful Steed', 1, 'long');
+      if (lv >= 20 && srd) U('nimbus', 'Holy Nimbus', 1, 'long');
+      break;
+    case 'ranger':
+      U('mark', "Hunter's Mark (free)", [2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6][lv - 1], 'long');
+      if (lv >= 10) U('tireless', 'Tireless', wis, 'long', '1d8+' + D.mod.wis + ' temp HP');
+      if (lv >= 14) U('veil', "Nature's Veil", wis, 'long');
+      break;
+    case 'rogue': D.notes.push('Sneak Attack: ' + Math.ceil(lv / 2) + 'd6 once per turn.'); if (lv >= 20) U('luck', 'Stroke of Luck', 1, 'short'); break;
+    case 'sorcerer':
+      U('innate', 'Innate Sorcery', 2, 'long');
+      if (lv >= 2) U('sorc', 'Sorcery points', lv, 'long');
+      if (lv >= 5) U('restore', 'Sorcerous Restoration', 1, 'long', Math.floor(lv / 2) + ' points on a short rest');
+      if (lv >= 14 && srd) U('wings', 'Dragon Wings', 1, 'long', 'or 3 sorcery points');
+      if (lv >= 18 && srd) U('dragon', 'Dragon Companion', 1, 'long', 'Summon Dragon without a slot');
+      break;
+    case 'warlock':
+      if (lv >= 2) U('cunning', 'Magical Cunning', 1, 'long', lv >= 20 ? 'all pact slots' : 'half your pact slots');
+      if (lv >= 9) U('patron', 'Contact Patron', 1, 'long');
+      if (lv >= 6 && srd) U('ownluck', "Dark One's Own Luck", cha, 'long', '+d10');
+      if (lv >= 14 && srd) U('hurl', 'Hurl Through Hell', 1, 'long', '8d10 psychic');
+      [[11, 6], [13, 7], [15, 8], [17, 9]].forEach(([at, sl]) => { if (lv >= at) U('arc' + sl, 'Mystic Arcanum (' + ordinal(sl) + ')', 1, 'long', h.arcanum[sl] || 'choose a spell'); });
+      break;
+    case 'wizard': U('arcrec', 'Arcane Recovery', 1, 'long', Math.ceil(lv / 2) + ' slot levels'); if (lv >= 20) U('sig', 'Signature Spells', 2, 'short'); break;
+  }
+  if (lv >= BOON_LV) { if (h.boon === 'recovery') U('laststand', 'Last Stand', 1, 'long'); if (h.boon === 'recall') U('recall', 'Spell Recall', 1, 'long'); if (h.boon === 'fate') U('fate', 'Boon of Fate', 1, 'short'); }
+}
+// choices to make that only the 2024 rules have
+function todo24(h, D, T) {
+  const lv = D.lv;
+  if ((h.cls === 'cleric' || h.cls === 'druid') && !h.order) T('class', h.cls === 'cleric' ? 'Choose your Divine Order.' : 'Choose your Primal Order.');
+  if ((h.cls === 'cleric' || h.cls === 'druid') && lv >= 7 && !h.strike7) T('class', h.cls === 'cleric' ? 'Choose Divine Strike or Potent Spellcasting.' : 'Choose Primal Strike or Potent Spellcasting.');
+  if (lv >= BOON_LV && !EPIC_BOONS[h.boon]) T('class', 'Choose your epic boon.');
+  if (lv >= BOON_LV && EPIC_BOONS[h.boon] && !boonAb(h)) T('class', 'Choose the ability your epic boon raises.');
+}
+const boonAbs = (k) => (EPIC_BOONS[k] && EPIC_BOONS[k][2]) || ABIL;
+const boonAb = (h) => (EPIC_BOONS[h.boon] && boonAbs(h.boon).includes(h.boonAb) ? h.boonAb : '');
+// the 2024-only pieces of the Class step
+function class24Html(h, D) {
+  const lv = D.lv, opt = (act, k, n, d, on) => '<button type="button" class="opt' + (on ? ' on' : '') + '" data-hr="' + act + '" data-v="' + k + '"><b>' + n + '</b><small>' + d + '</small></button>';
+  let o = '';
+  if (h.cls === 'cleric') o += '<section><h3>Divine Order</h3><div class="opts">' + opt('order', 'protector', 'Protector', 'Martial weapons and heavy armour.', h.order === 'protector') + opt('order', 'thaumaturge', 'Thaumaturge', 'One more cantrip; add your Wis mod to Arcana and Religion checks.', h.order === 'thaumaturge') + '</div></section>';
+  if (h.cls === 'druid') o += '<section><h3>Primal Order</h3><div class="opts">' + opt('order', 'magician', 'Magician', 'One more cantrip; add your Wis mod to Arcana and Nature checks.', h.order === 'magician') + opt('order', 'warden', 'Warden', 'Martial weapons and medium armour.', h.order === 'warden') + '</div></section>';
+  if (h.cls === 'cleric' && lv >= 7) o += '<section><h3>Blessed Strikes</h3><div class="opts">' + opt('strike7', 'strike', 'Divine Strike', 'Once per turn, +' + (lv >= 14 ? 2 : 1) + 'd8 necrotic or radiant on a weapon hit.', h.strike7 === 'strike') + opt('strike7', 'potent', 'Potent Spellcasting', 'Add your Wis mod to cleric cantrip damage.', h.strike7 === 'potent') + '</div></section>';
+  if (h.cls === 'druid' && lv >= 7) o += '<section><h3>Elemental Fury</h3><div class="opts">' + opt('strike7', 'strike', 'Primal Strike', 'Once per turn, +' + (lv >= 15 ? 2 : 1) + 'd8 cold, fire, lightning or thunder on an attack hit.', h.strike7 === 'strike') + opt('strike7', 'potent', 'Potent Spellcasting', 'Add your Wis mod to druid cantrip damage.', h.strike7 === 'potent') + '</div></section>';
+  if (h.cls === 'druid' && D.srd) o += fieldSel('hc-land24', 'Circle of the Land: your land', LANDS24.map((t) => [t, t]), LANDS24.includes(h.land24) ? h.land24 : 'Temperate');
+  if (lv >= BOON_LV) {
+    o += '<section><h3>Epic boon <small class="meta">level 19</small></h3><div class="opts">' + Object.keys(EPIC_BOONS).map((k) => opt('boon', k, EPIC_BOONS[k][0], EPIC_BOONS[k][1], h.boon === k)).join('') + '</div>';
+    if (EPIC_BOONS[h.boon]) o += fieldSel('hc-boonab', 'Raise one ability by 1 (up to 30)', [['', 'Choose…']].concat(boonAbs(h.boon).map((a) => [a, ABIL_N[a]])), boonAb(h));
+    o += '</section>';
+  }
+  return o;
+}
 
 // ================================================================ heroes: character creation and a live, play-ready sheet
 const HERO_KEY = 'atlas-heroes-v1';
 const heroes = { list: [], cur: null, step: 'basics', log: [], adv: 0, confirmDel: null, pickHome: false, shopCat: 'weapons', spellLv: -1, lastCrit: null };
 function heroLoad() {
-  try { const d = JSON.parse(localStorage.getItem(HERO_KEY) || 'null'); if (d && Array.isArray(d.list)) { heroes.list = d.list.filter((h) => h && h.id && CLASSES5[h.cls] && raceOk(h.race)).map(fixHero); heroes.cur = d.cur; if (d.rules) heroes.defRules = d.rules; } }
+  try { const d = JSON.parse(localStorage.getItem(HERO_KEY) || 'null'); if (d && Array.isArray(d.list)) { heroes.list = d.list.filter((h) => h && h.id && CLS(h) && raceOk(h.race)).map(fixHero); heroes.cur = d.cur; if (d.rules) heroes.defRules = d.rules; } }
   catch (e) { /* storage unavailable */ }
   if (!heroes.list.some((h) => h.id === heroes.cur)) heroes.cur = heroes.list[0] ? heroes.list[0].id : null;
   if (heroes.cur) heroes.step = 'sheet';
@@ -6270,7 +6695,8 @@ function newHero(blank) {
     cantrips: [], spells: [], prepared: [], arcanum: {},
     hpMax: 0, hp: null, temp: 0, hdUsed: 0, slotsUsed: [0, 0, 0, 0, 0, 0, 0, 0, 0], pactUsed: 0, uses: {}, death: [0, 0], insp: false, conds: [], exh: 0, xp: 0,
     subclass: '', subNotes: '', trait: '', ideal: '', bond: '', flaw: '', bondNpc: null, bondKind: '', notes: '', created: market.day,
-    bgAsi: { mode: '21' }, bgAbil: [], bgFeat: '', feat24: '', mi: {}, mi2: {}, miList: '', miList2: '', skilled: []
+    bgAsi: { mode: '21' }, bgAbil: [], bgFeat: '', feat24: '', mi: {}, mi2: {}, miList: '', miList2: '', skilled: [],
+    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate'
   };
 }
 const raceSub = (h) => { const R = raceOf(h); if (!R.subs) return null; const k = R.subs[h.sub] ? h.sub : Object.keys(R.subs)[0]; return R.subs[k]; };
@@ -6328,7 +6754,7 @@ function rollDamage(label, expr, key) {
 
 // ---------------------------------------------------------------- derived sheet
 function inventory(h) {
-  const C = CLASSES5[h.cls], B = bgOf(h);
+  const C = CLS(h), B = bgOf(h);
   const out = [];
   const add = (n, q, key, src) => { if (!n) return; if (h.removed.includes(key)) return; out.push({ n, q: q || 1, key, src }); };
   if (h.goldMode === 'kit') {
@@ -6347,10 +6773,10 @@ function inventory(h) {
   for (let i = 0; i < h.inv.length; i++) out.push({ n: h.inv[i].n, q: h.inv[i].q || 1, key: 'i' + i, src: 'bought', i });
   return out;
 }
-const goldOf = (h) => Math.round(((h.goldMode === 'kit' ? bgOf(h).gold : h.goldRoll) + h.goldDelta) * 100) / 100;
+const goldOf = (h) => Math.round(((is24(h) ? (h.goldMode === 'kit' ? bgOf(h).gold + kitGp24(h) : (CLS(h).goldB || 0) + 50) : h.goldMode === 'kit' ? bgOf(h).gold : h.goldRoll) + h.goldDelta) * 100) / 100;
 function weaponProf(D, w) { const p = D.weaponProfs; return p.has(w.name) || (w.cat.startsWith('simple') && p.has('simple')) || (w.cat.startsWith('martial') && p.has('martial')); }
 function derive(h) {
-  const R = raceOf(h), S = raceSub(h), C = CLASSES5[h.cls], B = bgOf(h);
+  const R = raceOf(h), S = raceSub(h), C = CLS(h), B = bgOf(h);
   const lv = clamp(h.level | 0, 1, 20), pb = profBonus(lv);
   const srd = (!h.subclass || h.subclass === C.sub[1]) && !(is24(h) && lv < 3);
   const D = { lv, pb, srd, subName: h.subclass || C.sub[1], todo: [], soft: [], feats: [], uses: [], attacks: [], notes: [], dark: (S && S.dark) || R.dark };
@@ -6361,12 +6787,16 @@ function derive(h) {
   const asiAt = asiLevels(C).filter((x) => x <= lv);
   for (const at of asiAt) { const c = h.asi[at] || {}; for (const k of [c.a, c.b]) if (ABIL.includes(k)) sc[k] = Math.min(20, sc[k] + 1); }
   for (const k of ABIL) sc[k] = Math.min(20, sc[k]);
-  if (h.cls === 'barbarian' && lv >= 20) { sc.str = Math.min(24, sc.str + 4); sc.con = Math.min(24, sc.con + 4); }
+  const v24 = is24(h);
+  if (v24 && lv >= BOON_LV && boonAb(h)) sc[boonAb(h)] = Math.min(30, sc[boonAb(h)] + 1);
+  const cap20 = (a, b) => { const m = v24 ? 25 : 24; sc[a] = Math.max(sc[a], Math.min(m, sc[a] + 4)); sc[b] = Math.max(sc[b], Math.min(m, sc[b] + 4)); };
+  if (h.cls === 'barbarian' && lv >= 20) cap20('str', 'con');
+  if (v24 && h.cls === 'monk' && lv >= 20) cap20('dex', 'wis');
   D.sc = sc; D.mod = {}; for (const k of ABIL) D.mod[k] = modOf(sc[k]);
   // proficiencies
   const saves = new Set(C.saves);
   if (h.cls === 'monk' && lv >= 14) ABIL.forEach((a) => saves.add(a));
-  if (h.cls === 'rogue' && lv >= 15) saves.add('wis');
+  if (h.cls === 'rogue' && lv >= 15) { saves.add('wis'); if (v24) saves.add('cha'); }
   D.saves = saves;
   const skills = new Set();
   const grant = (list, src) => { for (const s of list) { if (skills.has(s) && !src.endsWith('background')) D.soft.push(s + ' is granted twice (' + src + '); pick a different skill elsewhere.'); skills.add(s); } };
@@ -6377,22 +6807,31 @@ function derive(h) {
   D.bgSkills = (h.bg === 'custom' ? h.bgSkills.slice(0, 2) : B.skills).map((s) => (skills.has(s) && h.bgSwap[s] && !skills.has(h.bgSwap[s]) ? h.bgSwap[s] : s));
   D.bgDupes = D.bgSkills.filter((s) => skills.has(s));
   grant(D.bgSkills, B.name + ' background');
-  grant(h.skills.slice(0, C.skills[0]), C.name);
+  D.skN = C.skills[0] + (v24 && h.cls === 'barbarian' && lv >= 3 ? 1 : 0);
+  grant(h.skills.slice(0, D.skN), C.name);
+  if (v24 && lv >= BOON_LV && h.boon === 'skill') for (const s of ALL_SKILLS) skills.add(s);
   if (h.cls === 'bard' && srd && lv >= 3) grant(h.loreSkills.slice(0, 3), 'College of Lore');
   if (h.cls === 'warlock' && h.invocations.includes('beguiling')) { skills.add('Deception'); skills.add('Persuasion'); }
   D.skills = skills;
-  const expN = h.cls === 'rogue' ? (lv >= 6 ? 4 : 2) : h.cls === 'bard' ? (lv >= 10 ? 4 : lv >= 3 ? 2 : 0) : 0;
+  const expN = v24 ? expN24(h, lv) : h.cls === 'rogue' ? (lv >= 6 ? 4 : 2) : h.cls === 'bard' ? (lv >= 10 ? 4 : lv >= 3 ? 2 : 0) : 0;
   D.expN = expN;
-  D.expertise = new Set(h.expertise.filter((s) => skills.has(s) || s === "Thieves' tools").slice(0, expN));
-  const jack = h.cls === 'bard' && lv >= 2, athlete = h.cls === 'fighter' && srd && lv >= 7;
-  D.skillBonus = (s) => { const ab = SKILL_AB[s]; let b = D.mod[ab]; if (D.expertise.has(s)) b += pb * 2; else if (skills.has(s)) b += pb; else if (jack) b += Math.floor(pb / 2); else if (athlete && (ab === 'str' || ab === 'dex' || ab === 'con')) b += Math.ceil(pb / 2); return b; };
+  let exL = h.expertise.filter((s) => skills.has(s) || s === "Thieves' tools");
+  // 2024 wizard Scholar: the first expertise must be a scholarly skill
+  if (v24 && h.cls === 'wizard') { const sch = exL.filter((s) => SCHOLAR.includes(s)).slice(0, 1); exL = sch.concat(exL.filter((s) => !sch.includes(s)).slice(0, Math.max(0, expN - 1))); }
+  D.expertise = new Set(exL.slice(0, expN));
+  const jack = h.cls === 'bard' && lv >= 2, athlete = !v24 && h.cls === 'fighter' && srd && lv >= 7;
+  // 2024 Thaumaturge and Magician add Wisdom to two Intelligence skills
+  const orderSk = v24 && h.order === 'thaumaturge' && h.cls === 'cleric' ? ['Arcana', 'Religion'] : v24 && h.order === 'magician' && h.cls === 'druid' ? ['Arcana', 'Nature'] : [];
+  D.skillBonus = (s) => { const ab = SKILL_AB[s]; let b = D.mod[ab]; if (D.expertise.has(s)) b += pb * 2; else if (skills.has(s)) b += pb; else if (jack) b += Math.floor(pb / 2); else if (athlete && (ab === 'str' || ab === 'dex' || ab === 'con')) b += Math.ceil(pb / 2); if (orderSk.includes(s)) b += Math.max(1, D.mod.wis); return b; };
   D.saveBonus = (a) => D.mod[a] + (saves.has(a) ? pb : 0);
   D.passive = 10 + D.skillBonus('Perception');
-  D.armorProfs = new Set(C.armor.concat(srd ? C.subArmor || [] : [], (S && S.armor) || []));
-  D.weaponProfs = new Set(C.weapons.concat(R.weapons || [], (S && S.weapons) || []));
+  const ordArmor = v24 ? (h.cls === 'cleric' && h.order === 'protector' ? ['heavy'] : h.cls === 'druid' && h.order === 'warden' ? ['medium'] : []) : [];
+  const ordWeap = v24 && ((h.cls === 'cleric' && h.order === 'protector') || (h.cls === 'druid' && h.order === 'warden')) ? ['martial'] : [];
+  D.armorProfs = new Set(C.armor.concat(srd ? C.subArmor || [] : [], ordArmor, (S && S.armor) || []));
+  D.weaponProfs = new Set(C.weapons.concat(ordWeap, R.weapons || [], (S && S.weapons) || []));
   const tools = [].concat(C.tools || [], B.tools || [], (S && S.tools) || [], R.toolChoice && h.tool ? [h.tool] : []);
   D.tools = tools;
-  const langs = new Set(R.langs.concat(C.langs || [], h.cls === 'sorcerer' && srd ? ['Draconic'] : []));
+  const langs = new Set(R.langs.concat(C.langs || [], h.cls === 'sorcerer' && srd && !v24 ? ['Draconic'] : []));
   for (const l of h.raceLangs) langs.add(l);
   for (const l of h.bgLangs) langs.add(l);
   D.langs = langs;
@@ -6402,6 +6841,7 @@ function derive(h) {
   let hp = hd + con + perLv;
   for (let i = 2; i <= lv; i++) hp += Math.max(1, hd / 2 + 1 + con) + perLv;
   D.hpCalc = Math.max(1, hp);
+  if (v24 && lv >= BOON_LV && h.boon === 'fortitude') D.hpCalc += 40;
   D.hpMax = h.hpMax > 0 ? h.hpMax : D.hpCalc;
   D.hd = hd; D.hdLeft = Math.max(0, lv - (h.hdUsed || 0));
   // armour and AC
@@ -6417,23 +6857,25 @@ function derive(h) {
   const unarmoredOpts = [10 + D.mod.dex];
   if (C.unarmored === 'con') unarmoredOpts.push(10 + D.mod.dex + D.mod.con);
   if (C.unarmored === 'wis') unarmoredOpts.push(10 + D.mod.dex + D.mod.wis);
-  if (h.cls === 'sorcerer' && srd) unarmoredOpts.push(13 + D.mod.dex);
+  if (h.cls === 'sorcerer' && srd) unarmoredOpts.push(v24 ? 10 + D.mod.dex + D.mod.cha : 13 + D.mod.dex);
   let ac = armor ? armorAC(armor) : Math.max(...unarmoredOpts);
   const shieldOn = ownShield && h.shield && D.armorProfs.has('shield') && !(C.unarmored === 'wis' && !armor);
   if (shieldOn) ac += 2;
-  const styles = [h.style, lv >= 10 && h.cls === 'fighter' && srd ? h.style2 : ''].filter(Boolean);
+  const styles = [h.style, lv >= (v24 ? 7 : 10) && h.cls === 'fighter' && srd ? h.style2 : ''].filter(Boolean);
   const styleAt = C.style ? C.style[0] : 99;
   const hasStyle = (k) => lv >= styleAt && styles.includes(k);
   if (armor && hasStyle('defense')) ac += 1;
   D.ac = ac; D.armor = armor; D.shieldOn = shieldOn;
-  D.acNote = (armor ? armor.name : C.unarmored === 'con' ? 'Unarmoured defence (Dex + Con)' : C.unarmored === 'wis' ? 'Unarmoured defence (Dex + Wis)' : h.cls === 'sorcerer' && srd ? 'Draconic resilience (13 + Dex)' : 'No armour (10 + Dex)') + (shieldOn ? ' + shield' : '') + (armor && hasStyle('defense') ? ' + Defence style' : '');
+  D.acNote = (armor ? armor.name : C.unarmored === 'con' ? 'Unarmoured defence (Dex + Con)' : C.unarmored === 'wis' ? 'Unarmoured defence (Dex + Wis)' : h.cls === 'sorcerer' && srd ? (v24 ? 'Draconic resilience (10 + Dex + Cha)' : 'Draconic resilience (13 + Dex)') : 'No armour (10 + Dex)') + (shieldOn ? ' + shield' : '') + (armor && hasStyle('defense') ? ' + Defence style' : '');
   if (armor && !canWear(armor)) D.soft.push('You are not proficient with ' + armor.name.toLowerCase() + '.');
   if (ownShield && h.shield && !D.armorProfs.has('shield')) D.soft.push('You are not proficient with shields.');
   // speed
   let speed = (S && S.speed) || R.speed;
   if (armor && armor.type === 'heavy' && armor.str && sc.str < armor.str && !(h.race === 'dwarf' && !is24(h))) { speed -= 10; D.notes.push('Speed −10 ft: ' + armor.name + ' needs Strength ' + armor.str + '.'); }
   if (h.cls === 'barbarian' && lv >= 5 && !(armor && armor.type === 'heavy')) speed += 10;
-  if (h.cls === 'monk' && lv >= 2 && !armor && !shieldOn) speed += [0, 10, 10, 10, 15, 15, 15, 15, 20, 20, 20, 20, 25, 25, 25, 25, 30, 30, 30][Math.min(lv, 18) - 1] || 30;
+  if (h.cls === 'monk' && lv >= 2 && !armor && !shieldOn) speed += lv >= 18 ? 30 : lv >= 14 ? 25 : lv >= 10 ? 20 : lv >= 6 ? 15 : 10;
+  if (v24 && h.cls === 'ranger' && lv >= 6 && !(armor && armor.type === 'heavy')) speed += 10;
+  if (v24 && lv >= BOON_LV && h.boon === 'speed') speed += 30;
   // exhaustion: 2014 halves speed at level 2; 2024 takes 5 ft and 2 from every d20 test per level
   D.d20pen = is24(h) ? 2 * (h.exh || 0) : 0;
   if (is24(h)) speed = Math.max(0, speed - 5 * (h.exh || 0));
@@ -6444,7 +6886,7 @@ function derive(h) {
   D.critOn = h.cls === 'fighter' && srd ? (lv >= 15 ? 18 : lv >= 3 ? 19 : 20) : 20;
   if (armor && armor.stealth) D.notes.push('Disadvantage on Stealth in ' + armor.name.toLowerCase() + '.');
   // attacks
-  const martialDie = h.cls === 'monk' ? (lv >= 17 ? 'd10' : lv >= 11 ? 'd8' : lv >= 5 ? 'd6' : 'd4') : null;
+  const martialDie = h.cls === 'monk' ? (v24 ? (lv >= 17 ? 'd12' : lv >= 11 ? 'd10' : lv >= 5 ? 'd8' : 'd6') : (lv >= 17 ? 'd10' : lv >= 11 ? 'd8' : lv >= 5 ? 'd6' : 'd4')) : null;
   const twoHandedHeld = false;
   const seen = new Set();
   for (const it of inv) {
@@ -6452,7 +6894,7 @@ function derive(h) {
     if (!w || w.kind !== 'weapon' || seen.has(w.name) || w.dmg === '—') continue;
     seen.add(w.name);
     const ranged = w.cat.endsWith('ranged');
-    const monkW = martialDie && (w.name === 'Shortsword' || (w.cat === 'simple melee' && !w.props.includes('two-handed') && !w.props.includes('heavy')));
+    const monkW = martialDie && (v24 ? w.cat === 'simple melee' || (w.cat === 'martial melee' && w.props.includes('light')) : w.name === 'Shortsword' || (w.cat === 'simple melee' && !w.props.includes('two-handed') && !w.props.includes('heavy')));
     const ab = ranged ? 'dex' : (w.props.includes('finesse') || monkW) ? (D.mod.dex > D.mod.str ? 'dex' : 'str') : 'str';
     const prof = weaponProf(D, w);
     let hit = D.mod[ab] + (prof ? pb : 0) + (ranged && hasStyle('archery') ? 2 : 0);
@@ -6481,18 +6923,22 @@ function derive(h) {
     const mod = D.mod[cast.ab];
     const K = { ab: cast.ab, mod, dc: 8 + pb + mod, atk: pb + mod, mode: cast.mode, list: cast.list, type: cast.type };
     if (cast.type === 'full') K.slots = FULL_SLOTS[lv].slice();
-    else if (cast.type === 'half') K.slots = lv >= 2 ? FULL_SLOTS[Math.ceil(lv / 2)].slice() : [];
+    else if (cast.type === 'half') K.slots = lv >= (cast.from || 2) ? FULL_SLOTS[Math.ceil(lv / 2)].slice() : [];
     else { K.slots = []; K.pact = PACT_SLOTS[lv]; K.pactLv = PACT_LEVEL[lv]; }
     K.maxLv = cast.type === 'pact' ? K.pactLv : K.slots.length;
-    K.cantripsN = cast.cantrips(lv) + (h.cls === 'druid' && srd && lv >= 2 ? 1 : 0) + (h.cls === 'warlock' && lv >= 3 && h.pact === 'tome' ? 3 : 0);
+    K.cantripsN = cast.cantrips(lv) + (!v24 && h.cls === 'druid' && srd && lv >= 2 ? 1 : 0) + (hasPact(h, 'tome') ? 3 : 0);
+    if (v24 && ((h.cls === 'cleric' && h.order === 'thaumaturge') || (h.cls === 'druid' && h.order === 'magician'))) K.cantripsN += 1;
+    if (v24 && (h.cls === 'paladin' || h.cls === 'ranger') && lv >= 2 && h.style === (h.cls === 'paladin' ? 'blessed' : 'druidic')) K.cantripsN += 2;
     if (cast.mode === 'known') K.knownN = cast.known[lv - 1];
-    if (cast.mode === 'prepared') K.prepN = Math.max(1, mod + (cast.type === 'half' ? Math.floor(lv / 2) : lv));
-    if (cast.mode === 'book') { K.bookN = 6 + 2 * (lv - 1); K.prepN = Math.max(1, mod + lv); }
-    K.secretsN = h.cls === 'bard' ? (lv >= 6 && srd ? 2 : 0) + (lv >= 10 ? 2 : 0) + (lv >= 14 ? 2 : 0) + (lv >= 18 ? 2 : 0) : 0;
+    if (cast.mode === 'prepared') K.prepN = cast.prep ? cast.prep[lv - 1] : Math.max(1, mod + (cast.type === 'half' ? Math.floor(lv / 2) : lv));
+    if (cast.mode === 'book') { K.bookN = 6 + 2 * (lv - 1); K.prepN = cast.prep ? cast.prep[lv - 1] : Math.max(1, mod + lv); }
+    K.secretsN = h.cls !== 'bard' ? 0 : v24 ? (lv >= 10 ? K.knownN : lv >= 6 && srd ? 2 : 0) : (lv >= 6 && srd ? 2 : 0) + (lv >= 10 ? 2 : 0) + (lv >= 14 ? 2 : 0) + (lv >= 18 ? 2 : 0);
     // always-prepared spells from domain, oath, circle or patron
     K.always = [];
     if (C.extra && srd) for (const at in C.extra) if (lv >= +at) K.always.push(...C.extra[at]);
-    if (h.cls === 'druid' && srd && lv >= 3) { const cs = CIRCLE_SPELLS[h.land] || CIRCLE_SPELLS.Forest; [3, 5, 7, 9].forEach((at, i) => { if (lv >= at) K.always.push(cs[i * 2], cs[i * 2 + 1]); }); }
+    if (h.cls === 'druid' && srd && lv >= 3 && !v24) { const cs = CIRCLE_SPELLS[h.land] || CIRCLE_SPELLS.Forest; [3, 5, 7, 9].forEach((at, i) => { if (lv >= at) K.always.push(cs[i * 2], cs[i * 2 + 1]); }); }
+    if (h.cls === 'druid' && srd && lv >= 3 && v24) { const cs = CIRCLE24[h.land24] || CIRCLE24.Temperate; [3, 5, 7, 9].forEach((at, i) => { if (lv >= at) K.always.push(...cs[i]); }); }
+    if (v24) { const free = { druid: ['Speak with Animals'], paladin: lv >= 2 ? ['Divine Smite'].concat(lv >= 5 ? ['Find Steed'] : []) : [], ranger: ["Hunter's Mark"], warlock: lv >= 9 ? ['Contact Other Plane'] : [], bard: lv >= 20 ? ['Power Word Heal', 'Power Word Kill'] : [] }[h.cls] || []; for (const n of free) if (!K.always.includes(n)) K.always.push(n); }
     K.expanded = C.expanded && srd ? C.expanded.filter((n) => (SPELL_BY.get(n) || {}).lv <= K.maxLv) : [];
     D.cast = K;
   }
@@ -6507,7 +6953,7 @@ function derive(h) {
   if (S && S.name === 'Forest gnome' && !is24(h)) D.raceSpells.push({ name: 'Minor Illusion', ab: 'int', note: 'Natural Illusionist' });
   if (h.race === 'tiefling' && !is24(h)) { D.raceSpells.push({ name: 'Thaumaturgy', ab: 'cha', note: 'Infernal Legacy' }); if (lv >= 3) D.raceSpells.push({ name: 'Hellish Rebuke', ab: 'cha', note: 'as 2nd level, once per long rest', use: 'rebuke' }); if (lv >= 5) D.raceSpells.push({ name: 'Darkness', ab: 'cha', note: 'once per long rest', use: 'darkness' }); }
   // cantrip attacks
-  const myCantrips = (D.cast ? h.cantrips : []).map((n) => [n, D.cast.ab]).concat(D.raceSpells.filter((r) => (SPELL_BY.get(r.name) || {}).lv === 0).map((r) => [r.name, r.ab]));
+  const myCantrips = (D.cast ? h.cantrips.concat(D.cast.always.filter((n) => (SPELL_BY.get(n) || {}).lv === 0 && !h.cantrips.includes(n))) : []).map((n) => [n, D.cast.ab]).concat(D.raceSpells.filter((r) => (SPELL_BY.get(r.name) || {}).lv === 0).map((r) => [r.name, r.ab]));
   const tier = lv >= 17 ? 4 : lv >= 11 ? 3 : lv >= 5 ? 2 : 1;
   for (const [n, ab] of myCantrips) {
     const ca = CANTRIP_ATK[n]; if (!ca) continue;
@@ -6529,25 +6975,36 @@ function derive(h) {
   for (const [at, n, d] of C.feats) if (at <= lv) D.feats.push({ n, d, src: C.name + ' ' + at, at });
   if (subOn && srd) for (const [at, n, d] of C.subFeats) if (at <= lv) D.feats.push({ n, d, src: C.sub[1] + ' ' + at, at });
   if (subOn && !srd) { D.feats.push({ n: h.subclass, d: 'A Player\'s Handbook subclass outside the free SRD, so its features are not built in. Read them on AideDD and add the ones you have below in the Class step; they appear here.', src: C.sub[0], at: C.sub[2], link: AID.cls(h.cls) }); for (const line of (h.subNotes || '').split('\n').map((x) => x.trim()).filter(Boolean)) { const m = /^(?:(\d+)\s*[:.)-]\s*)?([^:]+?)(?::\s*(.*))?$/.exec(line); const at = m && m[1] ? +m[1] : C.sub[2]; if (at <= lv) D.feats.push({ n: m ? m[2] : line, d: m && m[3] ? m[3] : '', src: h.subclass + ' ' + at, at }); } }
-  if (C.style && lv >= C.style[0]) for (const k of styles) if (STYLES[k]) D.feats.push({ n: 'Fighting style: ' + STYLES[k][0], d: STYLES[k][1], src: C.name });
-  if (h.cls === 'sorcerer') { const dg = DRAGONS[h.dragon] || DRAGONS.red; if (srd) D.feats.push({ n: 'Ancestry: ' + dg[0] + ' dragon', d: 'Your draconic magic is tied to ' + dg[1] + '.', src: C.sub[1] }); for (const k of h.metamagic) if (METAMAGIC[k]) D.feats.push({ n: METAMAGIC[k][0], d: METAMAGIC[k][1], src: 'Metamagic' }); }
-  if (h.cls === 'warlock') { for (const k of h.invocations) if (INVOCATIONS[k]) D.feats.push({ n: INVOCATIONS[k][0], d: INVOCATIONS[k][1], src: 'Invocation' }); if (lv >= 3 && h.pact) D.feats.push({ n: 'Pact of the ' + h.pact.charAt(0).toUpperCase() + h.pact.slice(1), d: { chain: 'Cast find familiar as a ritual; your familiar can be an imp, pseudodragon, quasit or sprite.', blade: 'Bonus action: summon a pact weapon of any melee form; you are proficient with it.', tome: 'A Book of Shadows holding three cantrips from any class.' }[h.pact], src: 'Pact Boon' }); }
-  if (h.cls === 'ranger') D.feats.push({ n: 'Favoured enemy: ' + h.favored, d: 'Natural explorer terrain: ' + h.terrain + '.', src: C.name });
-  if (h.cls === 'druid' && srd && lv >= 2) D.feats.push({ n: 'Circle land: ' + h.land, d: 'Your circle spells come from the ' + h.land.toLowerCase() + '.', src: C.sub[1] });
+  const ST = styleTab(h);
+  if (C.style && lv >= C.style[0]) for (const k of styles) if (ST[k]) D.feats.push({ n: 'Fighting style: ' + ST[k][0], d: ST[k][1], src: C.name });
+  if (h.cls === 'sorcerer') { const dg = DRAGONS[h.dragon] || DRAGONS.red; if (srd) D.feats.push({ n: 'Ancestry: ' + dg[0] + ' dragon', d: 'Your draconic magic is tied to ' + dg[1] + '.', src: C.sub[1] }); const MM = metaTab(h); for (const k of h.metamagic.slice(0, metaN(h, lv))) if (MM[k]) D.feats.push({ n: MM[k][0], d: MM[k][1], src: 'Metamagic' }); }
+  if (h.cls === 'warlock') { const IV = invoTab(h); for (const k of h.invocations) if (IV[k] && invoOk(h, k, lv)) D.feats.push({ n: IV[k][0], d: IV[k][1], src: 'Invocation' }); if (!v24 && lv >= 3 && h.pact) D.feats.push({ n: 'Pact of the ' + h.pact.charAt(0).toUpperCase() + h.pact.slice(1), d: { chain: 'Cast find familiar as a ritual; your familiar can be an imp, pseudodragon, quasit or sprite.', blade: 'Bonus action: summon a pact weapon of any melee form; you are proficient with it.', tome: 'A Book of Shadows holding three cantrips from any class.' }[h.pact], src: 'Pact Boon' }); }
+  if (h.cls === 'ranger' && !v24) D.feats.push({ n: 'Favoured enemy: ' + h.favored, d: 'Natural explorer terrain: ' + h.terrain + '.', src: C.name });
+  if (h.cls === 'druid' && srd && lv >= 2 && !v24) D.feats.push({ n: 'Circle land: ' + h.land, d: 'Your circle spells come from the ' + h.land.toLowerCase() + '.', src: C.sub[1] });
+  if (h.cls === 'druid' && srd && lv >= 3 && v24) { const L = LANDS24.includes(h.land24) ? h.land24 : 'Temperate'; D.feats.push({ n: 'Circle land: ' + L, d: 'Your circle spells come from the ' + L.toLowerCase() + ' lands; Nature\'s Ward resists ' + { Arid: 'fire', Polar: 'cold', Temperate: 'lightning', Tropical: 'poison' }[L] + '.', src: C.sub[1] }); }
+  if (v24 && (h.cls === 'cleric' || h.cls === 'druid')) {
+    const ORD = { protector: ['Protector', 'Martial weapons and heavy armour.'], thaumaturge: ['Thaumaturge', 'One more cantrip; add your Wis mod (min +1) to Arcana and Religion checks.'], magician: ['Magician', 'One more cantrip; add your Wis mod (min +1) to Arcana and Nature checks.'], warden: ['Warden', 'Martial weapons and medium armour.'] }[h.order];
+    if (ORD) D.feats.push({ n: (h.cls === 'cleric' ? 'Divine Order: ' : 'Primal Order: ') + ORD[0], d: ORD[1], src: C.name });
+    if (lv >= 7 && h.strike7) D.feats.push(h.strike7 === 'potent' ? { n: 'Potent Spellcasting', d: 'Add your Wis mod to the damage of your ' + C.name.toLowerCase() + ' cantrips.', src: C.name } : h.cls === 'cleric' ? { n: 'Divine Strike', d: 'Once per turn, a weapon hit deals +' + (lv >= 14 ? 2 : 1) + 'd8 necrotic or radiant.', src: C.name } : { n: 'Primal Strike', d: 'Once per turn, an attack hit deals +' + (lv >= 15 ? 2 : 1) + 'd8 cold, fire, lightning or thunder.', src: C.name });
+  }
+  if (v24 && lv >= BOON_LV && EPIC_BOONS[h.boon]) D.feats.push({ n: EPIC_BOONS[h.boon][0], d: EPIC_BOONS[h.boon][1] + (boonAb(h) ? ' (+1 ' + ABIL_N[boonAb(h)] + ')' : ''), src: 'Epic boon' });
   // limited uses
   const U = (key, n, max, rest, note) => D.uses.push({ key, n, max, rest, note: note || '' });
   const cha = Math.max(1, D.mod.cha);
-  if (h.cls === 'barbarian') U('rage', 'Rage', lv >= 20 ? 99 : [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6][lv - 1], 'long', 'Rage damage +' + (lv >= 16 ? 4 : lv >= 9 ? 3 : 2));
-  if (h.cls === 'bard') U('insp', 'Bardic Inspiration', cha, lv >= 5 ? 'short' : 'long', 'd' + (lv >= 15 ? 12 : lv >= 10 ? 10 : lv >= 5 ? 8 : 6));
-  if (h.cls === 'cleric' && lv >= 2) U('channel', 'Channel Divinity', lv >= 18 ? 3 : lv >= 6 ? 2 : 1, 'short', srd ? 'Turn Undead or Preserve Life (' + 5 * lv + ' HP)' : 'Turn Undead or your domain\'s option');
-  if (h.cls === 'druid' && lv >= 2) { U('wild', 'Wild Shape', lv >= 20 ? 99 : 2, 'short', 'Max CR ' + (lv >= 8 ? '1' : lv >= 4 ? '1/2' : '1/4') + ', ' + Math.floor(lv / 2) + ' h'); if (srd) U('natrec', 'Natural Recovery', 1, 'long', Math.ceil(lv / 2) + ' slot levels'); }
-  if (h.cls === 'fighter') { U('second', 'Second Wind', 1, 'short', '1d10+' + lv); if (lv >= 2) U('surge', 'Action Surge', lv >= 17 ? 2 : 1, 'short'); if (lv >= 9) U('indom', 'Indomitable', lv >= 17 ? 3 : lv >= 13 ? 2 : 1, 'long'); }
-  if (h.cls === 'monk' && lv >= 2) { U('ki', 'Ki points', lv, 'short', 'Save DC ' + (8 + pb + D.mod.wis)); if (lv >= 6 && srd) U('whole', 'Wholeness of Body', 1, 'long', 3 * lv + ' HP'); }
-  if (h.cls === 'paladin') { U('sense', 'Divine Sense', 1 + Math.max(0, D.mod.cha), 'long'); U('lay', 'Lay on Hands pool', 5 * lv, 'long', 'HP'); if (lv >= 3) U('channel', 'Channel Divinity', 1, 'short'); if (lv >= 14) U('cleanse', 'Cleansing Touch', cha, 'long'); if (lv >= 20 && srd) U('nimbus', 'Holy Nimbus', 1, 'long'); }
-  if (h.cls === 'rogue') { D.notes.push('Sneak Attack: ' + Math.ceil(lv / 2) + 'd6 once per turn.'); if (lv >= 20) U('luck', 'Stroke of Luck', 1, 'short'); }
-  if (h.cls === 'sorcerer' && lv >= 2) U('sorc', 'Sorcery points', lv, 'long');
-  if (h.cls === 'warlock') { if (lv >= 6) U('ownluck', "Dark One's Own Luck", 1, 'short', '+d10'); if (lv >= 14) U('hurl', 'Hurl Through Hell', 1, 'long', '10d10 psychic'); if (lv >= 20) U('master', 'Eldritch Master', 1, 'long'); [[11, 6], [13, 7], [15, 8], [17, 9]].forEach(([at, sl]) => { if (lv >= at) U('arc' + sl, 'Mystic Arcanum (' + ordinal(sl) + ')', 1, 'long', h.arcanum[sl] || 'choose a spell'); }); }
-  if (h.cls === 'wizard') U('arcrec', 'Arcane Recovery', 1, 'long', Math.ceil(lv / 2) + ' slot levels');
+  if (v24) uses24(h, D, U);
+  else {
+    if (h.cls === 'barbarian') U('rage', 'Rage', lv >= 20 ? 99 : [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6][lv - 1], 'long', 'Rage damage +' + (lv >= 16 ? 4 : lv >= 9 ? 3 : 2));
+    if (h.cls === 'bard') U('insp', 'Bardic Inspiration', cha, lv >= 5 ? 'short' : 'long', 'd' + (lv >= 15 ? 12 : lv >= 10 ? 10 : lv >= 5 ? 8 : 6));
+    if (h.cls === 'cleric' && lv >= 2) U('channel', 'Channel Divinity', lv >= 18 ? 3 : lv >= 6 ? 2 : 1, 'short', srd ? 'Turn Undead or Preserve Life (' + 5 * lv + ' HP)' : 'Turn Undead or your domain\'s option');
+    if (h.cls === 'druid' && lv >= 2) { U('wild', 'Wild Shape', lv >= 20 ? 99 : 2, 'short', 'Max CR ' + (lv >= 8 ? '1' : lv >= 4 ? '1/2' : '1/4') + ', ' + Math.floor(lv / 2) + ' h'); if (srd) U('natrec', 'Natural Recovery', 1, 'long', Math.ceil(lv / 2) + ' slot levels'); }
+    if (h.cls === 'fighter') { U('second', 'Second Wind', 1, 'short', '1d10+' + lv); if (lv >= 2) U('surge', 'Action Surge', lv >= 17 ? 2 : 1, 'short'); if (lv >= 9) U('indom', 'Indomitable', lv >= 17 ? 3 : lv >= 13 ? 2 : 1, 'long'); }
+    if (h.cls === 'monk' && lv >= 2) { U('ki', 'Ki points', lv, 'short', 'Save DC ' + (8 + pb + D.mod.wis)); if (lv >= 6 && srd) U('whole', 'Wholeness of Body', 1, 'long', 3 * lv + ' HP'); }
+    if (h.cls === 'paladin') { U('sense', 'Divine Sense', 1 + Math.max(0, D.mod.cha), 'long'); U('lay', 'Lay on Hands pool', 5 * lv, 'long', 'HP'); if (lv >= 3) U('channel', 'Channel Divinity', 1, 'short'); if (lv >= 14) U('cleanse', 'Cleansing Touch', cha, 'long'); if (lv >= 20 && srd) U('nimbus', 'Holy Nimbus', 1, 'long'); }
+    if (h.cls === 'rogue') { D.notes.push('Sneak Attack: ' + Math.ceil(lv / 2) + 'd6 once per turn.'); if (lv >= 20) U('luck', 'Stroke of Luck', 1, 'short'); }
+    if (h.cls === 'sorcerer' && lv >= 2) U('sorc', 'Sorcery points', lv, 'long');
+    if (h.cls === 'warlock') { if (lv >= 6) U('ownluck', "Dark One's Own Luck", 1, 'short', '+d10'); if (lv >= 14) U('hurl', 'Hurl Through Hell', 1, 'long', '10d10 psychic'); if (lv >= 20) U('master', 'Eldritch Master', 1, 'long'); [[11, 6], [13, 7], [15, 8], [17, 9]].forEach(([at, sl]) => { if (lv >= at) U('arc' + sl, 'Mystic Arcanum (' + ordinal(sl) + ')', 1, 'long', h.arcanum[sl] || 'choose a spell'); }); }
+    if (h.cls === 'wizard') U('arcrec', 'Arcane Recovery', 1, 'long', Math.ceil(lv / 2) + ' slot levels');
+  }
   if (R.dragon && !is24(h)) U('breath', 'Breath Weapon', 1, 'short');
   if (is24(h)) for (const [k, n, max, rest, at] of [].concat(R.uses || [], (S && S.uses) || [])) if (lv >= at) U(k, n, max === 'pb' ? pb : max, rest);
   if (h.race === 'halforc') U('relentless', 'Relentless Endurance', 1, 'long');
@@ -6569,16 +7026,17 @@ function derive(h) {
   for (const s of D.bgDupes) T('basics', 'Your race already gives ' + s + '; choose a replacement background skill.');
   if ((B.langs || 0) > h.bgLangs.length) T('basics', 'Choose ' + (B.langs - h.bgLangs.length) + ' background language' + (B.langs - h.bgLangs.length > 1 ? 's' : '') + '.');
   if (h.method === 'point') { const left = 27 - ABIL.reduce((a, k) => a + (POINT_COST[h.base[k]] || 0), 0); if (left > 0) D.soft.push(left + ' point-buy points unspent.'); if (left < 0) T('scores', 'Point buy is over budget by ' + -left + '.'); }
-  if (h.skills.length < C.skills[0]) T('class', 'Choose ' + (C.skills[0] - h.skills.length) + ' more class skill' + (C.skills[0] - h.skills.length > 1 ? 's' : '') + '.');
+  if (h.skills.length < D.skN) T('class', 'Choose ' + (D.skN - h.skills.length) + ' more class skill' + (D.skN - h.skills.length > 1 ? 's' : '') + '.');
   if (expN && D.expertise.size < expN) T('class', 'Choose ' + (expN - D.expertise.size) + ' expertise skill' + (expN - D.expertise.size > 1 ? 's' : '') + '.');
   if (h.cls === 'bard' && srd && lv >= 3 && h.loreSkills.length < 3) T('class', 'Choose three College of Lore skills.');
   if (C.style && lv >= C.style[0] && !h.style) T('class', 'Choose a fighting style.');
-  if (h.cls === 'fighter' && srd && lv >= 10 && !h.style2) T('class', 'Choose a second fighting style.');
-  if (h.cls === 'sorcerer' && lv >= 3) { const n = lv >= 17 ? 4 : lv >= 10 ? 3 : 2; if (h.metamagic.length < n) T('class', 'Choose ' + (n - h.metamagic.length) + ' Metamagic option' + (n - h.metamagic.length > 1 ? 's' : '') + '.'); }
-  if (h.cls === 'warlock') { const n = [0, 0, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8][lv]; D.invN = n; if (h.invocations.length < n) T('class', 'Choose ' + (n - h.invocations.length) + ' eldritch invocation' + (n - h.invocations.length > 1 ? 's' : '') + '.'); if (lv >= 3 && !h.pact) T('class', 'Choose a pact boon.'); [[11, 6], [13, 7], [15, 8], [17, 9]].forEach(([at, sl]) => { if (lv >= at && !h.arcanum[sl]) T('spells', 'Choose a ' + ordinal(sl) + '-level Mystic Arcanum spell.'); }); }
+  if (h.cls === 'fighter' && srd && lv >= (v24 ? 7 : 10) && !h.style2) T('class', 'Choose a second fighting style.');
+  if (h.cls === 'sorcerer' && metaN(h, lv)) { const n = metaN(h, lv); if (h.metamagic.length < n) T('class', 'Choose ' + (n - h.metamagic.length) + ' Metamagic option' + (n - h.metamagic.length > 1 ? 's' : '') + '.'); }
+  if (h.cls === 'warlock') { const n = (v24 ? INV_N24 : [0, 0, 2, 2, 2, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8])[lv]; D.invN = n; const have = h.invocations.filter((k) => invoTab(h)[k]).length; if (have < n) T('class', 'Choose ' + (n - have) + ' eldritch invocation' + (n - have > 1 ? 's' : '') + '.'); if (!v24 && lv >= 3 && !h.pact) T('class', 'Choose a pact boon.'); [[11, 6], [13, 7], [15, 8], [17, 9]].forEach(([at, sl]) => { if (lv >= at && !h.arcanum[sl]) T('spells', 'Choose a ' + ordinal(sl) + '-level Mystic Arcanum spell.'); }); }
   for (const at of asiAt) { const c = h.asi[at] || {}; if (!c.a || !c.b) T('class', 'Choose your level ' + at + ' ability score increase.'); }
+  if (v24) todo24(h, D, T);
   if (h.goldMode === 'kit') C.kit.forEach((grp, g) => { const o = grp[Math.min(h.kit[g] || 0, grp.length - 1)]; o.i.forEach((tok, j) => { if (tok.startsWith('@') && !h.picks[g + '.' + j]) T('gear', 'Pick ' + PICKS[tok][0] + ' for your starting kit.'); }); });
-  if (h.goldMode === 'gold' && !h.goldRoll) T('gear', 'Roll your starting gold.');
+  if (h.goldMode === 'gold' && !h.goldRoll && !v24) T('gear', 'Roll your starting gold.');
   if (D.cast) {
     const K = D.cast;
     const nonCls = h.cls === 'bard' ? h.spells.filter((n) => !(SPELL_BY.get(n) || { cls: '' }).cls.includes('b')).length : 0;
@@ -6648,9 +7106,14 @@ const RECO = {
 };
 const KIT_DEFAULT = { '@martial': 'Longsword', '@martialMelee': 'Battleaxe', '@simple': 'Spear', '@simpleMelee': 'Mace', '@instrument': 'Flute' };
 function classSpells(h, lv, maxLv, all) {
-  const C = CLASSES5[h.cls];
-  const key = C.cast ? C.cast.list : '';
-  return SPELLS.filter((s) => s.lv <= maxLv && s.lv === lv && (all || s.cls.includes(key) || (C.expanded && (!h.subclass || h.subclass === C.sub[1]) && C.expanded.includes(s.name))));
+  const C = CLS(h);
+  let key = C.cast ? C.cast.list : '';
+  // 2024 Blessed Warrior and Druidic Warrior take cantrips from the cleric and druid lists
+  if (lv === 0 && is24(h) && h.style === 'blessed' && h.cls === 'paladin') key = 'c';
+  if (lv === 0 && is24(h) && h.style === 'druidic' && h.cls === 'ranger') key = 'd';
+  // 2024 Magical Secrets: the bard, cleric, druid and wizard lists only
+  const wide = all && is24(h) && h.cls === 'bard' && !hasPact(h, 'tome') ? (s) => /[bcdw]/.test(s.cls) : all ? () => true : null;
+  return SPELLS.filter((s) => s.lv <= maxLv && s.lv === lv && ((wide && wide(s)) || s.cls.includes(key) || (C.expanded && (!h.subclass || h.subclass === C.sub[1]) && C.expanded.includes(s.name))));
 }
 function spellOK(h, K, name, lv0) {
   const sp = SPELL_BY.get(name); if (!sp) return false;
@@ -6679,12 +7142,13 @@ function autoSpells(h) {
     for (const n of order(h.spells.map((x) => SPELL_BY.get(x))).map((x) => x.name)) { if (h.prepared.length >= K.prepN) break; if (!h.prepared.includes(n)) h.prepared.push(n); }
   }
   if (h.cls === 'warlock') [[11, 6], [13, 7], [15, 8], [17, 9]].forEach(([at, sl]) => { if (D.lv >= at && !h.arcanum[sl]) { const o = order(classSpells(h, sl, 9)); if (o[0]) h.arcanum[sl] = o[0].name; } });
+  if (hasPact(h, 'tome')) for (const sp of order(classSpells(h, 0, 0, true))) { if (h.cantrips.length >= K.cantripsN) break; if (!h.cantrips.includes(sp.name)) h.cantrips.push(sp.name); }
 }
 const META_ORDER = ['quickened', 'twinned', 'subtle', 'careful', 'empowered', 'extended', 'distant', 'heightened'];
 const INVO_ORDER = ['agonizing', 'devilsight', 'repelling', 'armor', 'mask', 'thirsting', 'lifedrinker', 'ascendant', 'misty', 'spear', 'eldsight', 'beast', 'omen', 'mire', 'shadows', 'grave', 'whispers', 'witchsight', 'myriad', 'distant', 'leap', 'sculptor', 'dreadful', 'minions', 'vigor', 'gaze', 'runekeeper', 'thief', 'beguiling'];
 // fill every open choice with a sensible default, keeping what the player already picked
 function autoFill(h) {
-  const R = raceOf(h), S = raceSub(h), C = CLASSES5[h.cls], B = bgOf(h), Q = QB[h.cls];
+  const R = raceOf(h), S = raceSub(h), C = CLS(h), B = bgOf(h), Q = QB[h.cls];
   const ranked = Q[3].concat(ALL_SKILLS).filter((x, i, a) => a.indexOf(x) === i);
   if (is24(h)) autoFill24(h, Q);
   if (!h.name.trim()) h.name = pickName(h);
@@ -6700,7 +7164,7 @@ function autoFill(h) {
   for (const s of D.bgDupes) { const r = ranked.find((x) => !D.skills.has(x) && !C.skills[1].includes(x)) || ranked.find((x) => !D.skills.has(x)); if (r) { h.bgSwap[s] = r; D = derive(h); } }
   while (h.bg === 'custom' && h.bgSkills.length < 2) { const r = ranked.find((x) => !D.skills.has(x) && !C.skills[1].includes(x)) || ranked.find((x) => !D.skills.has(x)); if (!r) break; h.bgSkills.push(r); D = derive(h); }
   h.skills = h.skills.filter((x) => C.skills[1].includes(x));
-  while (h.skills.length < C.skills[0]) { const r = ranked.find((x) => C.skills[1].includes(x) && !D.skills.has(x)); if (!r) break; h.skills.push(r); D = derive(h); }
+  while (h.skills.length < D.skN) { const r = ranked.find((x) => C.skills[1].includes(x) && !D.skills.has(x)); if (!r) break; h.skills.push(r); D = derive(h); }
   while (R.skillPick && h.raceSkills.length < R.skillPick) { const r = ranked.find((x) => !D.skills.has(x) && (!R.skillFrom || R.skillFrom.includes(x))) || (R.skillFrom || []).find((x) => !h.raceSkills.includes(x)); if (!r) break; h.raceSkills.push(r); D = derive(h); }
   while (feats24(h).some((f) => f.k === 'skilled') && (h.skilled = h.skilled || []).length < 3) { const r = ranked.find((x) => !D.skills.has(x)); if (!r) break; h.skilled.push(r); D = derive(h); }
   while (h.cls === 'bard' && D.srd && D.lv >= 3 && h.loreSkills.length < 3) { const r = ranked.find((x) => !D.skills.has(x)); if (!r) break; h.loreSkills.push(r); D = derive(h); }
@@ -6709,13 +7173,22 @@ function autoFill(h) {
   for (const x of expPool) { if (h.expertise.length >= D.expN) break; if ((D.skills.has(x) || (x === "Thieves' tools" && h.cls === 'rogue')) && !h.expertise.includes(x)) h.expertise.push(x); }
   // class options
   const dexy = D.mod.dex > D.mod.str;
-  if (C.style && D.lv >= C.style[0] && !h.style) h.style = h.cls === 'ranger' || (h.cls === 'fighter' && dexy) ? 'archery' : 'defense';
-  if (h.cls === 'fighter' && D.srd && D.lv >= 10 && !h.style2) h.style2 = h.style === 'defense' ? (dexy ? 'archery' : 'gwf') : 'defense';
-  if (h.cls === 'sorcerer') { const n = D.lv >= 17 ? 4 : D.lv >= 10 ? 3 : D.lv >= 3 ? 2 : 0; for (const k of META_ORDER) { if (h.metamagic.length >= n) break; if (!h.metamagic.includes(k)) h.metamagic.push(k); } }
+  const v24 = is24(h);
+  if (C.style && D.lv >= C.style[0] && (!h.style || !C.style[1].includes(h.style))) h.style = h.cls === 'ranger' || (h.cls === 'fighter' && dexy) ? 'archery' : 'defense';
+  if (h.cls === 'fighter' && D.srd && D.lv >= (v24 ? 7 : 10) && !h.style2) h.style2 = h.style === 'defense' ? (dexy ? 'archery' : 'gwf') : 'defense';
+  if (h.cls === 'sorcerer') { const n = metaN(h, D.lv), MM = metaTab(h); h.metamagic = h.metamagic.filter((k) => MM[k]); for (const k of v24 ? META_ORDER24 : META_ORDER) { if (h.metamagic.length >= n) break; if (!h.metamagic.includes(k)) h.metamagic.push(k); } }
   if (h.cls === 'warlock') {
-    if (D.lv >= 3 && !h.pact) h.pact = 'blade';
-    h.invocations = h.invocations.filter((k) => INVOCATIONS[k] && INVOCATIONS[k][2] <= D.lv);
-    for (const k of INVO_ORDER) { if (h.invocations.length >= (D.invN || 0)) break; const I = INVOCATIONS[k]; if (!I || I[2] > D.lv || h.invocations.includes(k)) continue; if (I[3] && I[3] !== 'eb' && I[3] !== h.pact) continue; h.invocations.push(k); }
+    if (!v24 && D.lv >= 3 && !h.pact) h.pact = 'blade';
+    h.invocations = h.invocations.filter((k) => invoOk(h, k, D.lv));
+    for (const k of v24 ? INVO_ORDER24 : INVO_ORDER) { if (h.invocations.length >= (D.invN || 0)) break; if (h.invocations.includes(k) || !invoOk(h, k, D.lv)) continue; h.invocations.push(k); }
+  }
+  if (v24) {
+    if (h.cls === 'cleric' && !['protector', 'thaumaturge'].includes(h.order)) h.order = D.mod.wis >= D.mod.str ? 'thaumaturge' : 'protector';
+    if (h.cls === 'druid' && !['magician', 'warden'].includes(h.order)) h.order = 'magician';
+    if ((h.cls === 'cleric' || h.cls === 'druid') && D.lv >= 7 && !h.strike7) h.strike7 = 'potent';
+    if (h.cls === 'druid' && !LANDS24.includes(h.land24)) h.land24 = 'Temperate';
+    if (D.lv >= BOON_LV && !EPIC_BOONS[h.boon]) h.boon = C.cast ? 'recall' : 'combat';
+    if (D.lv >= BOON_LV && !boonAb(h)) h.boonAb = Q[1].find((a) => boonAbs(h.boon).includes(a)) || boonAbs(h.boon)[0];
   }
   for (const at of asiLevels(C).filter((x) => x <= D.lv)) {
     const c = Object.assign({}, h.asi[at]);
@@ -6724,7 +7197,7 @@ function autoFill(h) {
   }
   // kit
   if (h.goldMode === 'kit') C.kit.forEach((grp, g) => { const o = grp[Math.min(h.kit[g] || 0, grp.length - 1)]; o.i.forEach((tok, j) => { const k = g + '.' + j; if (!tok.startsWith('@') || h.picks[k]) return; h.picks[k] = tok === '@simple' ? (dexy ? 'Shortbow' : 'Spear') : tok === '@simpleMelee' ? (dexy ? 'Dagger' : 'Mace') : KIT_DEFAULT[tok]; }); });
-  if (h.goldMode === 'gold' && !h.goldRoll) { const [n, d, m] = C.gold; h.goldRoll = rollExpr(n + 'd' + d).total * m; }
+  if (h.goldMode === 'gold' && !h.goldRoll && !v24) { const [n, d, m] = C.gold; h.goldRoll = rollExpr(n + 'd' + d).total * m; }
   autoSpells(h);
 }
 function pickName(h) {
@@ -6786,10 +7259,10 @@ function heroPanel() {
   const h = curHero();
   if (!h) return heroWelcome() + partyHtml();
   const D = derive(h);
-  const steps = HERO_STEPS.filter(([k]) => k !== 'spells' || CLASSES5[h.cls].cast || D.raceSpells.length);
+  const steps = HERO_STEPS.filter(([k]) => k !== 'spells' || CLS(h).cast || D.raceSpells.length);
   if (!steps.some((s) => s[0] === heroes.step)) heroes.step = 'sheet';
   const S = SBY.get(h.home);
-  let html = '<div class="mk-head"><div><div class="eyebrow">Heroes · Level ' + D.lv + ' ' + esc(raceName(h)) + ' ' + esc(CLASSES5[h.cls].name) + '</div><h2>' + esc(h.name || 'Unnamed hero') + '</h2></div>' + CLOSE_BTN + '</div>';
+  let html = '<div class="mk-head"><div><div class="eyebrow">Heroes · Level ' + D.lv + ' ' + esc(raceName(h)) + ' ' + esc(CLS(h).name) + '</div><h2>' + esc(h.name || 'Unnamed hero') + '</h2></div>' + CLOSE_BTN + '</div>';
   html += '<div class="hero-bar"><select id="hc-pick" aria-label="Choose hero">' + heroes.list.map((x) => '<option value="' + esc(x.id) + '"' + (x.id === h.id ? ' selected' : '') + '>' + esc((x.name || 'Unnamed') + ' · ' + CLASSES5[x.cls].name + ' ' + x.level) + '</option>').join('') + '</select><button type="button" class="btn sm" data-hr="new">+ New</button><button type="button" class="btn sm" data-hr="quick">Quick build</button><button type="button" class="btn sm" data-hr="step" data-v="chron">Chronicle</button></div>';
   html += '<div class="seg mk-tabs hsteps" role="tablist">' + steps.map(([k, l]) => { const n = D.todo.filter((t) => t.step === k).length; return '<button type="button" role="tab" data-hr="step" data-v="' + k + '" aria-pressed="' + (heroes.step === k) + '">' + l + (n ? '<i class="dotn">' + n + '</i>' : '') + '</button>'; }).join('') + '</div>';
   if (heroes.step !== 'sheet') html += readyBox(D, true);
@@ -6819,7 +7292,7 @@ function heroWelcome() {
 const chip = (act, v, label, on, extra) => '<button type="button" class="chip' + (on ? ' on' : '') + '" data-hr="' + act + '" data-v="' + esc(v) + '" aria-pressed="' + !!on + '"' + (extra || '') + '>' + label + '</button>';
 const fieldSel = (id, label, opts, cur) => '<div class="field"><label class="lab" for="' + id + '">' + label + '</label><select id="' + id + '">' + opts.map(([v, l]) => '<option value="' + esc(v) + '"' + (String(v) === String(cur) ? ' selected' : '') + '>' + esc(l) + '</option>').join('') + '</select></div>';
 function stepBasics(h, D) {
-  const R = raceOf(h), S = raceSub(h), C = CLASSES5[h.cls], B = bgOf(h);
+  const R = raceOf(h), S = raceSub(h), C = CLS(h), B = bgOf(h);
   const home = h.home ? SBY.get(h.home) : null;
   let o = rulesNoteHtml(h) + '<div class="row2"><div class="field"><label class="lab" for="hc-name">Name</label><div class="inrow"><input id="hc-name" value="' + esc(h.name) + '" maxlength="50" placeholder="Name your hero"><button type="button" class="btn sm" data-hr="rname" title="Suggest a name">↻</button></div></div>' +
     fieldSel('hc-level', 'Level', Array.from({ length: 20 }, (_, i) => [i + 1, 'Level ' + (i + 1)]), h.level) + '</div>';
@@ -6856,7 +7329,7 @@ function stepBasics(h, D) {
 }
 function stepScores(h, D) {
   const R = raceOf(h), S = raceSub(h);
-  let o = '<p class="meta">Six abilities describe your hero. Each score gives a modifier (10–11 is +0, every 2 points above adds +1) that is added to rolls. Put your highest numbers in ' + CLASSES5[h.cls].prime.map((a) => ABIL_N[a]).join(' and ') + '.</p>';
+  let o = '<p class="meta">Six abilities describe your hero. Each score gives a modifier (10–11 is +0, every 2 points above adds +1) that is added to rolls. Put your highest numbers in ' + CLS(h).prime.map((a) => ABIL_N[a]).join(' and ') + '.</p>';
   o += '<div class="seg" role="group">' + [['array', 'Standard array'], ['point', 'Point buy'], ['roll', 'Roll 4d6'], ['manual', 'Manual']].map(([k, l]) => '<button type="button" data-hr="method" data-v="' + k + '" aria-pressed="' + (h.method === k) + '">' + l + '</button>').join('') + '</div>';
   if (h.method === 'array') o += '<p class="small">Use 15, 14, 13, 12, 10 and 8 once each. Choosing a number already used swaps the two.</p>';
   if (h.method === 'point') { const spent = ABIL.reduce((a, k) => a + (POINT_COST[h.base[k]] || 0), 0); o += '<p class="small">Spend 27 points; scores run 8–15 and cost more near the top. <b>' + (27 - spent) + ' left.</b></p>'; }
@@ -6870,32 +7343,35 @@ function stepScores(h, D) {
     if (pool) base = '<select data-hbase="' + a + '" aria-label="' + ABIL_N[a] + ' base">' + pool.map((v, i) => '<option value="' + i + ':' + v + '"' + (v === h.base[a] ? ' selected' : '') + '>' + v + '</option>').join('') + '</select>';
     else if (h.method === 'point') base = '<span class="pbuy"><button type="button" class="btn sm" data-hr="pt" data-v="' + a + '|-1" aria-label="Lower ' + ABIL_N[a] + '"' + (h.base[a] <= 8 ? ' disabled' : '') + '>−</button><b>' + h.base[a] + '</b><button type="button" class="btn sm" data-hr="pt" data-v="' + a + '|1" aria-label="Raise ' + ABIL_N[a] + '"' + (h.base[a] >= 15 ? ' disabled' : '') + '>+</button></span>';
     else base = '<input type="number" min="3" max="20" data-hbase="' + a + '" value="' + h.base[a] + '" aria-label="' + ABIL_N[a] + ' base">';
-    o += '<tr><th scope="row">' + ABIL_N[a] + (CLASSES5[h.cls].prime.includes(a) ? ' <i class="star" title="Important for your class">★</i>' : '') + '</th><td>' + base + '</td><td>' + (race ? '+' + race : '—') + '</td><td>' + (other ? sgn(other) : '—') + '</td><td><b>' + D.sc[a] + '</b></td><td><b class="modv">' + sgn(D.mod[a]) + '</b></td></tr>';
+    o += '<tr><th scope="row">' + ABIL_N[a] + (CLS(h).prime.includes(a) ? ' <i class="star" title="Important for your class">★</i>' : '') + '</th><td>' + base + '</td><td>' + (race ? '+' + race : '—') + '</td><td>' + (other ? sgn(other) : '—') + '</td><td><b>' + D.sc[a] + '</b></td><td><b class="modv">' + sgn(D.mod[a]) + '</b></td></tr>';
   }
   o += '</tbody></table>';
   return o;
 }
 function stepClass(h, D) {
-  const C = CLASSES5[h.cls], lv = D.lv;
+  const C = CLS(h), lv = D.lv;
   const fixed = new Set([].concat(raceOf(h).skills || [], raceOf(h).skillPick ? h.raceSkills : [], D.bgSkills));
-  const subs = SUBCLASSES[h.cls] || [C.sub[1]];
+  const subs = subsOf(h);
   let o = '<section><h3>' + esc(C.sub[0]) + ' <small class="meta">from level ' + subLv(h, C) + '</small></h3>' + fieldSel('hc-subclass', 'Subclass', subs.map((n) => [n, n + (n === C.sub[1] ? ' (built in)' : ' (Player\'s Handbook)')]), D.subName) +
     (D.srd ? '<p class="small">' + esc(C.sub[1]) + ' is in the free SRD, so all its features are built into the sheet.</p>' : '<p class="small">' + esc(h.subclass) + ' is not in the free SRD. Read its features on ' + extLink(AID.cls(h.cls), 'AideDD: ' + C.name) + ' and list the ones you have, one per line, like <i>3: Combat Superiority: four d8 superiority dice</i>. They show on your sheet.</p><div class="field"><label class="lab" for="hc-subnotes">' + esc(h.subclass) + ' features</label><textarea id="hc-subnotes" rows="4" maxlength="3000" placeholder="3: Feature name: what it does">' + esc(h.subNotes || '') + '</textarea></div>') + '</section>';
-  o += '<section><h3>' + C.name + ' skills (' + h.skills.length + '/' + C.skills[0] + ')</h3><p class="small">Skills you already get from your race or background are greyed out.</p><div class="chips">' +
+  o += '<section><h3>' + C.name + ' skills (' + h.skills.length + '/' + D.skN + ')</h3><p class="small">Skills you already get from your race or background are greyed out.</p><div class="chips">' +
     C.skills[1].map((s) => chip('skill', s, s, h.skills.includes(s), fixed.has(s) && !h.skills.includes(s) ? ' disabled' : '')).join('') + '</div></section>';
   if (h.cls === 'bard' && D.srd && lv >= 3) o += '<section><h3>College of Lore skills (' + h.loreSkills.length + '/3)</h3><div class="chips">' + ALL_SKILLS.map((s) => chip('lskill', s, s, h.loreSkills.includes(s), D.skills.has(s) && !h.loreSkills.includes(s) ? ' disabled' : '')).join('') + '</div></section>';
   if (D.expN) o += '<section><h3>Expertise (' + D.expertise.size + '/' + D.expN + ')</h3><p class="small">Double your proficiency bonus with these.</p><div class="chips">' + [...D.skills].concat(h.cls === 'rogue' ? ["Thieves' tools"] : []).map((s) => chip('exp', s, s, D.expertise.has(s))).join('') + '</div></section>';
   if (C.style && lv >= C.style[0]) {
-    o += '<section><h3>Fighting style</h3><div class="opts">' + C.style[1].map((k) => '<button type="button" class="opt' + (h.style === k ? ' on' : '') + '" data-hr="style" data-v="' + k + '"><b>' + STYLES[k][0] + '</b><small>' + STYLES[k][1] + '</small></button>').join('') + '</div>';
-    if (h.cls === 'fighter' && D.srd && lv >= 10) o += '<h4>Second style</h4><div class="opts">' + C.style[1].filter((k) => k !== h.style).map((k) => '<button type="button" class="opt' + (h.style2 === k ? ' on' : '') + '" data-hr="style2" data-v="' + k + '"><b>' + STYLES[k][0] + '</b><small>' + STYLES[k][1] + '</small></button>').join('') + '</div>';
+    const ST = styleTab(h);
+    o += '<section><h3>Fighting style</h3><div class="opts">' + C.style[1].map((k) => '<button type="button" class="opt' + (h.style === k ? ' on' : '') + '" data-hr="style" data-v="' + k + '"><b>' + ST[k][0] + '</b><small>' + ST[k][1] + '</small></button>').join('') + '</div>';
+    if (h.cls === 'fighter' && D.srd && lv >= (is24(h) ? 7 : 10)) o += '<h4>Second style</h4><div class="opts">' + C.style[1].filter((k) => k !== h.style).map((k) => '<button type="button" class="opt' + (h.style2 === k ? ' on' : '') + '" data-hr="style2" data-v="' + k + '"><b>' + ST[k][0] + '</b><small>' + ST[k][1] + '</small></button>').join('') + '</div>';
     o += '</section>';
   }
-  if (h.cls === 'ranger') o += '<div class="row2">' + fieldSel('hc-favored', 'Favoured enemy', FAVORED.map((f) => [f, f]), h.favored) + fieldSel('hc-terrain', 'Favoured terrain', TERRAINS.map((t) => [t, t]), h.terrain) + '</div>';
-  if (h.cls === 'druid' && D.srd && lv >= 2) o += fieldSel('hc-land', 'Circle of the Land: your land', TERRAINS.map((t) => [t, t]), h.land);
+  if (h.cls === 'ranger' && !is24(h)) o += '<div class="row2">' + fieldSel('hc-favored', 'Favoured enemy', FAVORED.map((f) => [f, f]), h.favored) + fieldSel('hc-terrain', 'Favoured terrain', TERRAINS.map((t) => [t, t]), h.terrain) + '</div>';
+  if (h.cls === 'druid' && D.srd && lv >= 2 && !is24(h)) o += fieldSel('hc-land', 'Circle of the Land: your land', TERRAINS.map((t) => [t, t]), h.land);
   if (h.cls === 'sorcerer' && D.srd) o += fieldSel('hc-dragon', 'Dragon ancestor', Object.keys(DRAGONS).map((k) => [k, DRAGONS[k][0] + ' (' + DRAGONS[k][1] + ')']), h.dragon);
-  if (h.cls === 'sorcerer' && lv >= 3) { const n = lv >= 17 ? 4 : lv >= 10 ? 3 : 2; o += '<section><h3>Metamagic (' + h.metamagic.length + '/' + n + ')</h3><div class="opts">' + Object.keys(METAMAGIC).map((k) => '<button type="button" class="opt' + (h.metamagic.includes(k) ? ' on' : '') + '" data-hr="meta" data-v="' + k + '"><b>' + METAMAGIC[k][0] + '</b><small>' + METAMAGIC[k][1] + '</small></button>').join('') + '</div></section>'; }
-  if (h.cls === 'warlock' && lv >= 3) o += '<section><h3>Pact boon</h3><div class="opts">' + [['chain', 'Pact of the Chain', 'A clever familiar (imp, pseudodragon, quasit or sprite).'], ['blade', 'Pact of the Blade', 'Summon a magic melee weapon you are proficient with.'], ['tome', 'Pact of the Tome', 'Three extra cantrips from any class.']].map(([k, n, d]) => '<button type="button" class="opt' + (h.pact === k ? ' on' : '') + '" data-hr="pact" data-v="' + k + '"><b>' + n + '</b><small>' + d + '</small></button>').join('') + '</div></section>';
-  if (h.cls === 'warlock' && D.invN) o += '<section><h3>Eldritch invocations (' + h.invocations.length + '/' + D.invN + ')</h3><p class="small">The SRD set. ' + extLink(AID.invocations, 'Every invocation on AideDD') + '</p><div class="opts">' + Object.keys(INVOCATIONS).filter((k) => INVOCATIONS[k][2] <= lv).map((k) => { const I = INVOCATIONS[k]; const need = I[3] && I[3] !== 'eb' ? I[3] : null; const bad = need && h.pact !== need; return '<button type="button" class="opt' + (h.invocations.includes(k) ? ' on' : '') + '" data-hr="invo" data-v="' + k + '"' + (bad && !h.invocations.includes(k) ? ' disabled' : '') + '><b>' + I[0] + '</b><small>' + I[1] + (need ? ' Needs Pact of the ' + need + '.' : I[3] === 'eb' ? ' Needs eldritch blast.' : '') + '</small></button>'; }).join('') + '</div></section>';
+  if (h.cls === 'sorcerer' && metaN(h, lv)) { const n = metaN(h, lv), MM = metaTab(h); o += '<section><h3>Metamagic (' + h.metamagic.filter((k) => MM[k]).length + '/' + n + ')</h3><div class="opts">' + Object.keys(MM).map((k) => '<button type="button" class="opt' + (h.metamagic.includes(k) ? ' on' : '') + '" data-hr="meta" data-v="' + k + '"><b>' + MM[k][0] + '</b><small>' + MM[k][1] + '</small></button>').join('') + '</div></section>'; }
+  if (is24(h)) o += class24Html(h, D);
+  if (h.cls === 'warlock' && lv >= 3 && !is24(h)) o += '<section><h3>Pact boon</h3><div class="opts">' + [['chain', 'Pact of the Chain', 'A clever familiar (imp, pseudodragon, quasit or sprite).'], ['blade', 'Pact of the Blade', 'Summon a magic melee weapon you are proficient with.'], ['tome', 'Pact of the Tome', 'Three extra cantrips from any class.']].map(([k, n, d]) => '<button type="button" class="opt' + (h.pact === k ? ' on' : '') + '" data-hr="pact" data-v="' + k + '"><b>' + n + '</b><small>' + d + '</small></button>').join('') + '</div></section>';
+  if (h.cls === 'warlock' && D.invN) { const IV = invoTab(h), NEED = { pblade: 'Pact of the Blade', pchain: 'Pact of the Chain', ptome: 'Pact of the Tome', thirsting: 'Thirsting Blade', blade: 'Pact of the Blade', chain: 'Pact of the Chain', tome: 'Pact of the Tome' };
+    o += '<section><h3>Eldritch invocations (' + h.invocations.filter((k) => IV[k]).length + '/' + D.invN + ')</h3><p class="small">' + (is24(h) ? 'The 2024 set: the pact boons are invocations too. ' : 'The SRD set. ') + extLink(AID.invocations, 'Every invocation on AideDD') + '</p><div class="opts">' + Object.keys(IV).filter((k) => IV[k][2] <= lv).map((k) => { const I = IV[k]; const need = I[3] && I[3] !== 'eb' ? I[3] : null; const bad = !invoOk(h, k, lv); return '<button type="button" class="opt' + (h.invocations.includes(k) ? ' on' : '') + '" data-hr="invo" data-v="' + k + '"' + (bad && !h.invocations.includes(k) ? ' disabled' : '') + '><b>' + I[0] + '</b><small>' + I[1] + (need ? ' Needs ' + NEED[need] + '.' : I[3] === 'eb' ? ' Needs eldritch blast.' : '') + (I[2] > 1 ? ' Level ' + I[2] + '+.' : '') + '</small></button>'; }).join('') + '</div></section>'; }
   // ability score improvements
   const at = asiLevels(C).filter((x) => x <= lv);
   if (at.length) {
@@ -6906,21 +7382,23 @@ function stepClass(h, D) {
   // features by level
   o += '<section><h3>What you can do</h3><ul class="feats">' + D.feats.filter((f) => f.at).map((f) => '<li><b>' + esc(f.n) + '</b> <small class="meta">' + esc(f.src) + '</small><p>' + esc(f.d) + '</p></li>').join('') + '</ul>';
   const next = C.feats.concat(lv >= subLv(h, C) - 1 && (D.srd || (is24(h) && lv === 2 && (!h.subclass || h.subclass === C.sub[1]))) ? C.subFeats.filter(([l]) => l >= subLv(h, C)) : []).filter(([l]) => l === lv + 1);
-  if (lv < 20) o += '<p class="small"><b>At level ' + (lv + 1) + ':</b> ' + (next.length ? next.map((f) => esc(f[1])).join(', ') : 'more hit points') + (asiLevels(C).includes(lv + 1) ? ', ability score improvement' : '') + (lv + 1 === C.sub[2] ? ', ' + esc(C.sub[1]) : '') + '.</p>';
+  if (lv < 20) o += '<p class="small"><b>At level ' + (lv + 1) + ':</b> ' + (next.length ? next.map((f) => esc(f[1])).join(', ') : 'more hit points') + (asiLevels(C).includes(lv + 1) ? ', ability score improvement' : '') + (lv + 1 === subLv(h, C) ? ', ' + esc(C.sub[1]) : '') + '.</p>';
   return o + '</section>';
 }
 function stepGear(h, D) {
-  const C = CLASSES5[h.cls], B = bgOf(h);
+  const C = CLS(h), B = bgOf(h);
   const home = h.home ? SBY.get(h.home) : null;
   let o = '<div class="seg" role="group">' + [['kit', 'Starting kit'], ['gold', 'Starting gold']].map(([k, l]) => '<button type="button" data-hr="goldmode" data-v="' + k + '" aria-pressed="' + (h.goldMode === k) + '">' + l + '</button>').join('') + '</div>';
   if (h.goldMode === 'kit') {
-    o += '<p class="small">Your class kit plus your background\'s gear and ' + B.gold + ' gp.</p>';
+    o += '<p class="small">' + (is24(h) ? 'Your class kit and ' + kitGp24(h) + ' gp, plus your background\'s gear and ' + B.gold + ' gp (2024 rules).' : 'Your class kit plus your background\'s gear and ' + B.gold + ' gp.') + '</p>';
     C.kit.forEach((grp, g) => {
       const cur = Math.min(h.kit[g] || 0, grp.length - 1);
       o += '<div class="kitg">' + (grp.length > 1 ? grp.map((op, i) => chip('kit', g + '|' + i, esc(op.l), cur === i)).join('<span class="or">or</span>') : '<span class="chip on static">' + esc(grp[0].l) + '</span>');
       grp[cur].i.forEach((tok, j) => { if (tok.startsWith('@')) o += '<select data-hpick="' + g + '.' + j + '" aria-label="' + PICKS[tok][0] + '"><option value="">Pick ' + PICKS[tok][0] + '…</option>' + PICKS[tok][1].map((n) => { const w = ITEM.get(n); return '<option' + (h.picks[g + '.' + j] === n ? ' selected' : '') + ' value="' + esc(n) + '">' + esc(n) + (w && w.dmg ? ' (' + w.dmg + ' ' + w.type + ')' : '') + '</option>'; }).join('') + '</select>'; });
       o += '</div>';
     });
+  } else if (is24(h)) {
+    o += '<p class="small">Instead of the class and background kits, take ' + (C.goldB || 0) + ' gp from your class and 50 gp from your background, and buy what you want' + (home ? ' at ' + tLink(home) + '\'s prices' : '') + '.</p><p><b class="big">' + money((C.goldB || 0) + 50) + '</b></p>';
   } else {
     const [n, d, m] = C.gold;
     o += '<p class="small">Instead of the class and background kits, roll ' + n + 'd' + d + (m > 1 ? ' × ' + m : '') + ' gp and buy what you want' + (home ? ' at ' + tLink(home) + '\'s prices' : '') + '.</p><p><b class="big">' + (h.goldRoll ? money(h.goldRoll) : '—') + '</b> <button type="button" class="btn sm" data-hr="rollgold">' + (h.goldRoll ? 'Roll again' : 'Roll gold') + '</button></p>';
@@ -6953,14 +7431,14 @@ function spellRow(s, on, act, extra, disabled, after) {
   return '<li class="sp' + (on ? ' on' : '') + '"><button type="button" class="sp-t" data-hr="' + act + '" data-v="' + esc(s.name) + '" aria-pressed="' + !!on + '"' + (disabled && !on ? ' disabled' : '') + '><i class="box" aria-hidden="true"></i><b>' + esc(s.name) + '</b>' + (s.conc ? '<em class="tag">C</em>' : '') + (s.ritual ? '<em class="tag">R</em>' : '') + (extra || '') + '</button>' + (after || '') + '<details><summary aria-label="Details of ' + esc(s.name) + '">i</summary><p class="small">' + s.school + ' · ' + esc(s.time) + ' · ' + esc(s.range) + ' · ' + esc(s.dur) + (s.conc ? ' (concentration)' : '') + '</p><p>' + esc(s.text) + '</p><p class="small">' + extLink(AID.spell(s.name), 'Full spell text') + '</p></details></li>';
 }
 function stepSpells(h, D) {
-  const K = D.cast, C = CLASSES5[h.cls];
+  const K = D.cast, C = CLS(h);
   let o = '';
   if (D.raceSpells.length) o += '<section><h3>From your race</h3><ul class="spells">' + D.raceSpells.map((r) => { const s = SPELL_BY.get(r.name); return s ? spellRow(s, true, 'noop', '<small class="meta"> ' + esc(r.note) + '</small>') : ''; }).join('') + '</ul></section>';
   if (!K) { if (C.cast) o += '<p class="meta">' + C.name + 's start casting spells at level ' + C.cast.from + '.</p>'; return o; }
   o += '<dl class="stats">' + stat('Spell save DC', K.dc) + stat('Spell attack', sgn(K.atk)) + stat('Ability', ABIL_N[K.ab]) + '</dl>';
-  const how = K.mode === 'known' ? 'You know a fixed set of spells and can swap one each time you level up.' : K.mode === 'book' ? 'Your spellbook holds the spells you have learned. Each day, prepare some of them to cast.' : 'You can prepare any ' + C.name.toLowerCase() + ' spell each day after a long rest. The list below is what you have prepared.';
+  const how = K.mode === 'known' ? 'You know a fixed set of spells and can swap one each time you level up.' : K.mode === 'book' ? 'Your spellbook holds the spells you have learned. Each day, prepare some of them to cast.' : is24(h) && (h.cls === 'paladin' || h.cls === 'ranger') ? 'You keep a set number of ' + C.name.toLowerCase() + ' spells prepared and can swap one after each long rest.' : 'You can prepare any ' + C.name.toLowerCase() + ' spell each day after a long rest. The list below is what you have prepared.';
   o += '<p class="small">' + how + (K.type === 'pact' ? ' Your ' + K.pact + ' pact slot' + (K.pact > 1 ? 's are' : ' is') + ' ' + ordinal(K.pactLv) + ' level and come' + (K.pact > 1 ? '' : 's') + ' back on a short rest.' : '') + '</p>';
-  const tome = h.cls === 'warlock' && h.pact === 'tome';
+  const tome = hasPact(h, 'tome');
   // cantrips
   if (K.cantripsN) {
     const all = classSpells(h, 0, 0, tome);
@@ -7014,7 +7492,7 @@ function bondHtml(h) {
 
 // ---------------------------------------------------------------- the play sheet
 function heroSheet(h, D, S) {
-  const C = CLASSES5[h.cls];
+  const C = CLS(h);
   const hp = h.hp == null ? D.hpMax : h.hp;
   const reg = heroGuildMember(h);
   let o = readyBox(D);
@@ -7045,7 +7523,7 @@ function heroSheet(h, D, S) {
     '<button type="button" class="btn sm roll" data-hr="dmg" data-v="' + esc(x.dmg) + '|' + esc(x.name) + '|' + esc(x.key) + '">' + esc(x.dmg) + '</button>' + (x.vers ? '<button type="button" class="btn sm roll" data-hr="dmg" data-v="' + esc(x.vers) + '|' + esc(x.name) + ' two-handed|' + esc(x.key) + '" title="Two-handed">' + esc(x.vers) + '</button>' : '') + '</li>').join('') + '</ul>' +
     (D.notes.length ? '<p class="small">' + D.notes.map(esc).join(' ') + '</p>' : '') + '</section>';
   // limited uses
-  if (D.uses.length) o += '<section><h3>Limited uses</h3><ul class="uses">' + D.uses.map((u) => { const used = h.uses[u.key] || 0, left = Math.max(0, u.max - used); return '<li><div><b>' + esc(u.n) + '</b><small>' + (u.rest === 'short' ? 'short or long rest' : 'long rest') + (u.note ? ' · ' + esc(u.note) : '') + '</small></div>' + (u.max >= 99 ? '<span class="small">Unlimited</span>' : u.max > 8 ? '<span class="pool"><button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|1" aria-label="Spend one">−</button><b>' + left + '</b>/' + u.max + '<button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|-1" aria-label="Regain one">+</button></span>' : '<span class="pips">' + Array.from({ length: u.max }, (_, i) => '<button type="button" class="pip' + (i < left ? ' on' : '') + '" data-hr="usepip" data-v="' + u.key + '|' + i + '|' + u.max + '" aria-label="' + esc(u.n) + ' ' + (i + 1) + '"></button>').join('') + '</span>') + '</li>'; }).join('') + '</ul></section>';
+  if (D.uses.length) o += '<section><h3>Limited uses</h3><ul class="uses">' + D.uses.map((u) => { const used = h.uses[u.key] || 0, left = Math.max(0, u.max - used); return '<li><div><b>' + esc(u.n) + '</b><small>' + (u.rest === 'short' ? 'short or long rest' : u.rest === 'one' ? 'long rest; one back on a short rest' : 'long rest') + (u.note ? ' · ' + esc(u.note) : '') + '</small></div>' + (u.max >= 99 ? '<span class="small">Unlimited</span>' : u.max > 8 ? '<span class="pool"><button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|1" aria-label="Spend one">−</button><b>' + left + '</b>/' + u.max + '<button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|-1" aria-label="Regain one">+</button></span>' : '<span class="pips">' + Array.from({ length: u.max }, (_, i) => '<button type="button" class="pip' + (i < left ? ' on' : '') + '" data-hr="usepip" data-v="' + u.key + '|' + i + '|' + u.max + '" aria-label="' + esc(u.n) + ' ' + (i + 1) + '"></button>').join('') + '</span>') + '</li>'; }).join('') + '</ul></section>';
   // spells
   o += sheetSpells(h, D);
   // skills
@@ -7112,8 +7590,8 @@ function sheetSpells(h, D) {
 function heroGuildMember(h) { return (gst().party.members || []).find((m) => m.id === 'h:' + h.id) || null; }
 function syncGuild(h) {
   const m = heroGuildMember(h);
-  if (!m || (m.level === h.level && m.name === (h.name || 'Unnamed') && m.cls === CLASSES5[h.cls].name)) return;
-  guildCommit('Update ' + (h.name || 'hero'), (g) => { const x = g.party.members.find((q) => q.id === 'h:' + h.id); if (x) { x.level = h.level; x.name = h.name || 'Unnamed'; x.cls = CLASSES5[h.cls].name; } });
+  if (!m || (m.level === h.level && m.name === (h.name || 'Unnamed') && m.cls === CLS(h).name)) return;
+  guildCommit('Update ' + (h.name || 'hero'), (g) => { const x = g.party.members.find((q) => q.id === 'h:' + h.id); if (x) { x.level = h.level; x.name = h.name || 'Unnamed'; x.cls = CLS(h).name; } });
 }
 
 // ---------------------------------------------------------------- interaction
@@ -7130,7 +7608,7 @@ function longRest(h, D) {
 }
 function shortRest(h, D) {
   h.pactUsed = 0;
-  for (const u of D.uses) if (u.rest === 'short') delete h.uses[u.key];
+  for (const u of D.uses) { if (u.rest === 'short') delete h.uses[u.key]; else if (u.rest === 'one' && h.uses[u.key] > 0) h.uses[u.key] -= 1; }
 }
 function castSpell(h, D, name) {
   const s = SPELL_BY.get(name), K = D.cast;
@@ -7171,7 +7649,7 @@ $('inspector').addEventListener('click', (ev) => {
   if (act === 'quick') { const n = newHero(); quickBuild(n); heroLog(n, 'hero', 'Began the adventure as a ' + raceName(n).toLowerCase() + ' ' + CLASSES5[n.cls].name.toLowerCase()); heroes.list.push(n); heroes.cur = n.id; heroes.step = 'sheet'; heroChanged(n); $('inspector').scrollTop = 0; toast(n.name + ', a ' + raceName(n).toLowerCase() + ' ' + CLASSES5[n.cls].name.toLowerCase() + ', is ready. Edit anything you like.'); return; }
   if (!h) return;
   const D = derive(h);
-  const R = raceOf(h), C = CLASSES5[h.cls];
+  const R = raceOf(h), C = CLS(h);
   switch (act) {
     case 'step': heroes.step = v; heroes.confirmDel = null; renderPanel(); $('inspector').scrollTop = 0; return;
     case 'rname': h.name = pickName(h); break;
@@ -7183,27 +7661,30 @@ $('inspector').addEventListener('click', (ev) => {
     case 'micant': case 'mi2cant': { const k = act.slice(0, -4); h[k] = Object.assign({ cant: [] }, h[k]); h[k].cant = (h[k].cant || []).slice(); if (!toggleIn(h[k].cant, v, 2)) toast('Two cantrips. Untick one first.'); break; }
     case 'skilled': h.skilled = h.skilled || []; if (!toggleIn(h.skilled, v, 3)) toast('Three skills. Untick one first.'); break;
     case 'race': if (h.race !== v) { h.race = v; h.sub = ''; h.raceAsi = []; h.raceSkills = []; h.raceLangs = []; h.raceCantrip = ''; h.tool = ''; } break;
-    case 'cls': if (h.cls !== v) { h.cls = v; h.subclass = ''; h.subNotes = ''; h.skills = []; h.expertise = []; h.style = ''; h.style2 = ''; h.kit = {}; h.picks = {}; h.cantrips = []; h.spells = []; h.prepared = []; h.invocations = []; h.metamagic = []; h.pact = ''; h.asi = {}; h.arcanum = {}; h.uses = {}; h.slotsUsed = [0, 0, 0, 0, 0, 0, 0, 0, 0]; h.removed = []; } break;
+    case 'cls': if (h.cls !== v) { h.cls = v; h.subclass = ''; h.subNotes = ''; h.skills = []; h.expertise = []; h.style = ''; h.style2 = ''; h.kit = {}; h.picks = {}; h.cantrips = []; h.spells = []; h.prepared = []; h.invocations = []; h.metamagic = []; h.pact = ''; h.asi = {}; h.order = ''; h.strike7 = ''; h.boon = ''; h.boonAb = ''; h.arcanum = {}; h.uses = {}; h.slotsUsed = [0, 0, 0, 0, 0, 0, 0, 0, 0]; h.removed = []; } break;
     case 'bg': if (h.bg !== v) { h.bg = v; h.bgSkills = []; h.bgLangs = []; h.bgSwap = {}; h.bgAsi = { mode: (h.bgAsi || {}).mode || '21' }; h.mi = {}; h.removed = h.removed.filter((k) => !k.startsWith('b')); } break;
     case 'rasi': toggleIn(h.raceAsi, v, R.asiPick || 0); break;
     case 'rskill': toggleIn(h.raceSkills, v, R.skillPick || 0); break;
     case 'rlang': toggleIn(h.raceLangs, v, (R.extraLang || 0) + ((raceSub(h) || {}).extraLang || 0)); break;
     case 'bskill': toggleIn(h.bgSkills, v, 2); break;
     case 'blang': toggleIn(h.bgLangs, v, bgOf(h).langs || 0); break;
-    case 'skill': if (!toggleIn(h.skills, v, C.skills[0])) toast('You already have ' + C.skills[0] + ' class skills. Untick one first.'); break;
+    case 'skill': if (!toggleIn(h.skills, v, D.skN)) toast('You already have ' + D.skN + ' class skills. Untick one first.'); break;
     case 'lskill': toggleIn(h.loreSkills, v, 3); break;
     case 'exp': if (!toggleIn(h.expertise, v, D.expN)) toast('Expertise is full. Untick one first.'); break;
     case 'style': h.style = v; if (h.style2 === v) h.style2 = ''; break;
     case 'style2': h.style2 = v; break;
-    case 'meta': toggleIn(h.metamagic, v, D.lv >= 17 ? 4 : D.lv >= 10 ? 3 : 2); break;
-    case 'invo': if (!toggleIn(h.invocations, v, D.invN || 0)) toast('You know ' + D.invN + ' invocations at this level.'); break;
+    case 'meta': h.metamagic = h.metamagic.filter((k) => metaTab(h)[k]); if (!toggleIn(h.metamagic, v, metaN(h, D.lv))) toast('You know ' + metaN(h, D.lv) + ' Metamagic options at this level.'); break;
+    case 'order': h.order = v; break;
+    case 'strike7': h.strike7 = v; break;
+    case 'boon': h.boon = v; if (!boonAbs(v).includes(h.boonAb)) h.boonAb = ''; break;
+    case 'invo': h.invocations = h.invocations.filter((k) => invoTab(h)[k]); if (!toggleIn(h.invocations, v, D.invN || 0)) toast('You know ' + D.invN + ' invocations at this level.'); else if (is24(h)) { for (let i = 0; i < 4; i++) h.invocations = h.invocations.filter((k) => invoOk(h, k, D.lv)); } break;
     case 'pact': h.pact = v; h.invocations = h.invocations.filter((k) => !INVOCATIONS[k][3] || INVOCATIONS[k][3] === 'eb' || INVOCATIONS[k][3] === v); break;
     case 'method': h.method = v; if (v === 'array') { const order = QB[h.cls][1]; h.base = {}; order.forEach((a, i) => { h.base[a] = STD_ARRAY[i]; }); } else if (v === 'point') h.base = { str: 8, dex: 8, con: 8, int: 8, wis: 8, cha: 8 }; else if (v === 'roll' && !h.rolls) { rollStats(h); } break;
     case 'rollstats': rollStats(h); break;
     case 'pt': { const [a, d] = v.split('|'); const nv = clamp(h.base[a] + +d, 8, 15); const spent = ABIL.reduce((s, k) => s + (POINT_COST[k === a ? nv : h.base[k]] || 0), 0); if (spent > 27) { toast('Not enough points left.'); return; } h.base[a] = nv; break; }
     case 'kit': { const [g, i] = v.split('|').map(Number); h.kit[g] = i; break; }
     case 'goldmode': h.goldMode = v; break;
-    case 'rollgold': { const [n, d, m] = C.gold; const r = rollExpr(n + 'd' + d); h.goldRoll = r.total * m; showRoll('Starting gold', n + 'd' + d + ': ' + r.parts.join(' ') + (m > 1 ? ' × ' + m : ''), h.goldRoll, ''); break; }
+    case 'rollgold': if (is24(h)) break; { const [n, d, m] = C.gold; const r = rollExpr(n + 'd' + d); h.goldRoll = r.total * m; showRoll('Starting gold', n + 'd' + d + ': ' + r.parts.join(' ') + (m > 1 ? ' × ' + m : ''), h.goldRoll, ''); break; }
     case 'shopcat': heroes.shopCat = v; renderPanel(); return;
     case 'buy': { const it = ITEM.get(v); if (!it) return; const p = shopPrice(h, it); if (!p.ok) return; if (p.price > goldOf(h) + 1e-9) { toast('Not enough gold.'); return; } h.goldDelta -= Math.round(p.price * 100) / 100; const ex = h.inv.find((x) => x.n === v); if (ex && it.kind !== 'pack') ex.q = (ex.q || 1) + 1; else h.inv.push({ n: v, q: 1 }); heroLog(h, 'buy', 'Bought ' + v + ' for ' + money(p.price) + (h.home && SBY.get(h.home) ? ' in ' + SBY.get(h.home).name : '')); toast('Bought ' + v + ' for ' + money(p.price) + '.'); break; }
     case 'sell': { const x = h.inv[+v]; if (!x) return; const it = ITEM.get(x.n); const p = it ? shopPrice(h, it).price / 2 : 0; h.goldDelta += Math.round(p * 100) / 100; if ((x.q || 1) > 1) x.q -= 1; else h.inv.splice(+v, 1); heroLog(h, 'buy', 'Sold ' + x.n + ' for ' + money(p)); toast('Sold ' + x.n + ' for ' + money(p) + '.'); break; }
@@ -7300,13 +7781,15 @@ $('inspector').addEventListener('change', (e) => {
   else if (id === 'hc-favored') h.favored = t.value;
   else if (id === 'hc-terrain') h.terrain = t.value;
   else if (id === 'hc-land') h.land = t.value;
+  else if (id === 'hc-land24') h.land24 = t.value;
+  else if (id === 'hc-boonab') h.boonAb = t.value;
   else if (id === 'hc-armor') h.armor = t.value;
   else if (id === 'hc-shield') h.shield = t.checked;
   else if (/^hc-arc\d$/.test(id)) h.arcanum[id.slice(6)] = t.value;
   else if (['hc-trait', 'hc-ideal', 'hc-flaw', 'hc-bond'].includes(id)) { h[id.slice(3)] = t.value.slice(0, 120); heroSave(); return; }
   else if (id === 'hc-notes') { h.notes = t.value.slice(0, 4000); heroSave(); return; }
   else if (id === 'hc-subnotes') h.subNotes = t.value.slice(0, 3000);
-  else if (id === 'hc-subclass') { h.subclass = t.value === CLASSES5[h.cls].sub[1] ? '' : t.value; }
+  else if (id === 'hc-subclass') { h.subclass = t.value === CLS(h).sub[1] ? '' : t.value; }
   else if (id === 'hc-bondkind') h.bondKind = t.value;
   else if (id === 'hc-bondnpc') { if (t.value) { h.bondNpc = t.value; if (!h.bondKind) h.bondKind = 'mentor'; } }
   else if (id === 'hc-xp') h.xp = Math.max(0, Math.round(+t.value || 0));
@@ -7347,7 +7830,7 @@ function drawHeroBadges() {
 function heroBondsFor(p) {
   const hs = heroes.list.filter((h) => h.bondNpc === p.id);
   if (!hs.length) return '';
-  return '<section><h3>Bound to a hero</h3><ul class="rels">' + hs.map((h) => { const k = BOND_KINDS.find((b) => b[0] === h.bondKind) || BOND_KINDS[0]; return '<li><i style="background:#7e5bd1"></i><span>' + k[2] + ' of <button type="button" class="link" data-hero="' + esc(h.id) + '">' + esc(h.name || 'a hero') + '</button><small>' + esc(raceName(h)) + ' ' + esc(CLASSES5[h.cls].name.toLowerCase()) + ', level ' + h.level + '</small></span><span></span></li>'; }).join('') + '</ul></section>';
+  return '<section><h3>Bound to a hero</h3><ul class="rels">' + hs.map((h) => { const k = BOND_KINDS.find((b) => b[0] === h.bondKind) || BOND_KINDS[0]; return '<li><i style="background:#7e5bd1"></i><span>' + k[2] + ' of <button type="button" class="link" data-hero="' + esc(h.id) + '">' + esc(h.name || 'a hero') + '</button><small>' + esc(raceName(h)) + ' ' + esc(CLS(h).name.toLowerCase()) + ', level ' + h.level + '</small></span><span></span></li>'; }).join('') + '</ul></section>';
 }
 function openHero(id) {
   if (!heroes.list.some((h) => h.id === id)) { toast('That hero is no longer on this device.'); return; }
@@ -10128,6 +10611,7 @@ function activityTab(s, day) {
 
 // ================================================================ campaign: safe saving, backups, stable worlds, DM and player modes, merging (v20)
 const GEN_VERSION = 20;          // bump whenever generated content changes
+const APP_VERSION = 25;          // the release number shown to people (CHANGELOG.md)
 // what changed in generated content at each version, shown when an older world is opened
 const GEN_CHANGES = {
   13: 'Town layouts redrawn by terrain and culture.',
@@ -10313,7 +10797,7 @@ function mergeCampaign(d) {
   if (d.seed !== SEED) return { error: 'That file is a different world (seed ' + d.seed + '; yours is ' + SEED + '). Only files of the same world can be merged.' };
   const mine = JSON.parse(JSON.stringify(edits)), theirs = JSON.parse(JSON.stringify(Object.assign(blankEdits(), d.edits)));
   let next = Math.max(mine.next || 1, theirs.next || 1);
-  const sum = { places: 0, roads: 0, labels: 0, strokes: 0, people: 0, notes: 0, rels: 0, quests: 0, monsters: 0, events: 0, renamed: 0 };
+  const sum = { places: 0, roads: 0, labels: 0, strokes: 0, bm: 0, people: 0, notes: 0, rels: 0, quests: 0, monsters: 0, events: 0, heroes: 0, renamed: 0 };
   // ids both DMs made separately get new ids so nothing collides
   const ren = new Map();
   const claim = (list, prefix, mineList) => { for (const it of list || []) { const other = (mineList || []).find((m) => m.id === it.id); if (other && JSON.stringify(other) !== JSON.stringify(it)) { const nid = prefix + (next++); ren.set(it.id, nid); sum.renamed++; } } };
@@ -10334,7 +10818,7 @@ function mergeCampaign(d) {
   for (const k of ['del', 'rdel', 'evOff', 'monOff']) mine[k] = Object.assign({}, T2[k] || {}, mine[k] || {});
   for (const k of ['ov', 'rov']) { const o = Object.assign({}, mine[k] || {}); for (const id in T2[k] || {}) o[id] = Object.assign({}, T2[k][id], o[id] || {}); mine[k] = o; }
   // battle map: their painted squares are added; where both of you painted the same square, yours stays
-  { const o = mine.bm || {}; for (const ck in T2.bm || {}) { const a = o[ck] || (o[ck] = {}), b2 = T2.bm[ck] || {}; for (const kind of ['t', 'p', 'h', 'v']) if (b2[kind]) a[kind] = Object.assign({}, b2[kind], a[kind] || {}); } mine.bm = o; }
+  { const o = mine.bm || {}; for (const ck in T2.bm || {}) { const a = o[ck] || (o[ck] = {}), b2 = T2.bm[ck] || {}, was = JSON.stringify(a); for (const kind of ['t', 'p', 'h', 'v']) if (b2[kind]) a[kind] = Object.assign({}, b2[kind], a[kind] || {}); if (JSON.stringify(a) !== was) sum.bm++; } mine.bm = o; }
   // notes on people: logs combined, notes joined, tracking kept if either tracks
   const npc = Object.assign({}, mine.npc || {});
   for (const id in T2.npc || {}) {
@@ -10364,7 +10848,7 @@ function mergeCampaign(d) {
   return { edits: mine, sum };
 }
 function mergeSummary(s) {
-  const parts = [['places', 'new places'], ['roads', 'roads'], ['labels', 'labels'], ['strokes', 'painted areas'], ['people', 'new people'], ['notes', 'people with notes or logs'], ['rels', 'relationships'], ['quests', 'quest updates'], ['monsters', 'placed monsters'], ['events', 'events']].filter(([k]) => s[k]).map(([k, n]) => s[k] + ' ' + n);
+  const parts = [['places', 'new places'], ['roads', 'roads'], ['labels', 'labels'], ['strokes', 'painted areas'], ['bm', 'battle-map areas'], ['heroes', 'heroes'], ['people', 'new people'], ['notes', 'people with notes or logs'], ['rels', 'relationships'], ['quests', 'quest updates'], ['monsters', 'placed monsters'], ['events', 'events']].filter(([k]) => s[k]).map(([k, n]) => s[k] + ' ' + n);
   return (parts.length ? 'Merged: ' + parts.join(', ') + '.' : 'Nothing new to merge.') + (s.renamed ? ' ' + s.renamed + ' items made by both of you were given new ids so neither is lost.' : '');
 }
 
@@ -10373,7 +10857,7 @@ const ago = (t) => { if (!t) return 'never'; const s = (Date.now() - t) / 1000; 
 const mb = (b) => (b >= 1e9 ? (b / 1e9).toFixed(1) + ' GB' : (b / 1e6).toFixed(1) + ' MB');
 function campaignMenuHtml() {
   const u = campaign.usage;
-  let h = '<div class="field"><span class="lab">Saving</span><p class="meta save-' + (campaign.saveOk && !campaign.stale ? 'ok' : 'bad') + '">' + (campaign.stale ? '<b>Paused</b>: this world was changed in another tab' : campaign.saveOk ? 'Saved ' + ago(campaign.savedAt) + ' in this browser' + (idb ? ' (database storage)' : '') : '<b>Not saving</b>: storage is ' + (campaign.saveErr === 'full' ? 'full' : 'blocked')) + (u && u.quota ? ' · using ' + mb(u.used) + ' of ' + mb(u.quota) : '') + '.' +
+  let h = '<p class="meta appver">Realmwright Atlas v' + APP_VERSION + ' · world generator ' + GEN_VERSION + '</p><div class="field"><span class="lab">Saving</span><p class="meta save-' + (campaign.saveOk && !campaign.stale ? 'ok' : 'bad') + '">' + (campaign.stale ? '<b>Paused</b>: this world was changed in another tab' : campaign.saveOk ? 'Saved ' + ago(campaign.savedAt) + ' in this browser' + (idb ? ' (database storage)' : '') : '<b>Not saving</b>: storage is ' + (campaign.saveErr === 'full' ? 'full' : 'blocked')) + (u && u.quota ? ' · using ' + mb(u.used) + ' of ' + mb(u.quota) : '') + '.' +
     (campaign.persisted === true ? ' Protected from automatic clearing.' : campaign.persisted === false ? ' The browser may clear it if space runs low, so keep backup files.' : '') + '</p>' +
     '<p class="meta">Last backup file: ' + ago(campaign.lastBackup) + (campaign.lastBackup && Date.now() - campaign.lastBackup < 7 * 86400000 ? '' : ' <b>· download one now and then; browser storage can be wiped</b>') + '.</p>' +
     '<div class="actions"><button type="button" class="btn primary" data-w="backup">Download backup file</button><button type="button" class="btn" data-w="file">Load from file…</button><input type="file" id="f-file" accept=".json,application/json" hidden></div>' +
@@ -10696,6 +11180,50 @@ function routineTpl(group, r, day) {
   if (se && day != null) { const list = se[seasonOf(day)], q = (r * 7.31) % 1; if (q < 0.34) return list[Math.floor((q / 0.34) * list.length) % list.length]; }
   const arr = ROUTINE_AT[group] || ROUTINE_AT.labour;
   return arr[Math.floor(r * arr.length) % arr.length];
+}
+
+// ---------------------------------------------------------------- the aftermath: grief and occupation reach people's days (v25)
+// A family member's death stays with people for weeks: the first days in mourning, then visits to the grave and quiet
+// days now and then. Under occupation the watch is disarmed, leaders deal with the garrison and traders sell to it.
+const FAMILY_T = new Set(['spouse', 'parent', 'sibling']);
+function lossesOf(p, day) {
+  if (day == null) day = market.day;
+  const out = [];
+  if (!p || p.adv != null) return out;
+  for (const r of relsOf(p)) {
+    if (!FAMILY_T.has(r.type)) continue;
+    const o = r.o;
+    if ((o.status || 'Alive') === 'Dead' && o.fateDay != null && o.fateDay <= day) out.push({ o, label: r.label, days: day - o.fateDay });
+  }
+  return out.sort((a, b) => a.days - b.days);
+}
+const kinWord = (label, o) => /Married/.test(label) ? (o.fem ? 'wife' : 'husband') : /Child of/.test(label) ? (o.fem ? 'mother' : 'father') : /Parent of/.test(label) ? (o.fem ? 'daughter' : 'son') : (o.fem ? 'sister' : 'brother');
+function griefToday(p, s, day) {
+  const L = lossesOf(p, day).filter((x) => x.days <= 60);
+  if (!L.length) return null;
+  const x = L[0], who = 'their ' + kinWord(x.label, x.o) + ' ' + x.o.first, r = T.hash(p.h || hashStr(p.id), day, 2401);
+  if (x.days <= 7) return { text: 'In mourning for ' + who, tone: 'warn', with: x.o.id };
+  if (r < (x.days <= 30 ? 0.3 : 0.12)) {
+    const t = s ? resolveToken('temple', p, s, r) : null, pl = t ? placeGet(s, t) : null;
+    return pl ? { text: 'Visiting the grave of ' + who + ' at ' + pl.name, tone: 'warn', place: t, with: x.o.id } : { text: 'Quiet and grieving for ' + who, tone: 'warn', with: x.o.id };
+  }
+  return null;
+}
+function occupiedToday(p, s, day) {
+  const occ = s ? occupation(s, day) : null;
+  if (!occ) return null;
+  const by = REALMS[occ.by] ? REALMS[occ.by].name : 'the occupiers', r = T.hash(p.h || hashStr(p.id), day, 2402);
+  if (p.group === 'watch') return { text: r < 0.5 ? 'Disarmed, keeping the peace under the eye of ' + by : 'Ordered about by the garrison of ' + by, tone: 'warn' };
+  if (p.group === 'leader') return { text: 'Negotiating with the garrison of ' + by, tone: 'warn' };
+  if (p.group === 'trade' && r < 0.45) return { text: 'Selling supplies to the garrison of ' + by, tone: 'warn' };
+  if (p.group === 'underworld' && r < 0.4) return { text: 'Smuggling past the occupiers\' patrols', tone: 'warn' };
+  if (r < 0.15) return { text: 'Keeping out of the occupiers\' way', tone: 'warn' };
+  return null;
+}
+function lossesHtml(p, day) {
+  const L = lossesOf(p, day);
+  if (!L.length) return '';
+  return '<section><h3>Losses</h3><ul class="rels">' + L.map((x) => '<li><i style="background:#6b7280"></i><span>Lost ' + (/Married/.test(x.label) ? (p.fem ? 'her' : 'his') : 'their') + ' ' + kinWord(x.label, x.o) + ' ' + pLink(x.o) + '<small>' + esc(x.o.fate || 'Died ' + dateText(x.o.fateDay)) + '</small></span><span></span></li>').join('') + '</ul></section>';
 }
 
 // ================================================================ safe saving, a library of worlds, and edits as separate entities (v21)
@@ -11079,7 +11607,7 @@ function patchEdits(fromE, toE) {
 // Who is who comes from how the page is shared: the owner and Editors are DMs; Contributors and Viewers are players.
 // World data sits under 'w/' (everyone reads), the DM's private notes and secrets under 'dm/' (only DMs can read),
 // the calendar and seed in 'world/meta', and each person's heroes in 'heroes/<their id>'.
-const share = { db: null, user: null, room: null, uid: null, admin: false, owner: false, canWrite: false, meta: null, on: false, ready: false, synced: new Map(), pub: new Map(), dmd: new Map(), pending: new Map(), inflight: new Set(), unsub: [], party: new Map(), peers: [], names: {}, err: '', busy: 0, sent: 0, adopting: false, loaded: { w: false, dm: false } };
+const share = { localT: new Map(), pathKey: new Map(), unsent: new Map(), offline: typeof navigator !== 'undefined' && navigator.onLine === false, db: null, user: null, room: null, uid: null, admin: false, owner: false, canWrite: false, meta: null, on: false, ready: false, synced: new Map(), pub: new Map(), dmd: new Map(), pending: new Map(), inflight: new Set(), unsub: [], party: new Map(), peers: [], names: {}, err: '', busy: 0, sent: 0, adopting: false, loaded: { w: false, dm: false } };
 const DM_FIELDS = { npc: ['notes', 'disp'], ov: ['notes'], add: ['notes'] };
 const DM_ONLY = (sec, v) => sec === 'monAdd' || sec === 'monOff' || (sec === 'npcRel' && v && SECRET_REL.has(v.type)) || (sec === 'v' && false);
 const docId = (key) => key.replace(/[^A-Za-z0-9_.-]/g, (c) => '~' + c.charCodeAt(0).toString(16).padStart(2, '0')).slice(0, 190) + (key.length > 120 ? '-' + ehash(key) : '');
@@ -11163,7 +11691,18 @@ function docsChanged(which, qs) {
         }
       }
     }
-    else { const d = ch.doc.data(); if (!d || typeof d.k !== 'string') continue; M.set(id, { k: d.k, v: d.v, t: +d.t || 0, by: typeof d.by === 'string' ? d.by : '' }); touched.add(d.k); }
+    else {
+      const d = ch.doc.data(); if (!d || typeof d.k !== 'string') continue;
+      M.set(id, { k: d.k, v: d.v, t: +d.t || 0, by: typeof d.by === 'string' ? d.by : '' }); touched.add(d.k);
+      const lt = share.localT.get(d.k);
+      if (share.ready && d.by && d.by !== share.uid && lt && (+d.t || 0) > lt && Date.now() - lt < 120000) (share.clash = share.clash || new Map()).set(d.k, d.by);
+    }
+  }
+  if (share.clash && share.clash.size) {
+    const [[k, by]] = share.clash, txt = describeKey(k, mergedValue(k));
+    const who = share.names[by] || 'Another DM';
+    toast(who + ' changed the same thing a moment after you' + (txt ? ' (' + txt.replace(/<[^>]+>/g, '') + ')' : '') + '. Their change is the one kept.');
+    share.clash.clear();
   }
   if (!share.ready) {
     share.loaded[which] = true;
@@ -11254,25 +11793,37 @@ function syncPush() {
 function queueEntity(key, v) {
   const id = docId(key), { pub, dm } = v === undefined ? {} : partsOf(key, v), t = Date.now();
   if (v === undefined) (share.myDel = share.myDel || new Map()).set(key, t);
+  share.localT.set(key, t);
+  share.pathKey.set('w/' + id, key); share.pathKey.set('dm/' + id, key);
   if (pub !== undefined) share.pending.set('w/' + id, { k: key, v: pub, t, by: share.uid || '' }); else if (share.pub.has(id)) share.pending.set('w/' + id, null);
   if (dm !== undefined) share.pending.set('dm/' + id, { k: key, v: dm, t, by: share.uid || '' }); else if (share.dmd.has(id)) share.pending.set('dm/' + id, null);
 }
 let pumping = 0, sendErrShown = false;
 function pumpWrites() {
+  if (share.offline) { shareStatus(); return; }
   while (pumping < 4 && share.pending.size) {
     const path = [...share.pending.keys()].find((p) => !share.inflight.has(p));
     if (!path) break;
     const body = share.pending.get(path); share.pending.delete(path);
     share.inflight.add(path); pumping++;
     const ref = share.db.doc(path);
-    (body === null ? ref.delete() : ref.set(body)).then(() => { share.sent++; }, (e) => {
+    const key = share.pathKey.get(path);
+    (body === null ? ref.delete() : ref.set(body)).then(() => { share.sent++; share.unsent.delete(path); }, (e) => {
       const c = e && e.code;
-      if (c === 'resource_exhausted' || c === 'unavailable') { if (!share.pending.has(path)) share.pending.set(path, body); setTimeout(pumpWrites, 1500 + Math.random() * 1500); }
-      else if (!sendErrShown) { sendErrShown = true; toast(c === 'quota_exceeded' ? 'The shared world is full; some changes were not sent. Your browser still has them.' : c === 'invalid_argument' ? 'One change was too big to share (a very long paint stroke or note). It is kept in your browser.' : 'A change could not be shared. It is kept in your browser.'); }
+      if (c === 'resource_exhausted' || c === 'unavailable' || c === 'deadline_exceeded') { if (!share.pending.has(path)) share.pending.set(path, body); setTimeout(pumpWrites, 1500 + Math.random() * 1500); return; }
+      // not sent: forget that it was, so the next sync (on reconnecting, every minute, or Retry) sends it again
+      if (key) share.synced.delete(key);
+      share.unsent.set(path, { k: key || '', why: c === 'quota_exceeded' ? 'full' : c === 'invalid_argument' ? 'big' : c === 'permission_denied' ? 'denied' : 'error' });
+      if (!sendErrShown) { sendErrShown = true; toast(c === 'quota_exceeded' ? 'The shared world is full; some changes were not sent. Your browser still has them.' : c === 'invalid_argument' ? 'One change was too big to share (a very long paint stroke or note). It is kept in your browser.' : 'A change could not be shared. It is kept in your browser and will be tried again.'); }
     }).finally(() => { share.inflight.delete(path); pumping--; shareStatus(); pumpWrites(); });
   }
   shareStatus();
 }
+// coming back online, and a quiet check every minute, resend anything that did not get through
+function shareResync() { if (!share.on || !share.ready || !share.canWrite) return; for (const [p, x] of share.unsent) if (x.why !== 'big' && x.k) share.synced.delete(x.k); syncPush(); }
+window.addEventListener('offline', () => { share.offline = true; shareStatus(); });
+window.addEventListener('online', () => { share.offline = false; sendErrShown = false; shareResync(); pumpWrites(); shareStatus(); });
+setInterval(() => { if (!document.hidden && share.unsent.size) shareResync(); }, 60000);
 // per-device id blocks, so two DMs creating places at the same moment never pick the same id
 function deviceBlock() {
   let k = 0;
@@ -11380,6 +11931,11 @@ function shareMenuHtml() {
   const ppl = share.peers.map((p) => (share.names[p.by] || 'Someone') + ' (' + (p.presence && p.presence.role === 'dm' ? 'DM' : 'player') + ')');
   h += '<p class="meta">At the table now: ' + (ppl.length ? esc(ppl.join(', ')) + ' and you' : 'just you') + '.</p>';
   if (share.err) h += '<p class="meta save-bad">' + esc(share.err) + '</p>';
+  if (share.offline) h += '<p class="meta save-bad"><b>Offline.</b> Your changes are kept and will be sent when the connection comes back.</p>';
+  if (share.unsent.size) {
+    const big = [...share.unsent.values()].filter((x) => x.why === 'big').length, full = [...share.unsent.values()].some((x) => x.why === 'full');
+    h += '<p class="meta save-bad">' + share.unsent.size + ' change' + (share.unsent.size > 1 ? 's have' : ' has') + ' not reached the table yet' + (full ? ': the shared world is full' : '') + (big ? (full ? '; ' : ': ') + big + ' too big to share (split a long paint stroke or note)' : '') + '. They are safe in this browser.</p><div class="actions"><button type="button" class="btn" data-w="shareretry">Try again now</button></div>';
+  }
   if (share.admin) h += '<p class="meta">Starting a new world, loading a file or restoring a snapshot changes the world for everyone. If two DMs change the same thing at once, the later change wins; everything else merges.</p>';
   if (share.owner) h += '<div class="actions"><button type="button" class="btn danger" data-w="sharestop">Stop sharing</button></div>';
   return h + '</div>';
@@ -11389,8 +11945,9 @@ function shareStatus() {
   if (!share.on) { if (el) el.hidden = true; return; }
   if (!el) { el = document.createElement('div'); el.id = 'liveChip'; el.className = 'live-chip'; el.setAttribute('role', 'status'); ($('frame') || document.body).appendChild(el); }
   const n = share.pending.size + share.inflight.size;
-  el.className = 'live-chip' + (share.err ? ' bad' : n ? ' busy' : '');
-  el.textContent = share.err ? 'Live: disconnected' : (share.admin ? 'Live' : 'Live from your DM') + (share.peers.length ? ' · ' + (share.peers.length + 1) + ' here' : '') + (n ? ' · sending…' : '');
+  const u = share.unsent.size;
+  el.className = 'live-chip' + (share.err || share.offline ? ' bad' : n || u ? ' busy' : '');
+  el.textContent = share.offline ? 'Offline · your changes will send when you reconnect' : share.err ? 'Live: disconnected' : (share.admin ? 'Live' : 'Live from your DM') + (share.peers.length ? ' · ' + (share.peers.length + 1) + ' here' : '') + (n ? ' · sending…' : u ? ' · ' + u + ' not sent' : '');
   el.hidden = false;
 }
 
@@ -12591,7 +13148,7 @@ function whereAt(p, s, day, hour) {
   const ownPl = own ? placesOf(s).list.find((o) => o.key === own) : null;
   const keeper = ownPl && (ownPl.kind === 'tavern' || ownPl.kind === 'inn') ? own : null;
   const day0 = { key: a.place || own || '~about', text: a.text };
-  if (/^Sick/.test(a.text)) return { key: '~home', text: a.text };
+  if (/^Sick|^In mourning/.test(a.text)) return { key: '~home', text: a.text };
   if (part === 'night') {
     if (keeper && hour >= 22) return { key: keeper, text: 'Closing up for the night' };
     if (p.group === 'watch' && r(1) < 0.35) { const b = barracks(); if (b) return { key: b, text: 'On the night watch' }; }
@@ -12940,8 +13497,28 @@ function realmListHtml(R, st, q) {
 }
 
 // ---------------------------------------------------------------- wrapping every panel in the shell
+// a short line for screen readers whenever the page changes (the panel itself is not a live region, so it is never read out whole)
+let lastTitle = '', navFocus = false;
+function sideTitle(c) {
+  if (c.kind === 'home') return (WORLD_NAME || 'World') + ': realms';
+  if (c.kind === 'realm') return c.R.name + ': places';
+  if (c.kind === 'section') return c.name;
+  const tab = { overview: 'Overview', market: 'Market', people: 'People', guilds: 'Guilds' }[c.tab];
+  const npc = c.tab === 'people' && people.npc ? npcById(people.npc) : null;
+  return (npc ? npcName(npc) + ', ' : '') + c.s.name + ', ' + tab;
+}
+function afterShell() {
+  const c = sideCtx(), t = sideTitle(c);
+  if (t !== lastTitle) { lastTitle = t; const a = $('srAnnounce'); if (a) a.textContent = t; }
+  if (navFocus) {
+    navFocus = false;
+    const f = document.querySelector('#inspector .side-head h2') || document.querySelector('#inspector .crumbs b');
+    if (f) { if (!f.matches('input')) f.setAttribute('tabindex', '-1'); try { f.focus({ preventScroll: true }); } catch (e) { f.focus(); } }
+  }
+}
 function shellWrap(html) {
   const c = sideCtx(), el = $('inspector');
+  setTimeout(afterShell, 0);
   el.classList.toggle('in-place', c.kind === 'place');
   $('app').classList.toggle('side-wide', tool === 'heroes');
   if (c.kind === 'home') html = homeHtml();
@@ -12976,6 +13553,7 @@ function goRealmPage(capId) {
 $('inspector').addEventListener('click', (e) => {
   const t = e.target.closest('[data-nav],[data-ptab]');
   if (!t) return;
+  if (t.dataset.nav !== 'fly' && t.dataset.nav !== 'more') navFocus = true;
   if (t.dataset.ptab) { openPlace(t.dataset.v, t.dataset.ptab, false); return; }
   const go = t.dataset.nav, v = t.dataset.v;
   if (go === 'home') goHome();
@@ -13005,6 +13583,8 @@ $('inspector').addEventListener('change', (e) => {
   navSize = e.target.value; renderPanel();
 });
 
+try { document.documentElement.lang = document.documentElement.lang || 'en'; } catch (e) { /* ignore */ }
+{ const hv = $('helpVer'); if (hv) hv.textContent = 'Realmwright Atlas v' + APP_VERSION + ' · world generator ' + GEN_VERSION + '.'; }
 // ---------------------------------------------------------------- hiding the side panel, and the phone's map/list handle
 function setSide(on) {
   $('app').classList.toggle('side-off', !on);
@@ -13809,7 +14389,7 @@ $('worldBody').addEventListener('change', async (e) => {
     if (r.error) { toast(r.error); return; }
     await beforeReplace('Before merging a campaign file');
     commit('Merge campaign file', () => { edits = r.edits; }, { bb: [0, 0, W, H], z0: 0, z1: 20, roads: true, strokes: true, realms: true });
-    if (Array.isArray(d.heroes)) { let n = 0; for (const x of d.heroes) if (x && x.id && CLASSES5[x.cls] && raceOk(x.race) && !heroes.list.some((y) => y.id === x.id)) { heroes.list.push(fixHero(x)); n++; } if (n) heroSave(); }
+    if (Array.isArray(d.heroes)) r.sum.heroes = addHeroes(d.heroes);
     showDialog('Campaign merged', '<p>' + esc(mergeSummary(r.sum)) + '</p><p class="meta">Undo puts your world back as it was before the merge.</p>');
     saveAll(); renderWorldPop();
     return;
@@ -13856,6 +14436,7 @@ $('worldBody').addEventListener('click', async (e) => {
   else if (w === 'unlock') { const ok = await setMode('dm', ($('f-dmpw') || {}).value || ''); if (ok) renderWorldPop(); }
   else if (w === 'snap') { const key = b.dataset.v; const r = await readSnapshot(key); if (!r || !r.save) { toast('That snapshot could not be read.'); return; } const at = +String(key).split(':').pop(); worldConfirm = { msg: 'Go back to the snapshot from ' + new Date(at).toLocaleString('en-GB') + (r.why ? ' (' + r.why.toLowerCase() + ')' : '') + '? A snapshot of the world as it is now is kept first, so this can be undone.' + shareWarn, yes: 'Restore snapshot', run: async () => { await beforeReplace('Before restoring a snapshot'); const S = Object.assign({}, r.save, { cid: campaign.cid, mode: campaign.mode, view: null }); loadSaveObject(S); if (r.heroes.length) addHeroes(r.heroes); } }; renderWorldPop(); }
   else if (w === 'sharestart') { await shareStart(); }
+  else if (w === 'shareretry') { sendErrShown = false; shareResync(); pumpWrites(); toast('Trying again…'); setTimeout(renderWorldPop, 1500); }
   else if (w === 'sharestop') { worldConfirm = { msg: 'Stop sharing this world live? Players and co-DMs keep the copy they have in their browser, but it stops updating. Your world stays here.', yes: 'Stop sharing', run: () => shareStop() }; renderWorldPop(); }
   else if (w === 'openw') { const cid = b.dataset.v; if (campaign.shared) { toast('This page is sharing its world live. Open other worlds from your own copy of the atlas.'); return; } await openWorld(cid); }
   else if (w === 'forgetw') { const cid = b.dataset.v; worldConfirm = { msg: 'Delete this world and its snapshots from this browser? Download its backup first if you might want it again (open it, then Download backup file).', yes: 'Delete world', run: async () => { await forgetWorld(cid); renderWorldPop(); toast('World deleted from this browser.'); } }; renderWorldPop(); }

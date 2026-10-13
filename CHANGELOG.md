@@ -6,6 +6,42 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-13 — v25: the eight-point check
+*By: project owner (prepared with Claude)*
+
+- **index.html**, live sharing:
+  - changes that fail to send are kept and sent again when you're back online, or with **Try again now**;
+  - the live chip says when you're offline;
+  - you're told when someone else's later change to the same thing was kept;
+  - merge summaries count battle-map areas and heroes.
+- **index.html**, people:
+  - people mourn family who die: they stay home for a week, visit the grave for two months, and their page has a **Losses** section;
+  - occupied towns show a disarmed watch and life under the garrison.
+- **index.html**, 2024 rules for every class:
+  - the features at every level and the SRD 5.2 subclasses;
+  - 2024 spell counts, with paladins and rangers casting from level 1;
+  - Divine and Primal Order, Blessed Strikes and Elemental Fury;
+  - the 2024 Metamagic and invocations, with the pact boons as invocations;
+  - epic boons at level 19;
+  - 2024 starting kits and fixed starting gold;
+  - one use back on a short rest for Rage, Channel Divinity, Wild Shape and Second Wind.
+- **index.html**, accessibility:
+  - skip links come first;
+  - page changes are announced and focus lands on the page name;
+  - bigger touch targets on phones;
+  - a side-by-side layout for a phone held sideways;
+  - text colours checked for contrast;
+  - the version is shown in Help and the World menu.
+- **index.html**, fixes:
+  - "Show on map" centres properly;
+  - a capital placed next to another capital stays in its own realm (existing worlds unchanged);
+  - monk speed rises at the right levels.
+- **source/**, new: the modules the page is built from, `build.py`, and the browser tests. `source/README.md` explains how to build and test. Run `python3 build.py` in `source/` to rebuild.
+- **docs/live-table-checklist.md**, new: things to check at a real session with two devices.
+- **docs/world-atlas.md**: notes for v25.
+- **backups/index_2026-10-13_v25.html**: a copy of this version.
+- Tests: 249 automated checks pass.
+
 ## 2026-10-12 — v24: the atlas panel and a framed map
 *By: project owner (prepared with Claude)*
 
