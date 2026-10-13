@@ -294,7 +294,7 @@ $('inspector').addEventListener('click', (ev) => {
     case 'open': openMonster(v, false); flyToSpawn(v); return;
     case 'back': monUI.id = null; renderPanel(); return;
     case 'fly': flyToSpawn(v); return;
-    case 'tomarket': setTool('market', true); market.tab = 'bounties'; if (monUI.sid) market.sid = monUI.sid; renderPanel(); return;
+    case 'tomarket': setTool('market', true, true); market.tab = 'bounties'; if (monUI.sid) market.sid = monUI.sid; renderPanel(); return;
     case 'place': { const n = Math.max(1, Math.min(50, +(($('mo-count') || {}).value) || monUI.count)); monUI.count = n; monUI.place = { name: v, custom: !MON[v] && MON_SRD[v] ? { cr: MON_SRD[v][4], ac: MON_SRD[v][1], hp: MON_SRD[v][2], type: MON_SRD[v][0] } : undefined }; monUI.move = null; toast('Tap the map to place ' + (n > 1 ? n + ' × ' : '') + v + '.'); renderPanel(); return; }
     case 'placecustom': { const nm = (($('mo-cname') || {}).value || '').trim(); if (!nm) { toast('Give the creature a name first.'); return; } const n = Math.max(1, Math.min(50, +(($('mo-count') || {}).value) || 1)); monUI.count = n; monUI.place = { name: nm.slice(0, 60), custom: { cr: $('mo-ccr').value, ac: clamp(+$('mo-cac').value || 12, 1, 30), hp: clamp(+$('mo-chp').value || 10, 1, 999), type: 'creature' } }; toast('Tap the map to place ' + nm + '.'); renderPanel(); return; }
     case 'cancelplace': monUI.place = null; renderPanel(); return;
@@ -454,8 +454,8 @@ document.addEventListener('click', (ev) => {
   if (!t) return;
   ev.preventDefault(); ev.stopPropagation();
   if ((t.dataset.monSpawn || t.dataset.monNear) && isPlayer()) { toast('Monster whereabouts are for the DM.'); return; }
-  if (t.dataset.quest) { const [qid, sid] = t.dataset.quest.split('|'); setTool('guilds', true); market.sid = sid; people.sid = sid; guildUI.org = null; guildUI.tab = 'board'; guildUI.q = qid; panelMin = false; renderPanel(); const el = $('inspector'); if (el) el.scrollTop = 0; }
-  else if (t.dataset.questBoard) { setTool('guilds', true); market.sid = t.dataset.questBoard; guildUI.org = null; guildUI.q = null; guildUI.tab = 'board'; panelMin = false; renderPanel(); }
+  if (t.dataset.quest) { const [qid, sid] = t.dataset.quest.split('|'); setTool('guilds', true, true); market.sid = sid; people.sid = sid; guildUI.org = null; guildUI.tab = 'board'; guildUI.q = qid; panelMin = false; renderPanel(); const el = $('inspector'); if (el) el.scrollTop = 0; }
+  else if (t.dataset.questBoard) { setTool('guilds', true, true); market.sid = t.dataset.questBoard; guildUI.org = null; guildUI.q = null; guildUI.tab = 'board'; panelMin = false; renderPanel(); }
   else if (t.dataset.monSpawn) openMonster(t.dataset.monSpawn, true);
-  else if (t.dataset.monNear) { setTool('monsters', true); monUI.sid = t.dataset.monNear; monUI.id = null; monUI.tab = 'near'; renderPanel(); const s = SBY.get(monUI.sid); if (s) flyVis(s.x, s.y, Math.max(view.s, 1.2)); }
+  else if (t.dataset.monNear) { setTool('monsters', true, true); monUI.sid = t.dataset.monNear; monUI.id = null; monUI.tab = 'near'; renderPanel(); const s = SBY.get(monUI.sid); if (s) flyVis(s.x, s.y, Math.max(view.s, 1.2)); }
 }, true);

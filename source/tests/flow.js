@@ -54,6 +54,18 @@ const { chromium } = require('/opt/npm-tools/node_modules/playwright');
   ok(folded[0] && folded[1] === 'none' && back !== 'none', 'scrolling down folds the search row away, and the top brings it back');
   void box;
 
+  // each tap draws the side panel once
+  const draws = await p.evaluate((sid) => new Promise((res) => {
+    const A = window.__A, el = document.getElementById('inspector'); let n = 0;
+    const mo = new MutationObserver((ms) => { for (const m of ms) for (const x of m.addedNodes) if (x.classList && x.classList.contains('side-head')) n++; });
+    mo.observe(el, { childList: true });
+    const out = [];
+    A.openPlace(sid, 'market', false); setTimeout(() => { out.push(n); n = 0;
+      A.openPlace(sid, 'people', false); setTimeout(() => { out.push(n); n = 0;
+        document.querySelector('[data-ptab="overview"]').click(); setTimeout(() => { [...document.querySelectorAll('#inspector .gl-t')][0].click(); setTimeout(() => { out.push(n); mo.disconnect(); res(out); }, 50); }, 50); }, 50); }, 50);
+  }), sid);
+  ok(draws[0] === 1 && draws[1] === 1 && draws[2] === 2, 'opening a tab draws the panel once (market ' + draws[0] + ', people ' + draws[1] + ', overview then a tile ' + draws[2] + ')');
+
   // Jump back to
   await p.click('#inspector .crumbs [data-nav="home"]'); await p.waitForTimeout(400);
   const chip = await p.$$eval('#inspector .gl-recent .chip', (els) => els.map((e) => [e.dataset.nav, e.dataset.v]));

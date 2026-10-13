@@ -1048,10 +1048,17 @@ details.editbox > * + * { margin-top: 10px; }
 .gj-join .btn { flex: none; }
 .warn-t { color: #e8b75a !important; }
 .gj-disc { display: block; color: #8fd18a; font-size: 11px; white-space: nowrap; }
+s.was { opacity: .6; }
+.gj-notices { display: grid; gap: 4px; margin: 6px 0; }
+.gj-notices p { margin: 0; display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+.chip.warn { border-color: #e8b75a; color: #e8b75a; }
 .gj-kin { margin: 0; font-size: 13.5px; }
 .gj-kin .lab { margin-right: 6px; font-size: 10.5px; }
 .hguilds h4, .gj-org h4 { margin: 10px 0 6px; }
 .gj-wait { margin-top: 8px; }
+.dt .row3 { display: grid; grid-template-columns: 1.4fr .7fr 1fr; gap: 8px; }
+.dt-out { border: 1px solid var(--line); border-left: 4px solid var(--brass); border-radius: 8px; background: var(--panel); padding: 9px 10px; display: grid; gap: 4px; margin-top: 8px; }
+.dt-out p { margin: 0; }
 /* v27 what's happening at a place */
 .scene { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 10px; display: grid; gap: 8px; }
 .scene-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -1130,16 +1137,16 @@ details.editbox > * + * { margin-top: 10px; }
       <li><b>The calendar</b> sits at the top of the side panel: Play lets time run, or step a day or a week.</li>
       <li><b>Map tools</b> sit along the top of the map: <b>Select</b>, then <b>Settle</b>, <b>Road</b>, <b>Paint</b>, <b>Tiles</b>, <b>Label</b> and <b>Measure</b> add your own places, routes, terrain, battle maps and notes. Their options open in the side panel; press Done when finished.</li>
       <li><b>Tiles</b> paints the battle map square by square: ground, props such as tables, beds and campfires, and walls, doors, windows and fences along the grid lines. Fill a patch, or drag out a whole building. Players see your changes; undo works per stroke.</li>
-      <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill.</li>
+      <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill. On the Shop tab, pick a hero under <b>Prices for</b> to see their guild member prices and free lodging in the inn bill.</li>
       <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day. Every named place, from the palace to a cobbler's shop, shows <b>what's happening</b> there at dawn, morning, midday, afternoon, evening or night: who is in, the town's events, the season, something overheard, and the places around it.</li>
       <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town with a danger rating for your party, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for. <b>Heroes can join</b> any organisation in a town, from their sheet or the organisation's page: each has a fee, monthly dues, four ranks and benefits that fit it, such as member prices on the Gear step, better selling prices, lodging, healing, authority or a fence.</li>
-      <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character.</li>
+      <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character. The sheet's <b>Downtime</b> section spends days crafting, working, training, researching, carousing, serving a temple or recuperating, at the town's prices and with your guilds' help. Heroes using the 2024 rules choose from the SRD 5.2 spell lists.</li>
       <li><b>Monsters</b> shows creature groups living in their natural habitats, plus rare wanderers and haunts. They appear and move on over the weeks, while lairs stay for months. Place your own from the Bestiary (all 334 SRD creatures with full stat blocks, or a custom one), track each creature's hit points and initiative, and mark them slain. Monsters near a town raise its danger, which brings more monster quests, bigger rewards and higher bounties on the Market's Bounties tab. Zoomed out, nearby groups gather into one marker showing the most dangerous of them, with a count; tap it to zoom in.</li>
       <li><b>Links</b> Underlined names go somewhere: towns, realms, people, organisations and events all open their own page and move the map to them. Press the open tool again, a tab you are already on, or the – button to fold the panel into a slim bar; tap the bar to bring it back.</li><li><b>Measure</b> gives distance and overland travel time between any two points.</li>
       <li>Everything saves in this browser. Use <b>World → Copy map code</b> for a backup. Undo with Ctrl+Z. <b>World → Recent changes</b> shows who changed what; at a shared table it lists everyone's changes with their name.</li>
     </ol>
     <p class="meta" style="margin-top:10px">Shortcuts: V explore, K market, N people, G guilds, H heroes, B monsters, S settle, R road, P paint, T tiles, L label, M measure, Delete removes the selection, Esc cancels.</p>
-    <p class="meta">Rules, items and creatures include material from the System Reference Document 5.1 by Wizards of the Coast LLC, licensed under CC BY 4.0; the item and creature lists were compiled by Sean. Everyday prices, households, the town chronicle, the change feed, guild colours and town wealth and defence come from Sean and Adam's Market Ledger. Battle-map textures and the look come from Tilewright by Sean and Adam. Fonts: Atkinson Hyperlegible, IM Fell and Pixelify Sans, under the SIL Open Font License.</p>
+    <p class="meta">Rules, items and creatures include material from the System Reference Documents 5.1 and 5.2 by Wizards of the Coast LLC, licensed under CC BY 4.0 (the 2024 spell lists via the 5e-bits database, MIT); the item and creature lists were compiled by Sean. Everyday prices, households, the town chronicle, the change feed, guild colours and town wealth and defence come from Sean and Adam's Market Ledger. Battle-map textures and the look come from Tilewright by Sean and Adam. Fonts: Atkinson Hyperlegible, IM Fell and Pixelify Sans, under the SIL Open Font License.</p>
     <p class="meta" id="helpVer"></p>
   </div>
   </aside>

@@ -53,6 +53,8 @@ The build joins the modules in the order listed in `build.py`. Each one starts w
 | `app31.js` | 2024 class features, spellcasting, epic boons, metamagic, invocations and starting equipment |
 | `app32.js` | Guild membership for heroes: fees, dues, ranks and benefits |
 | `app33.js` | What's happening at each place, hour by hour |
+| `app34.js` | The 2024 spell lists (SRD 5.2) and the 26 spells new in it |
+| `app35.js` | Downtime: crafting, working, training, research, carousing, temple service and rest |
 
 ## Rules for changes
 

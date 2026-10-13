@@ -25,7 +25,7 @@ function newHero(blank) {
     hpMax: 0, hp: null, temp: 0, hdUsed: 0, slotsUsed: [0, 0, 0, 0, 0, 0, 0, 0, 0], pactUsed: 0, uses: {}, death: [0, 0], insp: false, conds: [], exh: 0, xp: 0,
     subclass: '', subNotes: '', trait: '', ideal: '', bond: '', flaw: '', bondNpc: null, bondKind: '', notes: '', created: market.day,
     bgAsi: { mode: '21' }, bgAbil: [], bgFeat: '', feat24: '', mi: {}, mi2: {}, miList: '', miList2: '', skilled: [],
-    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate', orgs: {}
+    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate', orgs: {}, dt: {}, learned: { langs: [], tools: [] }
   };
 }
 const raceSub = (h) => { const R = raceOf(h); if (!R.subs) return null; const k = R.subs[h.sub] ? h.sub : Object.keys(R.subs)[0]; return R.subs[k]; };
@@ -158,11 +158,12 @@ function derive(h) {
   const ordWeap = v24 && ((h.cls === 'cleric' && h.order === 'protector') || (h.cls === 'druid' && h.order === 'warden')) ? ['martial'] : [];
   D.armorProfs = new Set(C.armor.concat(srd ? C.subArmor || [] : [], ordArmor, (S && S.armor) || []));
   D.weaponProfs = new Set(C.weapons.concat(ordWeap, R.weapons || [], (S && S.weapons) || []));
-  const tools = [].concat(C.tools || [], B.tools || [], (S && S.tools) || [], R.toolChoice && h.tool ? [h.tool] : []);
+  const tools = [].concat(C.tools || [], B.tools || [], (S && S.tools) || [], R.toolChoice && h.tool ? [h.tool] : [], (h.learned && h.learned.tools) || []);
   D.tools = tools;
   const langs = new Set(R.langs.concat(C.langs || [], h.cls === 'sorcerer' && srd && !v24 ? ['Draconic'] : []));
   for (const l of h.raceLangs) langs.add(l);
   for (const l of h.bgLangs) langs.add(l);
+  for (const l of (h.learned && h.learned.langs) || []) langs.add(l);
   D.langs = langs;
   // hit points
   const hd = C.hd, con = D.mod.con;
@@ -368,7 +369,7 @@ function derive(h) {
   if (h.goldMode === 'gold' && !h.goldRoll && !v24) T('gear', 'Roll your starting gold.');
   if (D.cast) {
     const K = D.cast;
-    const nonCls = h.cls === 'bard' ? h.spells.filter((n) => !(SPELL_BY.get(n) || { cls: '' }).cls.includes('b')).length : 0;
+    const nonCls = h.cls === 'bard' ? h.spells.filter((n) => !spellCls(h, SPELL_BY.get(n) || { cls: '', cls24: '' }).includes('b')).length : 0;
     if (h.cantrips.length < K.cantripsN) T('spells', 'Choose ' + (K.cantripsN - h.cantrips.length) + ' more cantrip' + (K.cantripsN - h.cantrips.length > 1 ? 's' : '') + '.');
     if (K.knownN && h.spells.length < K.knownN) T('spells', 'Choose ' + (K.knownN - h.spells.length) + ' more spell' + (K.knownN - h.spells.length > 1 ? 's' : '') + ' known.');
     if (K.bookN && h.spells.length < K.bookN) T('spells', 'Add ' + (K.bookN - h.spells.length) + ' more spell' + (K.bookN - h.spells.length > 1 ? 's' : '') + ' to your spellbook.');
@@ -442,8 +443,8 @@ function classSpells(h, lv, maxLv, all) {
   if (lv === 0 && is24(h) && h.style === 'blessed' && h.cls === 'paladin') key = 'c';
   if (lv === 0 && is24(h) && h.style === 'druidic' && h.cls === 'ranger') key = 'd';
   // 2024 Magical Secrets: the bard, cleric, druid and wizard lists only
-  const wide = all && is24(h) && h.cls === 'bard' && !hasPact(h, 'tome') ? (s) => /[bcdw]/.test(s.cls) : all ? () => true : null;
-  return SPELLS.filter((s) => s.lv <= maxLv && s.lv === lv && ((wide && wide(s)) || s.cls.includes(key) || (C.expanded && (!h.subclass || h.subclass === C.sub[1]) && C.expanded.includes(s.name))));
+  const wide = all && is24(h) && h.cls === 'bard' && !hasPact(h, 'tome') ? (s) => /[bcdw]/.test(s.cls24) : all ? () => true : null;
+  return SPELLS.filter((s) => s.lv <= maxLv && s.lv === lv && ((wide && wide(s)) || spellCls(h, s).includes(key) || (C.expanded && (!h.subclass || h.subclass === C.sub[1]) && C.expanded.includes(s.name))));
 }
 function spellOK(h, K, name, lv0) {
   const sp = SPELL_BY.get(name); if (!sp) return false;
@@ -789,13 +790,13 @@ function stepSpells(h, D) {
     o += '<h4>' + ordinal(l) + ' level <small class="meta">' + (K.slots[l - 1] ? K.slots[l - 1] + ' slot' + (K.slots[l - 1] > 1 ? 's' : '') : K.type === 'pact' ? 'pact slots' : '') + '</small></h4><ul class="spells">' + list.map((s) => {
       const on = h.spells.includes(s.name);
       const prep = K.mode === 'book' && on ? '<button type="button" class="prep' + (h.prepared.includes(s.name) ? ' on' : '') + '" data-hr="prep" data-v="' + esc(s.name) + '" aria-pressed="' + h.prepared.includes(s.name) + '" aria-label="Prepare ' + esc(s.name) + ' today" title="Prepared today">' + (h.prepared.includes(s.name) ? '●' : '○') + '</button>' : '';
-      const foreign = secrets && !s.cls.includes('b') ? '<em class="tag">secret</em>' : '';
+      const foreign = secrets && !spellCls(h, s).includes('b') ? '<em class="tag">secret</em>' : '';
       return spellRow(s, on, 'spell', foreign, h.spells.length >= cap, prep);
     }).join('') + '</ul>';
   }
   o += '</section>';
   if (h.cls === 'warlock' && D.lv >= 11) {
-    o += '<section><h3>Mystic Arcanum</h3>' + [[11, 6], [13, 7], [15, 8], [17, 9]].filter(([at]) => D.lv >= at).map(([, sl]) => fieldSel('hc-arc' + sl, ordinal(sl) + '-level spell (once per long rest)', [['', 'Choose…']].concat(SPELLS.filter((s) => s.lv === sl && s.cls.includes('k')).map((s) => [s.name, s.name])), h.arcanum[sl] || '')).join('') + '</section>';
+    o += '<section><h3>Mystic Arcanum</h3>' + [[11, 6], [13, 7], [15, 8], [17, 9]].filter(([at]) => D.lv >= at).map(([, sl]) => fieldSel('hc-arc' + sl, ordinal(sl) + '-level spell (once per long rest)', [['', 'Choose…']].concat(SPELLS.filter((s) => s.lv === sl && spellCls(h, s).includes('k')).map((s) => [s.name, s.name])), h.arcanum[sl] || '')).join('') + '</section>';
   }
   return o;
 }
@@ -825,7 +826,7 @@ function heroSheet(h, D, S) {
   const C = CLS(h);
   const hp = h.hp == null ? D.hpMax : h.hp;
   const reg = heroGuildMember(h);
-  let o = readyBox(D);
+  let o = readyBox(D) + guildNoticeHtml(h);
   o += '<div id="hrRoll" class="rollbar" aria-live="polite">' + (heroes.log[0] ? rollCard(heroes.log[0]) : '<span class="rc-l">Tap any bonus to roll it</span>') + '</div>';
   o += '<div class="rollctl"><div class="seg" role="group" aria-label="Roll mode">' + [[-1, 'Disadvantage'], [0, 'Normal'], [1, 'Advantage']].map(([v, l]) => '<button type="button" data-hr="adv" data-v="' + v + '" aria-pressed="' + (heroes.adv === v) + '">' + l + '</button>').join('') + '</div><div class="dice">' + [4, 6, 8, 10, 12, 20, 100].map((d) => '<button type="button" data-hr="die" data-v="' + d + '">d' + d + '</button>').join('') + '</div></div>';
   // identity line
@@ -855,6 +856,7 @@ function heroSheet(h, D, S) {
   // limited uses
   if (D.uses.length) o += '<section><h3>Limited uses</h3><ul class="uses">' + D.uses.map((u) => { const used = h.uses[u.key] || 0, left = Math.max(0, u.max - used); return '<li><div><b>' + esc(u.n) + '</b><small>' + (u.rest === 'short' ? 'short or long rest' : u.rest === 'one' ? 'long rest; one back on a short rest' : 'long rest') + (u.note ? ' · ' + esc(u.note) : '') + '</small></div>' + (u.max >= 99 ? '<span class="small">Unlimited</span>' : u.max > 8 ? '<span class="pool"><button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|1" aria-label="Spend one">−</button><b>' + left + '</b>/' + u.max + '<button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|-1" aria-label="Regain one">+</button></span>' : '<span class="pips">' + Array.from({ length: u.max }, (_, i) => '<button type="button" class="pip' + (i < left ? ' on' : '') + '" data-hr="usepip" data-v="' + u.key + '|' + i + '|' + u.max + '" aria-label="' + esc(u.n) + ' ' + (i + 1) + '"></button>').join('') + '</span>') + '</li>'; }).join('') + '</ul></section>';
   o += heroGuildsHtml(h);
+  o += downtimeHtml(h);
   // spells
   o += sheetSpells(h, D);
   // skills
@@ -1069,7 +1071,7 @@ $('inspector').addEventListener('click', (ev) => {
       heroLog(h, 'hero', 'Joined the Adventurers\' Guild at Copper rank');
       toast((h.name || 'Your hero') + ' joins the Adventurers\' Guild at Copper rank.'); break;
     }
-    case 'toguild': { const s = SBY.get(h.home); setTool('guilds'); if (s) { market.sid = s.id; people.sid = s.id; } guildUI.tab = 'board'; guildUI.q = null; guildUI.org = null; renderPanel(); return; }
+    case 'toguild': { const s = SBY.get(h.home); setTool('guilds', false, true); if (s) { market.sid = s.id; people.sid = s.id; } guildUI.tab = 'board'; guildUI.q = null; guildUI.org = null; renderPanel(); return; }
     case 'del': if (heroes.confirmDel !== h.id) { heroes.confirmDel = h.id; renderPanel(); return; } heroes.list = heroes.list.filter((x) => x.id !== h.id); heroes.cur = heroes.list[0] ? heroes.list[0].id : null; heroes.confirmDel = null; heroes.step = 'sheet'; heroChanged(null); toast('Hero deleted.'); return;
     case 'noop': return;
     default: return;

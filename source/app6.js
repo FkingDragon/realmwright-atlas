@@ -408,7 +408,7 @@ function peopleHeader(s) {
     '<div class="seg mk-tabs g5" role="tablist">' + tabs.map(([k, l]) => '<button type="button" role="tab" data-pp="tab" data-v="' + k + '" aria-pressed="' + (people.tab === k) + '">' + l + '</button>').join('') + '</div>';
 }
 function personRow(p, day) {
-  const a = activity(p, day), d = dispOf(p), at = attitude(d);
+  const a = activity(p, day), d = dispShown(p), at = attitude(d);
   return '<li><button type="button" data-pp="npc" data-v="' + esc(p.id) + '"><span class="dot ' + at[1] + '" title="' + at[0] + ' to the party"></span><span class="t"><b>' + esc(npcName(p)) + (tracked(p) ? ' <i class="star" aria-label="tracked">★</i>' : '') + '</b><small>' + esc(p.job) + ' · ' + esc(p.race) + ', ' + p.age + '</small><small class="act' + (a.tone ? ' ' + a.tone : '') + '">' + esc(a.text) + '</small></span></button></li>';
 }
 function residentsTab(s, day) {
@@ -448,7 +448,7 @@ const PURSE = [0.02, 0.15, 0.6, 3, 12, 45, 180];
 function coinText(p) { const v = PURSE[p.life] * (0.4 + 1.2 * T.hash(p.h || 1, 3, 77)); return v < 0.01 ? 'Nothing' : money(v); }
 function personView(p, day) {
   const s = SBY.get(p.sid);
-  const d = dispOf(p), at = attitude(d);
+  const d = dispShown(p), at = attitude(d), kb = kinBonus(p);
   const a = activity(p, day);
   const o = (edits.npc || {})[p.id] || {};
   const rels = relsOf(p).filter((r) => !(isPlayer() && (SECRET_REL.has(r.type) || r.group === 'secret')));
@@ -458,6 +458,7 @@ function personView(p, day) {
   h += '<div class="row2"><div class="field"><label class="lab" for="pp-job">Job</label><input id="pp-job" value="' + esc(p.job) + '" maxlength="50"></div><div class="field"><label class="lab" for="pp-status">Status</label><select id="pp-status">' + STATUS.map((x) => '<option' + ((p.status || 'Alive') === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></div></div>';
   if (p.secretJob && !isPlayer()) h += '<p class="secret-line"><b>Secretly:</b> ' + esc(p.secretJob) + '</p>';
   h += '<div class="disp"><div><span class="lab">Towards the party</span><b class="' + at[1] + '">' + at[0] + '</b></div><div class="meter" aria-hidden="true"><em style="left:' + ((d + 100) / 2).toFixed(1) + '%"></em></div>' + (isPlayer() ? '' : '<div class="disp-btns"><button type="button" class="btn" data-pp="disp" data-v="-10">Worse</button><button type="button" class="btn" data-pp="disp" data-v="10">Better</button></div>') + '</div>';
+  if (kb.v && !(kb.org === 'thieves' && isPlayer())) h += '<p class="small gj-kin-why">' + esc(kb.why) + ' (added to the attitude the DM sets).</p>';
   h += placeRoleHtml(p);
   h += '<section><h3>Today</h3><p class="today ' + (a.tone || '') + '">' + (a.ev ? '<button type="button" class="link" data-ev="' + esc(a.ev) + '">' + esc(a.text) + '</button>' : actLinks(a, s)) + '</p>' + (a.secret && !isPlayer() ? '<p class="secret-line"><b>' + (a.secretWith ? 'Secretly:' : 'Really:') + '</b> ' + actLinks({ text: a.secret, place: a.secretPlace, with: a.secretWith }, s) + '</p>' : '') + '</section>';
   h += '<dl class="stats two">' + (isPlayer() ? '' : stat('Wants', esc(p.motive)) + stat('Secret', esc(p.secret))) + stat('Personality', esc(p.trait)) + stat('Believes in', esc(p.ideal)) + (isPlayer() ? '' : stat('Flaw', esc(p.flaw))) + stat('Look', esc(p.quirk)) +

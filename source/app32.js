@@ -163,7 +163,7 @@ function gjCard(h, k, day) {
     '<p class="meta">' + (at ? 'Joined in ' + tLink(at) + ', ' : 'Joined ') + dateText(m.day || 0) + (G.dues ? ' · dues ' + money(G.dues) + ' a month, ' + (lapsed ? '<b>overdue since ' + dateText(m.paid || 0) + '</b>' : 'paid to ' + dateText(m.paid || 0)) : '') + '</p>' +
     (lapsed ? '<p class="small warn-t">Benefits are suspended until the dues are paid.</p>' : '<ul class="gj-perks">' + perks.map(([, n, d]) => '<li><b>' + esc(n) + '</b> ' + esc(d) + '</li>').join('') + '</ul>') +
     (next.length && !lapsed ? '<p class="small">Next rank adds: ' + next.map((p) => esc(p[1])).join(', ') + (k === 'adventurers' ? ' (earn merit on quests)' : m.r == null ? ' (after time served and more levels)' : '') + '.</p>' : '') +
-    '<div class="actions">' + (G.dues ? '<button type="button" class="btn sm' + (lapsed ? ' primary' : '') + '" data-gj="pay" data-v="' + esc(h.id) + '|' + k + '">Pay a month (' + money(G.dues) + ')</button>' : '') +
+    '<div class="actions">' + (k === 'watch' && watchWageDays(h, day) ? '<button type="button" class="btn sm primary" data-gj="collect" data-v="' + esc(h.id) + '|watch">Collect wages (' + money(watchWageDays(h, day) * G.wage) + ')</button>' : '') + (G.dues ? '<button type="button" class="btn sm' + (lapsed ? ' primary' : '') + '" data-gj="pay" data-v="' + esc(h.id) + '|' + k + '">Pay a month (' + money(G.dues) + ')</button>' : '') +
     (dm ? '<button type="button" class="btn sm" data-gj="down" data-v="' + esc(h.id) + '|' + k + '"' + (r <= 0 ? ' disabled' : '') + '>Demote</button><button type="button" class="btn sm" data-gj="up" data-v="' + esc(h.id) + '|' + k + '"' + (r >= 3 ? ' disabled' : '') + '>Promote</button>' : '') +
     '<button type="button" class="btn sm danger" data-gj="leave" data-v="' + esc(h.id) + '|' + k + '">Leave</button></div></li>';
 }
@@ -203,6 +203,7 @@ document.addEventListener('click', (ev) => {
   if (a === 'join') { if (gjJoin(h, k, SBY.get(sid) || gjTown(h))) toast((h.name || 'Your hero') + ' is now ' + (k === 'rulers' ? 'sworn to the realm' : 'a member of the ' + ORGS[k].short) + '.'); }
   else if (a === 'leave') gjLeave(h, k);
   else if (a === 'pay') gjPay(h, k);
+  else if (a === 'collect') gjCollect(h);
   else if (a === 'up') gjSetRank(h, k, 1);
   else if (a === 'down') gjSetRank(h, k, -1);
   heroSave();
@@ -224,3 +225,136 @@ document.addEventListener('click', (ev) => {
   guildCommit('Register ' + (h.name || 'hero'), (g) => { g.party.members.push({ id: 'h:' + h.id, name: h.name || 'Unnamed', cls: CLS(h).name, level: h.level, merit: 0 }); });
   renderPanel();
 });
+
+// ---------------------------------------------------------------- member prices in the Market's Shop and at the inn (v28)
+// Pick a hero on the Shop tab and the prices and inn bill are worked out for them: their guilds' discounts in this
+// town, free lodging where a guild gives it, and half-price healing for the faithful.
+function shopKindSrd(it) {
+  const n = it.name;
+  if (it.cat === 'Weapons') return 'weapon';
+  if (it.cat === 'Armor') return 'armor';
+  if (it.cat === 'Tools') return /thieves'|disguise/i.test(n) ? 'shady' : 'tool';
+  if (it.cat === 'Magic items') return /potion of healing/i.test(n) ? 'cure' : /^spell scroll/i.test(n) ? 'scroll' : 'magic';
+  if (it.cat === 'Services') return /healer/i.test(n) ? 'heal' : /toll/i.test(n) ? 'toll' : 'service';
+  if (it.cat === 'Lodging') return /stabling|bath/i.test(n) ? 'service' : 'lodge';
+  if (it.cat === 'Wages') return 'wage';
+  if (it.cat === 'Food' || it.cat === 'Drink') return 'food';
+  if (/^(Crystal|Orb|Rod|Staff|Wand|Component pouch|Spellbook|Sprig of mistletoe|Totem|Wooden staff|Yew wand)/i.test(n)) return 'arcane';
+  if (/^(Amulet|Emblem|Reliquary)/i.test(n)) return 'holy';
+  if (/antitoxin|healer's kit/i.test(n)) return 'cure';
+  if (/pack$/i.test(n)) return 'pack';
+  return 'gear';
+}
+// the best member price for a hero buying a kind of thing in a town
+function memberDisc(h, s, kind) {
+  let best = { v: 0, by: '' };
+  if (!h || !h.orgs || !s) return best;
+  const take = (v, by) => { if (v > best.v) best = { v, by }; };
+  for (const k in h.orgs) {
+    const m = h.orgs[k];
+    if (!m || !GJ[k] || gjLapsed(m) || !gjAt(s, k)) continue;
+    const r = Math.max(0, gjRank(h, k));
+    // merchants' prices cover goods, not lodging, services or wages
+    if (k === 'merchants' && /^(lodge|service|heal|toll|wage)$/.test(kind)) continue;
+    const f = GJ_DISC[k], t = f && f(kind);
+    if (t) take(t[r], ORGS[k].short);
+    if (k === 'temple' && kind === 'heal') take(0.5, 'Temple');
+    if (k === 'adventurers' && kind === 'heal' && r >= 1) take(0.5, 'Adventurers');
+    if (k === 'rulers' && kind === 'toll') take(1, 'Writ of passage');
+    if (k === 'mages' && kind === 'scroll' && r >= 2) take(0.25, 'Mages');
+  }
+  return best;
+}
+// free or cheap lodging a member can claim in a town: { lodge: highest free lodging (0-5) or -1, meals: highest free meals, cot: price of a cot or null, by }
+function memberLodging(h, s) {
+  const out = { lodge: -1, meals: -1, cot: null, by: [] };
+  if (!h || !h.orgs || !s) return out;
+  const give = (l, m, by) => { if (l > out.lodge) out.lodge = l; if (m > out.meals) out.meals = m; out.by.push(by); };
+  for (const k in h.orgs) {
+    const m = h.orgs[k];
+    if (!m || !GJ[k] || gjLapsed(m) || !gjAt(s, k)) continue;
+    const r = Math.max(0, gjRank(h, k));
+    if (k === 'temple') give(2, 2, 'the temple');
+    if (k === 'watch') give(1, -1, 'the watch house');
+    if (k === 'thieves') give(0, -1, 'a guild safehouse');
+    if (k === 'rulers' && r >= 1) give(3, 3, 'crown lodging (on crown business)');
+    if (k === 'adventurers' && guildLevel(s, 'adventurers') >= 1) { if (r >= 3) give(3, 3, 'the guild hall'); else { out.cot = 0.1; out.by.push('a cot in the hall\'s bunkroom'); } }
+  }
+  return out;
+}
+const shopHero = () => (market.shop && market.shop.hero ? (heroes.list || []).find((x) => x.id === market.shop.hero) || null : null);
+function shopHeroHtml(s) {
+  const hs = heroes.list || [];
+  if (!hs.length) return '';
+  const h = shopHero();
+  let o = '<div class="field"><label class="lab" for="shop-hero">Prices for</label><select id="shop-hero"><option value="">Anyone</option>' + hs.map((x) => '<option value="' + esc(x.id) + '"' + (h && h.id === x.id ? ' selected' : '') + '>' + esc(x.name || 'Unnamed hero') + '</option>').join('') + '</select></div>';
+  if (h) {
+    const keys = Object.keys(h.orgs || {}).filter((k) => GJ[k]);
+    const here = keys.filter((k) => !gjLapsed(gjMember(h, k)) && gjAt(s, k)), away = keys.filter((k) => !here.includes(k));
+    o += '<p class="small">' + (here.length ? 'Member prices for ' + esc(h.name || 'this hero') + ' from the ' + here.map((k) => esc(ORGS[k].short) + ' (' + esc(gjRankName(h, k)) + ')').join(', ') + '.' : esc(h.name || 'This hero') + ' has no guild discounts in ' + esc(s.name) + '.') + (away.length ? ' <span class="meta">Not here or dues owed: ' + away.map((k) => esc(ORGS[k].short)).join(', ') + '.</span>' : '') + '</p>';
+  }
+  return o;
+}
+document.addEventListener('change', (ev) => {
+  const t = ev.target;
+  if (!t || t.id !== 'shop-hero') return;
+  market.shop.hero = t.value || null;
+  renderPanel();
+});
+
+// ---------------------------------------------------------------- dues and wages as the calendar runs (v28)
+// Nothing is written as days pass (in a shared world each player's device owns its heroes); instead the hero's sheet
+// and the World page's Today show what is owed and what can be collected, worked out from the day.
+function watchWageDays(h, day) {
+  const m = gjMember(h, 'watch');
+  if (!m) return 0;
+  const from = m.wageFrom != null ? m.wageFrom : m.day || 0;
+  return Math.max(0, Math.floor(((day == null ? market.day : day) - from) / 10));   // one day in ten on patrol
+}
+function guildNotices(h, day) {
+  day = day == null ? market.day : day;
+  const out = [];
+  for (const k of Object.keys(h.orgs || {})) {
+    const m = h.orgs[k];
+    if (!m || !GJ[k]) continue;
+    if (gjLapsed(m, day)) out.push({ k, kind: 'dues', text: money(GJ[k].dues * Math.max(1, Math.ceil((day - (m.paid || 0)) / 30))) + ' dues owed to the ' + ORGS[k].short + ' since ' + dateText(m.paid || 0) + '; benefits are suspended.' });
+  }
+  const wd = watchWageDays(h, day);
+  if (wd > 0) out.push({ k: 'watch', kind: 'wage', text: wd + ' day' + (wd === 1 ? '' : 's') + ' on patrol: ' + money(wd * GJ.watch.wage) + ' in wages to collect from the Watch.' });
+  return out;
+}
+function gjCollect(h) {
+  const m = gjMember(h, 'watch'), wd = watchWageDays(h);
+  if (!m || !wd) return;
+  const pay = Math.round(wd * GJ.watch.wage * 100) / 100;
+  h.goldDelta += pay;
+  h.orgs = Object.assign({}, h.orgs, { watch: Object.assign({}, m, { wageFrom: (m.wageFrom != null ? m.wageFrom : m.day || 0) + wd * 10 }) });
+  heroLog(h, 'guild', 'Collected ' + money(pay) + ' in wages from the Watch');
+  toast((h.name || 'Your hero') + ' collects ' + money(pay) + '.');
+}
+function guildNoticeHtml(h) {
+  const N = guildNotices(h);
+  if (!N.length) return '';
+  return '<div class="gj-notices">' + N.map((n) => '<p class="small ' + (n.kind === 'dues' ? 'warn-t' : '') + '">' + esc(n.text) + ' ' + (n.kind === 'dues' ? '<button type="button" class="btn sm" data-gj="pay" data-v="' + esc(h.id) + '|' + n.k + '">Pay a month</button>' : '<button type="button" class="btn sm primary" data-gj="collect" data-v="' + esc(h.id) + '|watch">Collect</button>') + '</p>').join('') + '</div>';
+}
+// for the World page: which heroes owe dues or have wages waiting
+function guildTodayChips() {
+  const out = [];
+  for (const h of heroes.list || []) for (const n of guildNotices(h)) out.push('<button type="button" class="chip' + (n.kind === 'dues' ? ' warn' : '') + '" data-hero="' + esc(h.id) + '">' + esc(h.name || 'Hero') + ': ' + (n.kind === 'dues' ? 'dues to the ' + esc(ORGS[n.k].short) : 'wages waiting') + '</button>');
+  return out;
+}
+
+// ---------------------------------------------------------------- fellow members get a warmer welcome (v28)
+// A person who belongs to an organisation a hero serves (dues paid) thinks better of the party: +15, or +25 once a
+// hero holds the third rank or higher. It adds to the DM's own setting and is shown with its reason.
+function kinBonus(p) {
+  const org = GROUP_ORG[p.group] || (!isPlayer() && /thieves/.test(p.secretJob || '') ? 'thieves' : null);
+  if (!org || !GJ[org]) return { v: 0, why: '' };
+  let best = null;
+  for (const h of heroes.list || []) { const m = gjMember(h, org); if (!m || gjLapsed(m)) continue; const r = gjRank(h, org); if (!best || r > best.r) best = { h, r }; }
+  if (!best) return { v: 0, why: '' };
+  const v = best.r >= 2 ? 25 : 15;
+  // a secret thief's warmth counts only on the DM's screen, so players never learn of it this way
+  return { v, why: '+' + v + ': ' + (best.h.name || 'a hero') + ' is a fellow member of the ' + ORGS[org].short + ' (' + gjRankName(best.h, org) + ')', org };
+}
+function dispShown(p) { return clamp(dispOf(p) + kinBonus(p).v, -100, 100); }

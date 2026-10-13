@@ -1,6 +1,6 @@
 t=open('template.html').read()
 lib=open('lib.js').read().replace("if (typeof module !== 'undefined') module.exports = terrainLib;\n","")
-app=''.join(open(f).read() for f in ['app1.js','app2.js','app3.js','app5.js','app6.js','app7.js','app8.js','app9.js','app10.js','app21.js','app31.js','app11.js','app12.js','app13.js','app14.js','app15.js','app16.js','app17.js','app18.js','app19.js','app20.js','app22.js','app23.js','app24.js','srd-data.js','app25.js','app26.js','app27.js','app28.js','app29.js','app30.js','app32.js','app33.js','app4.js'])
+app=''.join(open(f).read() for f in ['app1.js','app2.js','app3.js','app5.js','app6.js','app7.js','app8.js','app9.js','app10.js','app21.js','app31.js','app34.js','app11.js','app12.js','app13.js','app14.js','app15.js','app16.js','app17.js','app18.js','app19.js','app20.js','app22.js','app23.js','app24.js','srd-data.js','app25.js','app26.js','app27.js','app28.js','app29.js','app30.js','app32.js','app33.js','app35.js','app4.js'])
 out=t.replace('/*LIB*/',lib).replace('/*APP*/',app)
 open('atlas.html','w').write(out)
 open('check.js','w').write(lib+'\n'+app)

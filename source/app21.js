@@ -140,8 +140,8 @@ function basics24Html(h, D) {
     if (f.k === 'mi') {
       const key = f.slot === 'race' ? 'mi2' : 'mi', M = h[key] || {}, list = f.mi;
       if (h.bg === 'custom' || f.slot === 'race') o += fieldSel('hc-' + key + 'list', 'Magic Initiate list', Object.keys(MI_LIST).map((k) => [k, MI_LIST[k]]), list);
-      o += '<div class="field"><span class="lab">Two ' + MI_LIST[list].toLowerCase() + ' cantrips (' + (M.cant || []).length + '/2)</span><div class="chips">' + SPELLS.filter((s) => s.lv === 0 && s.cls.includes(list)).map((s) => chip(key + 'cant', s.name, s.name, (M.cant || []).includes(s.name))).join('') + '</div></div>';
-      o += '<div class="row2">' + fieldSel('hc-' + key + 'spell', '1st-level spell', [['', 'Choose…']].concat(SPELLS.filter((s) => s.lv === 1 && s.cls.includes(list)).map((s) => [s.name, s.name])), M.spell || '') + fieldSel('hc-' + key + 'ab', 'Spellcasting ability', [['int', 'Intelligence'], ['wis', 'Wisdom'], ['cha', 'Charisma']], M.ab || (list === 'w' ? 'int' : 'wis')) + '</div>';
+      o += '<div class="field"><span class="lab">Two ' + MI_LIST[list].toLowerCase() + ' cantrips (' + (M.cant || []).length + '/2)</span><div class="chips">' + SPELLS.filter((s) => s.lv === 0 && spellCls(h, s).includes(list)).map((s) => chip(key + 'cant', s.name, s.name, (M.cant || []).includes(s.name))).join('') + '</div></div>';
+      o += '<div class="row2">' + fieldSel('hc-' + key + 'spell', '1st-level spell', [['', 'Choose…']].concat(SPELLS.filter((s) => s.lv === 1 && spellCls(h, s).includes(list)).map((s) => [s.name, s.name])), M.spell || '') + fieldSel('hc-' + key + 'ab', 'Spellcasting ability', [['int', 'Intelligence'], ['wis', 'Wisdom'], ['cha', 'Charisma']], M.ab || (list === 'w' ? 'int' : 'wis')) + '</div>';
     }
     if (f.k === 'skilled') o += '<div class="field"><span class="lab">Three skills (' + (h.skilled || []).length + '/3)</span><div class="chips">' + ALL_SKILLS.map((s) => chip('skilled', s, s, (h.skilled || []).includes(s))).join('') + '</div></div>';
   }
@@ -149,7 +149,7 @@ function basics24Html(h, D) {
 }
 function rulesNoteHtml(h) {
   return '<div class="field"><span class="lab">Rules</span><div class="seg" role="group">' + [['2014', '2014 (SRD 5.1)'], ['2024', '2024 (SRD 5.2)']].map(([k, l]) => '<button type="button" data-hr="rules" data-v="' + k + '" aria-pressed="' + ((h.rules || '2014') === k) + '">' + l + '</button>').join('') + '</div>' +
-    (is24(h) ? '<p class="small rules-note">2024 rules: species give no ability increases (your background does), backgrounds grant an origin feat, martial classes use weapon mastery, exhaustion is −2 per level to d20 tests and −5 ft speed, and every subclass starts at level 3. Classes use their 2024 features, spell counts, starting kits and a level 19 epic boon. Spell lists still follow SRD 5.1. Only free SRD 5.2 subclasses are built in. ' + srdLink() + '</p>' : '<p class="small rules-note">The 2014 rules (SRD 5.1, plus Player\'s Handbook summaries). Switch to 2024 to use the newer free rules.</p>') + '</div>';
+    (is24(h) ? '<p class="small rules-note">2024 rules: species give no ability increases (your background does), backgrounds grant an origin feat, martial classes use weapon mastery, exhaustion is −2 per level to d20 tests and −5 ft speed, and every subclass starts at level 3. Classes use their 2024 features, spell counts, starting kits and a level 19 epic boon. Spell lists follow SRD 5.2. Only free SRD 5.2 subclasses are built in. ' + srdLink() + '</p>' : '<p class="small rules-note">The 2014 rules (SRD 5.1, plus Player\'s Handbook summaries). Switch to 2024 to use the newer free rules.</p>') + '</div>';
 }
 const srdLink = () => '<a class="ext" href="' + SRD52 + '" target="_blank" rel="noopener noreferrer">SRD 5.2 rules<span aria-hidden="true"> ↗</span><span class="vh"> (opens the free rules in a new tab)</span></a>';
 const BG24_FOR = { fighter: 'soldier', barbarian: 'soldier', paladin: 'soldier', ranger: 'soldier', rogue: 'criminal', monk: 'criminal', cleric: 'acolyte', druid: 'acolyte', bard: 'acolyte', sorcerer: 'sage', warlock: 'sage', wizard: 'sage' };
@@ -165,7 +165,7 @@ function autoFill24(h, Q) {
   for (const f of feats24(h)) {
     if (f.k !== 'mi') continue;
     const key = f.slot === 'race' ? 'mi2' : 'mi', M = Object.assign({ cant: [] }, h[key]), reco = RECO[f.mi] || [];
-    const pool = (lv) => reco.filter((n) => (SPELL_BY.get(n) || {}).lv === lv && SPELL_BY.get(n).cls.includes(f.mi)).concat(SPELLS.filter((s) => s.lv === lv && s.cls.includes(f.mi)).map((s) => s.name));
+    const pool = (lv) => reco.filter((n) => (SPELL_BY.get(n) || {}).lv === lv && spellCls(h, SPELL_BY.get(n)).includes(f.mi)).concat(SPELLS.filter((s) => s.lv === lv && spellCls(h, s).includes(f.mi)).map((s) => s.name));
     M.cant = (M.cant || []).slice(); for (const n of pool(0)) if (M.cant.length < 2 && !M.cant.includes(n) && !(h.cantrips || []).includes(n)) M.cant.push(n);
     if (!M.spell) M.spell = pool(1).find((n) => !(h.spells || []).includes(n)) || '';
     if (!M.ab) M.ab = C.cast && ['int', 'wis', 'cha'].includes(C.cast.ab) ? C.cast.ab : f.mi === 'w' ? 'int' : 'wis';

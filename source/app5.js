@@ -665,7 +665,7 @@ $('inspector').addEventListener('click', (ev) => {
     case 'town': selectTown(v, true); break;
     case 'why': { const gi = +v; market.why = market.why === gi ? null : gi; if (market.tab !== 'town') market.tab = 'town'; const el = $('inspector'), top = el.scrollTop; renderPanel(); el.scrollTop = top; const r = el.querySelector('.whyrow'); if (r && market.why != null) r.scrollIntoView({ block: 'nearest' }); break; }
     case 'back': sel = null; renderPanel(); requestRender(); break;
-    case 'profile': if (market.sid) { setTool('explore'); sel = { kind: 'settle', id: market.sid }; renderPanel(); requestRender(); } break;
+    case 'profile': if (market.sid) { setTool('explore', false, true); sel = { kind: 'settle', id: market.sid }; renderPanel(); requestRender(); } break;
     case 'declare': market.tab = 'events'; if (sel && sel.kind === 'event') sel = null; renderPanel(); { const f = $('mkDeclare'); if (f) f.scrollIntoView({ block: 'start', behavior: 'smooth' }); } break;
     case 'mktype': market.form.type = v; market.form.dur = ''; renderPanel(); break;
     case 'mksev': market.form.sev = v; renderPanel(); break;

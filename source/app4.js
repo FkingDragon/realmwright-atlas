@@ -495,7 +495,8 @@ function deleteSelected() {
 }
 
 // ================================================================ UI
-function setTool(t, keepSel) {
+// quiet: the caller draws the panel itself once it has finished setting things up
+function setTool(t, keepSel, quiet) {
   if (isPlayer() && PLAYER_HIDDEN_TOOLS.includes(t)) { toast('That tool is for the DM.'); return; }
   tool = t;
   panelMin = false;
@@ -513,7 +514,7 @@ function setTool(t, keepSel) {
   if (t === 'explore' && sel && sel.kind === 'event') sel = null;
   for (const b of document.querySelectorAll('.tool[data-tool]')) b.setAttribute('aria-pressed', String(b.dataset.tool === t));
   canvas.dataset.tool = t;
-  renderPanel();
+  if (!quiet) renderPanel();
   requestRender();
 }
 let toastTimer = 0;
@@ -687,7 +688,7 @@ $('inspector').addEventListener('click', (e) => {
   if (!b) return;
   const act = b.dataset.act, v = b.dataset.v;
   switch (act) {
-    case 'close': panelMin = false; if (tool === 'market' || tool === 'people' || tool === 'guilds') { sel = null; setTool('explore'); break; } if (sel) sel = null; else setTool('explore'); renderPanel(); requestRender(); break;
+    case 'close': panelMin = false; if (tool === 'market' || tool === 'people' || tool === 'guilds') { sel = null; setTool('explore'); break; } if (sel) sel = null; else setTool('explore', false, true); renderPanel(); requestRender(); break;
     case 'minimise': panelMin = true; renderPanel(); break;
     case 'restore': panelMin = false; renderPanel(); break;
     case 'tier': settleTier = +v; renderPanel(); break;
@@ -700,8 +701,8 @@ $('inspector').addEventListener('click', (e) => {
     case 'delete': deleteSelected(); break;
     case 'setrtype': if (sel) { patchRoad(sel.id, +v); } break;
     case 'setlsize': if (sel) patchLabel(sel.id, { size: v }, 'Resize label'); break;
-    case 'openpeople': { const id = sel && sel.kind === 'settle' ? sel.id : market.sid; if (id && SBY.get(id)) { sel = { kind: 'settle', id }; setTool('people', true); people.sid = id; people.npc = null; people.tab = 'residents'; renderPanel(); } break; }
-    case 'openmarket': { const s = selObj(); if (s) { setTool('market', true); market.sid = s.id; market.tab = 'town'; renderPanel(); } break; }
+    case 'openpeople': { const id = sel && sel.kind === 'settle' ? sel.id : market.sid; if (id && SBY.get(id)) { sel = { kind: 'settle', id }; setTool('people', true, true); people.sid = id; people.npc = null; people.tab = 'residents'; renderPanel(); } break; }
+    case 'openmarket': { const s = selObj(); if (s) { setTool('market', true, true); market.sid = s.id; market.tab = 'town'; renderPanel(); } break; }
     case 'roadreset': if (sel && sel.kind === 'road') resetRoadShape(sel.id); requestRender(); break;
     case 'locate': { const s = selObj(); if (s && sel.kind === 'settle') { flyVis(s.x, s.y, view.s >= TOWN_ZOOM[s.tier] ? view.s : TOWN_ZOOM[s.tier]); pulseTown(s.id); } break; }
     case 'zoomto': { const s = selObj(); if (s) flyTo(s.x, s.y, clamp(Math.min(vw, vh) * 0.42 / settleR(s), PLAN_S * 1.2, MAXS)); break; }
@@ -900,7 +901,7 @@ function goSearch(r) {
   if (r.kind === 'monp') { openMonster(r.id, true); return; }
   if (r.kind === 'ext') { window.open(r.url, '_blank', 'noopener'); return; }
   if (r.kind === 'realm') { const R = REALMS.find((x) => x.name === r.name); if (R) { goRealm(R.cap.id); return; } }
-  if (r.kind === 'settle' || r.kind === 'label') { setTool('explore'); sel = { kind: r.kind, id: r.id }; renderPanel(); }
+  if (r.kind === 'settle' || r.kind === 'label') { setTool('explore', false, true); sel = { kind: r.kind, id: r.id }; renderPanel(); }
   flyTo(r.x, r.y, r.s);
 }
 

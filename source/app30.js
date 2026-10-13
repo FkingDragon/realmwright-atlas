@@ -168,17 +168,18 @@ function shellWrap(html) {
   for (const b of document.querySelectorAll('#side .tool.sec')) b.setAttribute('aria-pressed', String(b.dataset.tool === 'explore' ? (tool === 'explore' && !(sel && sel.kind !== 'settle')) || (c.kind === 'place') : b.dataset.tool === tool));
   return sideHead(c) + '<div class="side-body">' + (html || '') + '</div>';
 }
-function openPlace(sid, tab, fly) {
+function openPlace(sid, tab, fly, sub) {
   const s = SBY.get(sid);
   if (!s) return;
   const R = realmOfS(s);
   if (R) navR = R.cap.id;
   closePopovers();
   sel = { kind: 'settle', id: sid };
-  if (tab === 'market') { market.sid = sid; setTool('market', true); if (market.tab === 'overview') market.tab = 'town'; }
-  else if (tab === 'people') { people.sid = sid; people.npc = null; people.place = null; if (people.tab === 'tracked') people.tab = 'residents'; setTool('people', true); }
-  else if (tab === 'guilds') { market.sid = sid; people.sid = sid; guildUI.q = null; guildUI.org = null; setTool('guilds', true); }
-  else setTool('explore', true);
+  // one panel draw per tap: the tool switch stays quiet and the place draws once its tab is set
+  if (tab === 'market') { market.sid = sid; setTool('market', true, true); if (sub) market.tab = sub; else if (market.tab === 'overview') market.tab = 'town'; }
+  else if (tab === 'people') { people.sid = sid; people.npc = null; people.place = null; if (sub) people.tab = sub; else if (people.tab === 'tracked') people.tab = 'residents'; setTool('people', true, true); }
+  else if (tab === 'guilds') { market.sid = sid; people.sid = sid; guildUI.q = null; guildUI.org = null; if (sub) guildUI.tab = sub; setTool('guilds', true, true); }
+  else setTool('explore', true, true);
   renderPanel();
   const box = $('inspector'); if (box) box.scrollTop = 0;
   if (fly) { flyVis(s.x, s.y, view.s >= TOWN_ZOOM[s.tier] ? view.s : TOWN_ZOOM[s.tier]); pulseTown(s.id); }
@@ -204,22 +205,18 @@ $('inspector').addEventListener('click', (e) => {
   else if (go === 'done') { setTool('explore'); }
   else if (go === 'gl') {
     const [sid, tab, sub] = v.split('|');
-    if (tab === 'market') market.tab = sub;
-    else if (tab === 'guilds') guildUI.tab = sub;
-    else if (tab === 'people') people.tab = sub;
-    openPlace(sid, tab, false);
-    if (tab === 'market' && market.tab !== sub) { market.tab = sub; renderPanel(); }
+    openPlace(sid, tab, false, sub);
   }
-  else if (go === 'person') { const p = npcById(v); if (p && SBY.get(p.sid)) { openPlace(p.sid, 'people', false); people.npc = p.id; renderPanel(); if (typeof flyToPerson === 'function') flyToPerson(p); } }
+  else if (go === 'person') { const p = npcById(v); if (p && SBY.get(p.sid)) { people.sid = p.sid; people.place = null; sel = { kind: 'settle', id: p.sid }; setTool('people', true, true); people.npc = p.id; renderPanel(); if (typeof flyToPerson === 'function') flyToPerson(p); } }
   else if (go === 'more') { navMore[v] = true; renderPanel(); }
   else if (go === 'sect') {
     sel = null;
-    if (v === 'markets') { setTool('market'); market.tab = 'overview'; market.sid = null; renderPanel(); }
-    else if (v === 'events') { setTool('market'); market.sid = null; market.tab = 'events'; renderPanel(); }
-    else if (v === 'tracked') { setTool('people'); people.tab = 'tracked'; people.npc = null; renderPanel(); }
+    if (v === 'markets') { setTool('market', false, true); market.tab = 'overview'; market.sid = null; renderPanel(); }
+    else if (v === 'events') { setTool('market', false, true); market.sid = null; market.tab = 'events'; renderPanel(); }
+    else if (v === 'tracked') { setTool('people', false, true); people.tab = 'tracked'; people.npc = null; renderPanel(); }
     else if (v === 'heroes') setTool('heroes');
     else if (v === 'monsters') setTool('monsters');
-    else if (v === 'party') { const at = gst().party.at; if (at && SBY.get(at)) openPlace(at, 'overview', true); else { setTool('heroes'); heroes.step = 'chron'; renderPanel(); } }
+    else if (v === 'party') { const at = gst().party.at; if (at && SBY.get(at)) openPlace(at, 'overview', true); else { setTool('heroes', false, true); heroes.step = 'chron'; renderPanel(); } }
   }
 });
 $('inspector').addEventListener('input', (e) => {
@@ -311,6 +308,8 @@ function todayHtml() {
     if (k.startsWith('p:')) { const p = npcById(k.slice(2)); if (p && SBY.get(p.sid)) chips.push('<button type="button" class="chip" data-nav="person" data-v="' + esc(p.id) + '">' + esc(npcName(withOv(p))) + '</button>'); }
     else { const s = SBY.get(k); if (s && !(at && at.id === s.id)) chips.push('<button type="button" class="chip" data-nav="place" data-v="' + esc(s.id) + '">' + esc(s.name) + '</button>'); }
   }
+  const gch = guildTodayChips();
+  if (gch.length) h += '<div class="gl-recent"><span class="lab">Guild business</span><div class="chips">' + gch.join('') + '</div></div>';
   if (chips.length) h += '<div class="gl-recent"><span class="lab">Jump back to</span><div class="chips">' + chips.join('') + '</div></div>';
   return h + '</section>';
 }

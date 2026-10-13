@@ -462,6 +462,8 @@ function travelText(mi) {
 const LADDER = [['World', 0], ['Realm', 1.2], ['Region', 14], ['Town', 900], ['Battle', 24000]];
 function zoomName(s) { return s < 0.6 ? 'World' : s < 5 ? 'Realm' : s < 70 ? 'Region' : s < 4000 ? 'Town & countryside' : 'Battle map · 5 ft squares'; }
 let hudCache = '';
+let rungPos = null, rungRetry = 0;
+window.addEventListener('resize', () => { rungPos = null; hudCache = ''; });
 function updateHud() {
   const s = view.s;
   const key = s.toFixed(4);
@@ -482,11 +484,16 @@ function updateHud() {
   }
   $('scaleBar').style.width = Math.round(mi * s) + 'px';
   $('scaleText').textContent = label;
-  const rungs = [...document.querySelectorAll('[data-rung]')];
-  const box = rungs.length ? rungs[0].parentElement.clientHeight : 0;
-  if (box) {
-    const pos = rungs.map((el) => [Math.log(+el.dataset.rung || minS), box - el.offsetTop - el.offsetHeight / 2]);
-    pos.sort((p, q) => p[0] - q[0]);
+  // the ladder's rung positions are measured once (and again after a resize), not every frame: reading layout while
+  // the map flies would force the browser to lay out the whole page each frame
+  if (!rungPos) {
+    const rungs = [...document.querySelectorAll('[data-rung]')];
+    const box = rungs.length ? rungs[0].parentElement.clientHeight : 0;
+    rungPos = box ? rungs.map((el) => [Math.log(+el.dataset.rung || minS), box - el.offsetTop - el.offsetHeight / 2]).sort((p, q) => p[0] - q[0]) : [];
+    if (!box && !rungRetry) rungRetry = setTimeout(() => { rungRetry = 0; rungPos = null; hudCache = ''; }, 2000);   // hidden (phones) or not laid out yet: look again later
+  }
+  if (rungPos.length) {
+    const pos = rungPos;
     const ls = Math.log(s);
     let y = pos[0][1];
     if (ls >= pos[pos.length - 1][0]) y = pos[pos.length - 1][1];

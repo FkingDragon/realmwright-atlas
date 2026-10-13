@@ -197,6 +197,22 @@ Relative-neighbourhood graph per tier: highways between cities/capitals (within 
 - **shellWrap(html):** adds a sticky header with breadcrumbs, and for a place its name (an editable title for the DM), size and population, a "show on map" button, and the Overview, Market, People and Guilds tabs. Inside a place, the tool panels' own titles and calendars are hidden.
 - **realmStats:** groups every settlement by realmOf() in one pass, cached per mkVer.
 
+## Downtime, spell lists and guild reach (v28)
+- **Downtime (`app35.js`).**
+  - Living cost per day is `(INN_STAY[q] × lodging + INN_MEAL[q] × meal)` at the town's price levels; `memberLodging` makes it free where a guild covers that quality.
+  - **Craft:** half the cost in materials up front. Progress is 5 gp a day (2014) or 10 (2024), ×2 for Craft Guild members where the guild is present. Arms and armour need smith's, leatherworker's, woodcarver's or tinker's tools, or Craft Guild membership.
+  - **Work:** d20 + the best of Athletics, Performance, Persuasion, Sleight of Hand or (Int + proficiency with a tool). Results ≥10, ≥15 and ≥21 pay 1, 2 and 4 gp a day (0.1 below 10), × √(lodging × meal), and ×1.25 for merchants or crafters.
+  - **Train:** 250 days at 1 gp a day; languages count double for Mages' Circle members.
+  - **Research:** d20 (advantage in the circle's library) + the best of Arcana, History or Religion + a bonus for every 5 days; totals of 12, 18 and 25 give 1, 2 and 3 facts.
+  - **Carouse:** spend by quality; a Persuasion roll of 21+, 16+, 6+ or below gives an ally, a friend, an acquaintance or an enemy among the town's adults.
+  - **Service:** one favour per 10 days, plus one for temple members serving 5 or more.
+  - **Rest:** every 3 days lowers exhaustion by 1 and ends Poisoned.
+- **Spells (`app34.js`):** the 2024 class lists live in `cls24`, used through `spellCls(h, s)`. The 26 SRD 5.2 spells are added with `cls: ''`, so 2014 lists never include them.
+- **Member prices:** `memberDisc(h, s, kind)`, where `shopKindSrd` sorts SRD shop items. Merchants' prices cover goods but not lodging, services or wages. Temple and Adventurers' rank 1+ healing is half price; the Rulers waive tolls; Mages from rank 2 take a quarter off scrolls.
+- **Free lodging** (lodging, meals): Temple modest/modest; Watch poor/none; Thieves squalid/none; Rulers from rank 1 comfortable/comfortable; the Adventurers' Guild gives a 1 sp cot, or comfortable/comfortable from rank 3 in hall towns.
+- **Calendar:** Watch wages are 1 sp per 10 days since `wageFrom`. `guildNotices` works out dues owed and wages waiting without writing anything (in a shared world, players own their heroes).
+- **Attitude:** `dispShown(p) = dispOf(p) + kinBonus(p)`. The bonus is +15, or +25 from rank 2, for a hero with paid dues in the person's organisation (`GROUP_ORG`, or thieves by secret job, DM only).
+
 ## Guild membership for heroes (v27)
 - `h.orgs[k] = { k, sid, day, paid, r }`.
   - `paid` is the paid-through day (null when there are no dues).

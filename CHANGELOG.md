@@ -6,6 +6,21 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-13 — v28: downtime, 2024 spell lists, guilds that reach further
+*By: project owner (prepared with Claude)*
+
+- **index.html**, downtime: a section on the hero sheet for crafting, working, training, research, carousing, temple service and rest. It uses town prices and guild help, and the results go to gold, inventory, languages, tools and the chronicle.
+- **index.html**, spells: 2024 heroes choose from the SRD 5.2 spell lists, including the 26 new spells (Divine Smite, Hex, Ice Knife, Sorcerous Burst and others).
+- **index.html**, guilds:
+  - on the Market's Shop tab, pick a hero to see their member prices and free guild lodging in the inn bill;
+  - Watch wages, and dues reminders on the World page;
+  - fellow members think better of the party.
+- **index.html**, speed: each tap draws the side panel once, and map flights no longer force page re-layouts every frame.
+- **source/**: new `app34.js` (spell lists) and `app35.js` (downtime), and the test `downtime.js`.
+- **docs/world-atlas.md**: notes for v28.
+- **backups/index_2026-10-13_v28.html**: a copy of this version.
+- Tests: 310 automated checks pass.
+
 ## 2026-10-13 — v27: heroes join guilds; places come alive
 *By: project owner (prepared with Claude)*
 

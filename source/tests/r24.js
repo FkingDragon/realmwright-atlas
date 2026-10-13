@@ -87,6 +87,29 @@ const { chromium } = require('/opt/npm-tools/node_modules/playwright');
   ok(c24.gold.g === 105 && c24.gold.todo === 0, '2024 starting gold is fixed: class 55 gp + background 50 gp, nothing to roll');
   ok(c24.sub === '', 'switching rules drops a subclass the other edition lacks');
   ok(c24.ranger.speed === 40 && c24.ranger.mark === 3, '2024 ranger 6: Roving +10 ft and three free Hunter\'s Marks');
+  // 2024 spell lists (v28)
+  const sp = await p.evaluate(() => {
+    const A = window.__A, o = {};
+    const mk = (cls, lv, rules, f) => { const h = A.newHero(true); h.rules = rules || '2024'; h.level = lv; A.quickBuild(h, cls); h.level = lv; if (f) f(h); A.autoFill(h); return h; };
+    const names = (h, lv) => A.classSpells(h, lv, 9).map((s) => s.name);
+    const w24 = mk('wizard', 15), w14 = mk('wizard', 15, '2014');
+    o.wiz = { ice24: names(w24, 1).includes('Ice Knife'), ice14: names(w14, 1).includes('Ice Knife'), fee24: names(w24, 8).includes('Feeblemind'), bef24: names(w24, 8).includes('Befuddlement'), fee14: names(w14, 8).includes('Feeblemind') };
+    o.bard = [names(mk('bard', 1), 1).includes('Dissonant Whispers'), names(mk('bard', 1, '2014'), 1).includes('Dissonant Whispers')];
+    o.ranger = names(mk('ranger', 1), 1).includes('Ensnaring Strike');
+    o.lock = names(mk('warlock', 1), 1).includes('Hex');
+    const so = mk('sorcerer', 1, '2024', (h) => { h.cantrips = ['Sorcerous Burst']; });
+    o.burst = A.derive(so).attacks.some((a) => a.name === 'Sorcerous Burst');
+    const cur0 = A.heroes.cur, pal = mk('paladin', 2); A.heroes.list.push(pal); A.openHero(pal.id); A.heroes.step = 'sheet'; A.renderPanel();
+    o.smite = /Divine Smite/.test(document.querySelector('#inspector').innerText) && !!A.SPELL_BY.get('Divine Smite');
+    A.heroes.cur = cur0; A.setTool('explore');
+    o.new14 = A.classSpells(mk('cleric', 9, '2014'), 4, 9).some((s) => s.name === 'Aura of Life');
+    o.new24 = A.classSpells(mk('cleric', 9), 4, 9).some((s) => s.name === 'Aura of Life');
+    return o;
+  });
+  console.log(JSON.stringify(sp));
+  ok(sp.wiz.ice24 && !sp.wiz.ice14 && !sp.wiz.fee24 && sp.wiz.bef24 && sp.wiz.fee14, '2024 wizards choose from the SRD 5.2 list (Ice Knife, Befuddlement); 2014 wizards keep theirs (Feeblemind)');
+  ok(sp.bard[0] && !sp.bard[1] && sp.ranger && sp.lock && sp.new24 && !sp.new14, 'each 2024 class gets its own new spells: Dissonant Whispers, Ensnaring Strike, Hex, Aura of Life');
+  ok(sp.burst && sp.smite, 'Sorcerous Burst works as a cantrip attack, and a 2024 paladin\'s sheet lists Divine Smite as a spell');
   // UI: switch rules on the current hero
   await p.evaluate(() => { const A = window.__A; A.setTool('heroes'); A.heroes.step = 'basics'; A.renderPanel(); });
   await p.waitForTimeout(300);

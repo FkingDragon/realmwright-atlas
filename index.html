@@ -1052,10 +1052,17 @@ details.editbox > * + * { margin-top: 10px; }
 .gj-join .btn { flex: none; }
 .warn-t { color: #e8b75a !important; }
 .gj-disc { display: block; color: #8fd18a; font-size: 11px; white-space: nowrap; }
+s.was { opacity: .6; }
+.gj-notices { display: grid; gap: 4px; margin: 6px 0; }
+.gj-notices p { margin: 0; display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+.chip.warn { border-color: #e8b75a; color: #e8b75a; }
 .gj-kin { margin: 0; font-size: 13.5px; }
 .gj-kin .lab { margin-right: 6px; font-size: 10.5px; }
 .hguilds h4, .gj-org h4 { margin: 10px 0 6px; }
 .gj-wait { margin-top: 8px; }
+.dt .row3 { display: grid; grid-template-columns: 1.4fr .7fr 1fr; gap: 8px; }
+.dt-out { border: 1px solid var(--line); border-left: 4px solid var(--brass); border-radius: 8px; background: var(--panel); padding: 9px 10px; display: grid; gap: 4px; margin-top: 8px; }
+.dt-out p { margin: 0; }
 /* v27 what's happening at a place */
 .scene { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 10px; display: grid; gap: 8px; }
 .scene-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -1134,16 +1141,16 @@ details.editbox > * + * { margin-top: 10px; }
       <li><b>The calendar</b> sits at the top of the side panel: Play lets time run, or step a day or a week.</li>
       <li><b>Map tools</b> sit along the top of the map: <b>Select</b>, then <b>Settle</b>, <b>Road</b>, <b>Paint</b>, <b>Tiles</b>, <b>Label</b> and <b>Measure</b> add your own places, routes, terrain, battle maps and notes. Their options open in the side panel; press Done when finished.</li>
       <li><b>Tiles</b> paints the battle map square by square: ground, props such as tables, beds and campfires, and walls, doors, windows and fences along the grid lines. Fill a patch, or drag out a whole building. Players see your changes; undo works per stroke.</li>
-      <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill.</li>
+      <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill. On the Shop tab, pick a hero under <b>Prices for</b> to see their guild member prices and free lodging in the inn bill.</li>
       <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day. Every named place, from the palace to a cobbler's shop, shows <b>what's happening</b> there at dawn, morning, midday, afternoon, evening or night: who is in, the town's events, the season, something overheard, and the places around it.</li>
       <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town with a danger rating for your party, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for. <b>Heroes can join</b> any organisation in a town, from their sheet or the organisation's page: each has a fee, monthly dues, four ranks and benefits that fit it, such as member prices on the Gear step, better selling prices, lodging, healing, authority or a fence.</li>
-      <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character.</li>
+      <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character. The sheet's <b>Downtime</b> section spends days crafting, working, training, researching, carousing, serving a temple or recuperating, at the town's prices and with your guilds' help. Heroes using the 2024 rules choose from the SRD 5.2 spell lists.</li>
       <li><b>Monsters</b> shows creature groups living in their natural habitats, plus rare wanderers and haunts. They appear and move on over the weeks, while lairs stay for months. Place your own from the Bestiary (all 334 SRD creatures with full stat blocks, or a custom one), track each creature's hit points and initiative, and mark them slain. Monsters near a town raise its danger, which brings more monster quests, bigger rewards and higher bounties on the Market's Bounties tab. Zoomed out, nearby groups gather into one marker showing the most dangerous of them, with a count; tap it to zoom in.</li>
       <li><b>Links</b> Underlined names go somewhere: towns, realms, people, organisations and events all open their own page and move the map to them. Press the open tool again, a tab you are already on, or the – button to fold the panel into a slim bar; tap the bar to bring it back.</li><li><b>Measure</b> gives distance and overland travel time between any two points.</li>
       <li>Everything saves in this browser. Use <b>World → Copy map code</b> for a backup. Undo with Ctrl+Z. <b>World → Recent changes</b> shows who changed what; at a shared table it lists everyone's changes with their name.</li>
     </ol>
     <p class="meta" style="margin-top:10px">Shortcuts: V explore, K market, N people, G guilds, H heroes, B monsters, S settle, R road, P paint, T tiles, L label, M measure, Delete removes the selection, Esc cancels.</p>
-    <p class="meta">Rules, items and creatures include material from the System Reference Document 5.1 by Wizards of the Coast LLC, licensed under CC BY 4.0; the item and creature lists were compiled by Sean. Everyday prices, households, the town chronicle, the change feed, guild colours and town wealth and defence come from Sean and Adam's Market Ledger. Battle-map textures and the look come from Tilewright by Sean and Adam. Fonts: Atkinson Hyperlegible, IM Fell and Pixelify Sans, under the SIL Open Font License.</p>
+    <p class="meta">Rules, items and creatures include material from the System Reference Documents 5.1 and 5.2 by Wizards of the Coast LLC, licensed under CC BY 4.0 (the 2024 spell lists via the 5e-bits database, MIT); the item and creature lists were compiled by Sean. Everyday prices, households, the town chronicle, the change feed, guild colours and town wealth and defence come from Sean and Adam's Market Ledger. Battle-map textures and the look come from Tilewright by Sean and Adam. Fonts: Atkinson Hyperlegible, IM Fell and Pixelify Sans, under the SIL Open Font License.</p>
     <p class="meta" id="helpVer"></p>
   </div>
   </aside>
@@ -2887,6 +2894,8 @@ function travelText(mi) {
 const LADDER = [['World', 0], ['Realm', 1.2], ['Region', 14], ['Town', 900], ['Battle', 24000]];
 function zoomName(s) { return s < 0.6 ? 'World' : s < 5 ? 'Realm' : s < 70 ? 'Region' : s < 4000 ? 'Town & countryside' : 'Battle map · 5 ft squares'; }
 let hudCache = '';
+let rungPos = null, rungRetry = 0;
+window.addEventListener('resize', () => { rungPos = null; hudCache = ''; });
 function updateHud() {
   const s = view.s;
   const key = s.toFixed(4);
@@ -2907,11 +2916,16 @@ function updateHud() {
   }
   $('scaleBar').style.width = Math.round(mi * s) + 'px';
   $('scaleText').textContent = label;
-  const rungs = [...document.querySelectorAll('[data-rung]')];
-  const box = rungs.length ? rungs[0].parentElement.clientHeight : 0;
-  if (box) {
-    const pos = rungs.map((el) => [Math.log(+el.dataset.rung || minS), box - el.offsetTop - el.offsetHeight / 2]);
-    pos.sort((p, q) => p[0] - q[0]);
+  // the ladder's rung positions are measured once (and again after a resize), not every frame: reading layout while
+  // the map flies would force the browser to lay out the whole page each frame
+  if (!rungPos) {
+    const rungs = [...document.querySelectorAll('[data-rung]')];
+    const box = rungs.length ? rungs[0].parentElement.clientHeight : 0;
+    rungPos = box ? rungs.map((el) => [Math.log(+el.dataset.rung || minS), box - el.offsetTop - el.offsetHeight / 2]).sort((p, q) => p[0] - q[0]) : [];
+    if (!box && !rungRetry) rungRetry = setTimeout(() => { rungRetry = 0; rungPos = null; hudCache = ''; }, 2000);   // hidden (phones) or not laid out yet: look again later
+  }
+  if (rungPos.length) {
+    const pos = rungPos;
     const ls = Math.log(s);
     let y = pos[0][1];
     if (ls >= pos[pos.length - 1][0]) y = pos[pos.length - 1][1];
@@ -3586,7 +3600,7 @@ $('inspector').addEventListener('click', (ev) => {
     case 'town': selectTown(v, true); break;
     case 'why': { const gi = +v; market.why = market.why === gi ? null : gi; if (market.tab !== 'town') market.tab = 'town'; const el = $('inspector'), top = el.scrollTop; renderPanel(); el.scrollTop = top; const r = el.querySelector('.whyrow'); if (r && market.why != null) r.scrollIntoView({ block: 'nearest' }); break; }
     case 'back': sel = null; renderPanel(); requestRender(); break;
-    case 'profile': if (market.sid) { setTool('explore'); sel = { kind: 'settle', id: market.sid }; renderPanel(); requestRender(); } break;
+    case 'profile': if (market.sid) { setTool('explore', false, true); sel = { kind: 'settle', id: market.sid }; renderPanel(); requestRender(); } break;
     case 'declare': market.tab = 'events'; if (sel && sel.kind === 'event') sel = null; renderPanel(); { const f = $('mkDeclare'); if (f) f.scrollIntoView({ block: 'start', behavior: 'smooth' }); } break;
     case 'mktype': market.form.type = v; market.form.dur = ''; renderPanel(); break;
     case 'mksev': market.form.sev = v; renderPanel(); break;
@@ -4135,7 +4149,7 @@ function peopleHeader(s) {
     '<div class="seg mk-tabs g5" role="tablist">' + tabs.map(([k, l]) => '<button type="button" role="tab" data-pp="tab" data-v="' + k + '" aria-pressed="' + (people.tab === k) + '">' + l + '</button>').join('') + '</div>';
 }
 function personRow(p, day) {
-  const a = activity(p, day), d = dispOf(p), at = attitude(d);
+  const a = activity(p, day), d = dispShown(p), at = attitude(d);
   return '<li><button type="button" data-pp="npc" data-v="' + esc(p.id) + '"><span class="dot ' + at[1] + '" title="' + at[0] + ' to the party"></span><span class="t"><b>' + esc(npcName(p)) + (tracked(p) ? ' <i class="star" aria-label="tracked">★</i>' : '') + '</b><small>' + esc(p.job) + ' · ' + esc(p.race) + ', ' + p.age + '</small><small class="act' + (a.tone ? ' ' + a.tone : '') + '">' + esc(a.text) + '</small></span></button></li>';
 }
 function residentsTab(s, day) {
@@ -4175,7 +4189,7 @@ const PURSE = [0.02, 0.15, 0.6, 3, 12, 45, 180];
 function coinText(p) { const v = PURSE[p.life] * (0.4 + 1.2 * T.hash(p.h || 1, 3, 77)); return v < 0.01 ? 'Nothing' : money(v); }
 function personView(p, day) {
   const s = SBY.get(p.sid);
-  const d = dispOf(p), at = attitude(d);
+  const d = dispShown(p), at = attitude(d), kb = kinBonus(p);
   const a = activity(p, day);
   const o = (edits.npc || {})[p.id] || {};
   const rels = relsOf(p).filter((r) => !(isPlayer() && (SECRET_REL.has(r.type) || r.group === 'secret')));
@@ -4185,6 +4199,7 @@ function personView(p, day) {
   h += '<div class="row2"><div class="field"><label class="lab" for="pp-job">Job</label><input id="pp-job" value="' + esc(p.job) + '" maxlength="50"></div><div class="field"><label class="lab" for="pp-status">Status</label><select id="pp-status">' + STATUS.map((x) => '<option' + ((p.status || 'Alive') === x ? ' selected' : '') + '>' + x + '</option>').join('') + '</select></div></div>';
   if (p.secretJob && !isPlayer()) h += '<p class="secret-line"><b>Secretly:</b> ' + esc(p.secretJob) + '</p>';
   h += '<div class="disp"><div><span class="lab">Towards the party</span><b class="' + at[1] + '">' + at[0] + '</b></div><div class="meter" aria-hidden="true"><em style="left:' + ((d + 100) / 2).toFixed(1) + '%"></em></div>' + (isPlayer() ? '' : '<div class="disp-btns"><button type="button" class="btn" data-pp="disp" data-v="-10">Worse</button><button type="button" class="btn" data-pp="disp" data-v="10">Better</button></div>') + '</div>';
+  if (kb.v && !(kb.org === 'thieves' && isPlayer())) h += '<p class="small gj-kin-why">' + esc(kb.why) + ' (added to the attitude the DM sets).</p>';
   h += placeRoleHtml(p);
   h += '<section><h3>Today</h3><p class="today ' + (a.tone || '') + '">' + (a.ev ? '<button type="button" class="link" data-ev="' + esc(a.ev) + '">' + esc(a.text) + '</button>' : actLinks(a, s)) + '</p>' + (a.secret && !isPlayer() ? '<p class="secret-line"><b>' + (a.secretWith ? 'Secretly:' : 'Really:') + '</b> ' + actLinks({ text: a.secret, place: a.secretPlace, with: a.secretWith }, s) + '</p>' : '') + '</section>';
   h += '<dl class="stats two">' + (isPlayer() ? '' : stat('Wants', esc(p.motive)) + stat('Secret', esc(p.secret))) + stat('Personality', esc(p.trait)) + stat('Believes in', esc(p.ideal)) + (isPlayer() ? '' : stat('Flaw', esc(p.flaw))) + stat('Look', esc(p.quirk)) +
@@ -6335,8 +6350,8 @@ function basics24Html(h, D) {
     if (f.k === 'mi') {
       const key = f.slot === 'race' ? 'mi2' : 'mi', M = h[key] || {}, list = f.mi;
       if (h.bg === 'custom' || f.slot === 'race') o += fieldSel('hc-' + key + 'list', 'Magic Initiate list', Object.keys(MI_LIST).map((k) => [k, MI_LIST[k]]), list);
-      o += '<div class="field"><span class="lab">Two ' + MI_LIST[list].toLowerCase() + ' cantrips (' + (M.cant || []).length + '/2)</span><div class="chips">' + SPELLS.filter((s) => s.lv === 0 && s.cls.includes(list)).map((s) => chip(key + 'cant', s.name, s.name, (M.cant || []).includes(s.name))).join('') + '</div></div>';
-      o += '<div class="row2">' + fieldSel('hc-' + key + 'spell', '1st-level spell', [['', 'Choose…']].concat(SPELLS.filter((s) => s.lv === 1 && s.cls.includes(list)).map((s) => [s.name, s.name])), M.spell || '') + fieldSel('hc-' + key + 'ab', 'Spellcasting ability', [['int', 'Intelligence'], ['wis', 'Wisdom'], ['cha', 'Charisma']], M.ab || (list === 'w' ? 'int' : 'wis')) + '</div>';
+      o += '<div class="field"><span class="lab">Two ' + MI_LIST[list].toLowerCase() + ' cantrips (' + (M.cant || []).length + '/2)</span><div class="chips">' + SPELLS.filter((s) => s.lv === 0 && spellCls(h, s).includes(list)).map((s) => chip(key + 'cant', s.name, s.name, (M.cant || []).includes(s.name))).join('') + '</div></div>';
+      o += '<div class="row2">' + fieldSel('hc-' + key + 'spell', '1st-level spell', [['', 'Choose…']].concat(SPELLS.filter((s) => s.lv === 1 && spellCls(h, s).includes(list)).map((s) => [s.name, s.name])), M.spell || '') + fieldSel('hc-' + key + 'ab', 'Spellcasting ability', [['int', 'Intelligence'], ['wis', 'Wisdom'], ['cha', 'Charisma']], M.ab || (list === 'w' ? 'int' : 'wis')) + '</div>';
     }
     if (f.k === 'skilled') o += '<div class="field"><span class="lab">Three skills (' + (h.skilled || []).length + '/3)</span><div class="chips">' + ALL_SKILLS.map((s) => chip('skilled', s, s, (h.skilled || []).includes(s))).join('') + '</div></div>';
   }
@@ -6344,7 +6359,7 @@ function basics24Html(h, D) {
 }
 function rulesNoteHtml(h) {
   return '<div class="field"><span class="lab">Rules</span><div class="seg" role="group">' + [['2014', '2014 (SRD 5.1)'], ['2024', '2024 (SRD 5.2)']].map(([k, l]) => '<button type="button" data-hr="rules" data-v="' + k + '" aria-pressed="' + ((h.rules || '2014') === k) + '">' + l + '</button>').join('') + '</div>' +
-    (is24(h) ? '<p class="small rules-note">2024 rules: species give no ability increases (your background does), backgrounds grant an origin feat, martial classes use weapon mastery, exhaustion is −2 per level to d20 tests and −5 ft speed, and every subclass starts at level 3. Classes use their 2024 features, spell counts, starting kits and a level 19 epic boon. Spell lists still follow SRD 5.1. Only free SRD 5.2 subclasses are built in. ' + srdLink() + '</p>' : '<p class="small rules-note">The 2014 rules (SRD 5.1, plus Player\'s Handbook summaries). Switch to 2024 to use the newer free rules.</p>') + '</div>';
+    (is24(h) ? '<p class="small rules-note">2024 rules: species give no ability increases (your background does), backgrounds grant an origin feat, martial classes use weapon mastery, exhaustion is −2 per level to d20 tests and −5 ft speed, and every subclass starts at level 3. Classes use their 2024 features, spell counts, starting kits and a level 19 epic boon. Spell lists follow SRD 5.2. Only free SRD 5.2 subclasses are built in. ' + srdLink() + '</p>' : '<p class="small rules-note">The 2014 rules (SRD 5.1, plus Player\'s Handbook summaries). Switch to 2024 to use the newer free rules.</p>') + '</div>';
 }
 const srdLink = () => '<a class="ext" href="' + SRD52 + '" target="_blank" rel="noopener noreferrer">SRD 5.2 rules<span aria-hidden="true"> ↗</span><span class="vh"> (opens the free rules in a new tab)</span></a>';
 const BG24_FOR = { fighter: 'soldier', barbarian: 'soldier', paladin: 'soldier', ranger: 'soldier', rogue: 'criminal', monk: 'criminal', cleric: 'acolyte', druid: 'acolyte', bard: 'acolyte', sorcerer: 'sage', warlock: 'sage', wizard: 'sage' };
@@ -6360,7 +6375,7 @@ function autoFill24(h, Q) {
   for (const f of feats24(h)) {
     if (f.k !== 'mi') continue;
     const key = f.slot === 'race' ? 'mi2' : 'mi', M = Object.assign({ cant: [] }, h[key]), reco = RECO[f.mi] || [];
-    const pool = (lv) => reco.filter((n) => (SPELL_BY.get(n) || {}).lv === lv && SPELL_BY.get(n).cls.includes(f.mi)).concat(SPELLS.filter((s) => s.lv === lv && s.cls.includes(f.mi)).map((s) => s.name));
+    const pool = (lv) => reco.filter((n) => (SPELL_BY.get(n) || {}).lv === lv && spellCls(h, SPELL_BY.get(n)).includes(f.mi)).concat(SPELLS.filter((s) => s.lv === lv && spellCls(h, s).includes(f.mi)).map((s) => s.name));
     M.cant = (M.cant || []).slice(); for (const n of pool(0)) if (M.cant.length < 2 && !M.cant.includes(n) && !(h.cantrips || []).includes(n)) M.cant.push(n);
     if (!M.spell) M.spell = pool(1).find((n) => !(h.spells || []).includes(n)) || '';
     if (!M.ab) M.ab = C.cast && ['int', 'wis', 'cha'].includes(C.cast.ab) ? C.cast.ab : f.mi === 'w' ? 'int' : 'wis';
@@ -6760,6 +6775,49 @@ function class24Html(h, D) {
   }
   return o;
 }
+// ================================================================ 2024 spell lists (SRD 5.2) (v28)
+// A 2024 hero chooses from the SRD 5.2 class spell lists. Each spell gets cls24, its 2024 classes; the 26 spells new in
+// SRD 5.2 are added to the spell table (on no 2014 list). Source: System Reference Document 5.2 by Wizards of the Coast
+// LLC (CC BY 4.0, https://www.dndbeyond.com/srd), via the 5e-bits database (MIT).
+const SPELL24_LIST = {"b":["Aid","Animal Friendship","Animal Messenger","Animate Objects","Antipathy/Sympathy","Arcane Sword","Awaken","Bane","Befuddlement","Bestow Curse","Blindness/Deafness","Calm Emotions","Charm Monster","Charm Person","Clairvoyance","Color Spray","Command","Comprehend Languages","Compulsion","Confusion","Cure Wounds","Dancing Lights","Detect Magic","Detect Thoughts","Dimension Door","Disguise Self","Dispel Magic","Dissonant Whispers","Dominate Monster","Dominate Person","Dream","Enhance Ability","Enlarge/Reduce","Enthrall","Etherealness","Eyebite","Faerie Fire","Fear","Feather Fall","Find the Path","Forcecage","Foresight","Freedom of Movement","Geas","Glibness","Glyph of Warding","Greater Invisibility","Greater Restoration","Guards and Wards","Hallucinatory Terrain","Healing Word","Heat Metal","Heroes' Feast","Heroism","Hideous Laughter","Hold Monster","Hold Person","Hypnotic Pattern","Identify","Illusory Script","Invisibility","Irresistible Dance","Knock","Legend Lore","Lesser Restoration","Light","Locate Animals or Plants","Locate Creature","Locate Object","Longstrider","Mage Hand","Magic Mouth","Magnificent Mansion","Major Image","Mass Cure Wounds","Mass Healing Word","Mass Suggestion","Mending","Message","Mind Blank","Minor Illusion","Mirage Arcane","Mirror Image","Mislead","Modify Memory","Nondetection","Phantasmal Force","Phantasmal Killer","Planar Binding","Plant Growth","Polymorph","Power Word Heal","Power Word Kill","Power Word Stun","Prestidigitation","Prismatic Spray","Prismatic Wall","Programmed Illusion","Project Image","Raise Dead","Regenerate","Resurrection","Scrying","See Invisibility","Seeming","Sending","Shatter","Silence","Silent Image","Sleep","Slow","Speak with Animals","Speak with Dead","Speak with Plants","Starry Wisp","Stinking Cloud","Suggestion","Symbol","Telepathic Bond","Teleport","Teleportation Circle","Thunderwave","Tiny Hut","Tongues","True Polymorph","True Seeing","True Strike","Unseen Servant","Vicious Mockery","Zone of Truth"],"c":["Aid","Animate Dead","Antimagic Field","Astral Projection","Augury","Aura of Life","Bane","Banishment","Beacon of Hope","Bestow Curse","Blade Barrier","Bless","Blindness/Deafness","Calm Emotions","Clairvoyance","Command","Commune","Conjure Celestial","Contagion","Continual Flame","Control Water","Control Weather","Create Food and Water","Create Undead","Create or Destroy Water","Cure Wounds","Daylight","Death Ward","Detect Evil and Good","Detect Magic","Detect Poison and Disease","Dispel Evil and Good","Dispel Magic","Divination","Divine Word","Earthquake","Enhance Ability","Etherealness","Find Traps","Find the Path","Fire Storm","Flame Strike","Forbiddance","Freedom of Movement","Gate","Geas","Gentle Repose","Glyph of Warding","Greater Restoration","Guardian of Faith","Guidance","Guiding Bolt","Hallow","Harm","Heal","Healing Word","Heroes' Feast","Hold Person","Holy Aura","Inflict Wounds","Insect Plague","Legend Lore","Lesser Restoration","Light","Locate Creature","Locate Object","Magic Circle","Mass Cure Wounds","Mass Heal","Mass Healing Word","Meld into Stone","Mending","Planar Ally","Planar Binding","Plane Shift","Power Word Heal","Prayer of Healing","Protection from Energy","Protection from Evil and Good","Protection from Poison","Purify Food and Drink","Raise Dead","Regenerate","Remove Curse","Resistance","Resurrection","Revivify","Sacred Flame","Sanctuary","Scrying","Sending","Shield of Faith","Silence","Spare the Dying","Speak with Dead","Spirit Guardians","Spiritual Weapon","Stone Shape","Sunbeam","Sunburst","Symbol","Thaumaturgy","Tongues","True Resurrection","True Seeing","Warding Bond","Water Walk","Word of Recall","Zone of Truth"],"d":["Aid","Animal Friendship","Animal Messenger","Animal Shapes","Antilife Shell","Antipathy/Sympathy","Augury","Awaken","Barkskin","Befuddlement","Blight","Call Lightning","Charm Monster","Charm Person","Commune with Nature","Cone of Cold","Confusion","Conjure Animals","Conjure Elemental","Conjure Fey","Conjure Minor Elementals","Conjure Woodland Beings","Contagion","Continual Flame","Control Water","Control Weather","Create or Destroy Water","Cure Wounds","Darkvision","Daylight","Detect Magic","Detect Poison and Disease","Dispel Magic","Divination","Dominate Beast","Druidcraft","Earthquake","Elementalism","Enhance Ability","Enlarge/Reduce","Entangle","Faerie Fire","Find Traps","Find the Path","Fire Shield","Fire Storm","Flame Blade","Flaming Sphere","Flesh to Stone","Fog Cloud","Foresight","Freedom of Movement","Geas","Giant Insect","Goodberry","Greater Restoration","Guidance","Gust of Wind","Hallucinatory Terrain","Heal","Healing Word","Heat Metal","Heroes' Feast","Hold Person","Ice Knife","Ice Storm","Incendiary Cloud","Insect Plague","Jump","Lesser Restoration","Locate Animals or Plants","Locate Creature","Locate Object","Longstrider","Mass Cure Wounds","Meld into Stone","Mending","Message","Mirage Arcane","Moonbeam","Move Earth","Pass without Trace","Planar Binding","Plane Shift","Plant Growth","Poison Spray","Polymorph","Produce Flame","Protection from Energy","Protection from Evil and Good","Protection from Poison","Purify Food and Drink","Regenerate","Reincarnate","Resistance","Reverse Gravity","Revivify","Scrying","Shapechange","Shillelagh","Sleet Storm","Spare the Dying","Speak with Animals","Speak with Plants","Spike Growth","Starry Wisp","Stone Shape","Stoneskin","Storm of Vengeance","Sunbeam","Sunburst","Symbol","Thunderwave","Transport via Plants","Tree Stride","True Resurrection","Tsunami","Wall of Fire","Wall of Stone","Wall of Thorns","Water Breathing","Water Walk","Wind Walk","Wind Wall"],"p":["Aid","Aura of Life","Banishment","Bless","Command","Create Food and Water","Cure Wounds","Daylight","Death Ward","Detect Evil and Good","Detect Magic","Detect Poison and Disease","Dispel Evil and Good","Dispel Magic","Divine Favor","Divine Smite","Find Steed","Geas","Gentle Repose","Greater Restoration","Heroism","Lesser Restoration","Locate Creature","Locate Object","Magic Circle","Magic Weapon","Prayer of Healing","Protection from Evil and Good","Protection from Poison","Purify Food and Drink","Raise Dead","Remove Curse","Revivify","Searing Smite","Shield of Faith","Shining Smite","Warding Bond","Zone of Truth"],"r":["Aid","Alarm","Animal Friendship","Animal Messenger","Barkskin","Commune with Nature","Conjure Animals","Conjure Woodland Beings","Cure Wounds","Darkvision","Daylight","Detect Magic","Detect Poison and Disease","Dispel Magic","Dominate Beast","Enhance Ability","Ensnaring Strike","Entangle","Find Traps","Fog Cloud","Freedom of Movement","Goodberry","Greater Restoration","Gust of Wind","Hunter's Mark","Jump","Lesser Restoration","Locate Animals or Plants","Locate Creature","Locate Object","Longstrider","Magic Weapon","Meld into Stone","Nondetection","Pass without Trace","Plant Growth","Protection from Energy","Protection from Poison","Revivify","Silence","Speak with Animals","Speak with Plants","Spike Growth","Stoneskin","Tree Stride","Water Breathing","Water Walk","Wind Wall"],"s":["Acid Splash","Alter Self","Animate Objects","Arcane Hand","Banishment","Blight","Blindness/Deafness","Blink","Blur","Burning Hands","Chain Lightning","Charm Monster","Charm Person","Chill Touch","Chromatic Orb","Circle of Death","Clairvoyance","Cloudkill","Color Spray","Comprehend Languages","Cone of Cold","Confusion","Counterspell","Creation","Dancing Lights","Darkness","Darkvision","Daylight","Delayed Blast Fireball","Demiplane","Detect Magic","Detect Thoughts","Dimension Door","Disguise Self","Disintegrate","Dispel Magic","Dominate Beast","Dominate Monster","Dominate Person","Dragon's Breath","Earthquake","Elementalism","Enhance Ability","Enlarge/Reduce","Etherealness","Expeditious Retreat","Eyebite","False Life","Fear","Feather Fall","Finger of Death","Fire Bolt","Fire Shield","Fire Storm","Fireball","Flame Blade","Flaming Sphere","Flesh to Stone","Fly","Fog Cloud","Freezing Sphere","Gaseous Form","Gate","Globe of Invulnerability","Grease","Greater Invisibility","Gust of Wind","Haste","Hold Monster","Hold Person","Hypnotic Pattern","Ice Knife","Ice Storm","Incendiary Cloud","Insect Plague","Invisibility","Jump","Knock","Levitate","Light","Lightning Bolt","Mage Armor","Mage Hand","Magic Missile","Magic Weapon","Major Image","Mass Suggestion","Mending","Message","Meteor Swarm","Mind Spike","Minor Illusion","Mirror Image","Misty Step","Move Earth","Phantasmal Force","Plane Shift","Poison Spray","Polymorph","Power Word Kill","Power Word Stun","Prestidigitation","Prismatic Spray","Protection from Energy","Ray of Frost","Ray of Sickness","Reverse Gravity","Scorching Ray","See Invisibility","Seeming","Shatter","Shield","Shocking Grasp","Silent Image","Sleep","Sleet Storm","Slow","Sorcerous Burst","Spider Climb","Stinking Cloud","Stoneskin","Suggestion","Sunbeam","Sunburst","Telekinesis","Teleport","Teleportation Circle","Thunderwave","Time Stop","Tongues","True Seeing","True Strike","Vampiric Touch","Vitriolic Sphere","Wall of Fire","Wall of Stone","Water Breathing","Water Walk","Web","Wish"],"k":["Astral Projection","Bane","Banishment","Befuddlement","Blight","Charm Monster","Charm Person","Chill Touch","Circle of Death","Comprehend Languages","Contact Other Plane","Counterspell","Create Undead","Darkness","Demiplane","Detect Magic","Dimension Door","Dispel Magic","Dominate Monster","Dream","Eldritch Blast","Enthrall","Etherealness","Expeditious Retreat","Eyebite","Fear","Finger of Death","Fly","Forcecage","Foresight","Gaseous Form","Gate","Glibness","Hallucinatory Terrain","Hellish Rebuke","Hex","Hideous Laughter","Hold Monster","Hold Person","Hypnotic Pattern","Illusory Script","Imprisonment","Invisibility","Mage Hand","Magic Circle","Major Image","Mind Spike","Minor Illusion","Mirror Image","Mislead","Misty Step","Planar Binding","Plane Shift","Poison Spray","Power Word Kill","Power Word Stun","Prestidigitation","Protection from Evil and Good","Ray of Enfeeblement","Remove Curse","Scrying","Speak with Animals","Spider Climb","Suggestion","Teleportation Circle","Tongues","True Polymorph","True Seeing","True Strike","Unseen Servant","Vampiric Touch","Weird"],"w":["Acid Arrow","Acid Splash","Alarm","Alter Self","Animate Dead","Animate Objects","Antimagic Field","Antipathy/Sympathy","Arcane Eye","Arcane Hand","Arcane Lock","Arcane Sword","Arcanist's Magic Aura","Astral Projection","Augury","Banishment","Befuddlement","Bestow Curse","Black Tentacles","Blight","Blindness/Deafness","Blink","Blur","Burning Hands","Chain Lightning","Charm Monster","Charm Person","Chill Touch","Chromatic Orb","Circle of Death","Clairvoyance","Clone","Cloudkill","Color Spray","Comprehend Languages","Cone of Cold","Confusion","Conjure Elemental","Conjure Minor Elementals","Contact Other Plane","Contingency","Continual Flame","Control Water","Control Weather","Counterspell","Create Undead","Creation","Dancing Lights","Darkness","Darkvision","Delayed Blast Fireball","Demiplane","Detect Magic","Detect Thoughts","Dimension Door","Disguise Self","Disintegrate","Dispel Magic","Divination","Dominate Monster","Dominate Person","Dragon's Breath","Dream","Elementalism","Enhance Ability","Enlarge/Reduce","Etherealness","Expeditious Retreat","Eyebite","Fabricate","Faithful Hound","False Life","Fear","Feather Fall","Find Familiar","Finger of Death","Fire Bolt","Fire Shield","Fireball","Flaming Sphere","Flesh to Stone","Floating Disk","Fly","Fog Cloud","Forcecage","Foresight","Freezing Sphere","Gaseous Form","Gate","Geas","Gentle Repose","Globe of Invulnerability","Glyph of Warding","Grease","Greater Invisibility","Guards and Wards","Gust of Wind","Hallucinatory Terrain","Haste","Hideous Laughter","Hold Monster","Hold Person","Hypnotic Pattern","Ice Knife","Ice Storm","Identify","Illusory Script","Imprisonment","Incendiary Cloud","Instant Summons","Invisibility","Irresistible Dance","Jump","Knock","Legend Lore","Levitate","Light","Lightning Bolt","Locate Creature","Locate Object","Longstrider","Mage Armor","Mage Hand","Magic Circle","Magic Jar","Magic Missile","Magic Mouth","Magic Weapon","Magnificent Mansion","Major Image","Mass Suggestion","Maze","Mending","Message","Meteor Swarm","Mind Blank","Mind Spike","Minor Illusion","Mirage Arcane","Mirror Image","Mislead","Misty Step","Modify Memory","Move Earth","Nondetection","Passwall","Phantasmal Force","Phantasmal Killer","Phantom Steed","Planar Binding","Plane Shift","Poison Spray","Polymorph","Power Word Kill","Power Word Stun","Prestidigitation","Prismatic Spray","Prismatic Wall","Private Sanctum","Programmed Illusion","Project Image","Protection from Energy","Protection from Evil and Good","Ray of Enfeeblement","Ray of Frost","Ray of Sickness","Remove Curse","Resilient Sphere","Reverse Gravity","Rope Trick","Scorching Ray","Scrying","Secret Chest","See Invisibility","Seeming","Sending","Sequester","Shapechange","Shatter","Shield","Shocking Grasp","Silent Image","Simulacrum","Sleep","Sleet Storm","Slow","Speak with Dead","Spider Climb","Stinking Cloud","Stone Shape","Stoneskin","Suggestion","Summon Dragon","Sunbeam","Sunburst","Symbol","Telekinesis","Telepathic Bond","Teleport","Teleportation Circle","Thunderwave","Time Stop","Tiny Hut","Tongues","True Polymorph","True Seeing","True Strike","Unseen Servant","Vampiric Touch","Vitriolic Sphere","Wall of Fire","Wall of Force","Wall of Ice","Wall of Stone","Water Breathing","Web","Weird","Wish"]};
+const SPELL24_NEW = `Arcane Hand|5|V|sw|1 action|120 ft|1 minute|c|A Large hand of force (AC 20, your HP max) that you move as a bonus action: punch (5d8 force), shove, grapple or shield you.
+Aura of Life|4|A|cp|1 action|Self|10 minutes|c|30-ft emanation: you and allies resist necrotic damage and HP maximums can't be reduced; allies at 0 HP regain 1 HP each turn.
+Befuddlement|8|E|bdkw|1 action|150 ft|Instant||A creature makes an Int save or takes 10d12 psychic and can't cast spells or take the Magic action; it can retry every 30 days.
+Charm Monster|4|E|bdskw|1 action|30 ft|1 hour||One creature makes a Wis save (with advantage if you are fighting it) or is charmed and friendly for 1 hour.
+Chromatic Orb|1|V|sw|1 action|90 ft|Instant||Ranged spell attack for 3d8 acid, cold, fire, lightning, poison or thunder; doubles on the dice make it leap to another target.
+Conjure Celestial|7|C|c|1 action|90 ft|10 minutes|c|A 10-ft pillar of light: creatures in it either regain 4d12 + your modifier HP or make a Dex save against 6d12 radiant.
+Dissonant Whispers|1|E|b|1 action|60 ft|Instant||A creature makes a Wis save or takes 3d6 psychic and uses its reaction to flee from you; half damage on a save.
+Divine Smite|1|V|p|1 bonus action|Self|Instant||Bonus action after a melee hit: +2d8 radiant (+1d8 per slot level above 1st, +1d8 against fiends and undead).
+Dragon's Breath|2|T|sw|1 bonus action|Touch|1 minute|c|A willing creature can exhale a 15-ft cone of acid, cold, fire, lightning or poison as a Magic action: Dex save, 3d6.
+Elementalism|0|T|dsw|1 action|30 ft|Instant||Small elemental effects: a breeze, a shroud of dust, a flicker of flame, a mist or a puff of water within 30 ft.
+Ensnaring Strike|1|C|r|1 bonus action|Self|1 minute|c|Bonus action after a weapon hit: Str save or the target is restrained by vines and takes 1d6 piercing each turn.
+Freezing Sphere|6|V|sw|1 action|300 ft|Instant||A 60-ft-radius burst: Con save, 10d6 cold (half on a save); it can freeze water, or be held as a thrown globe.
+Hex|1|E|k|1 bonus action|90 ft|1 hour|c|Bonus action: +1d6 necrotic whenever you hit the target, and disadvantage on checks with one ability you choose. Move it if the target drops.
+Ice Knife|1|C|dsw|1 action|60 ft|Instant||Ranged spell attack for 1d10 piercing; then the shard bursts: the target and creatures within 5 ft make a Dex save or take 2d6 cold.
+Mind Spike|2|D|skw|1 action|120 ft|1 hour|c|A creature makes a Wis save or takes 3d8 psychic (half on a save); on a failure you always know where it is, and it can't hide from you.
+Phantasmal Force|2|I|bsw|1 action|60 ft|1 minute|c|An illusion only the target perceives (Int save to resist); it deals 2d8 psychic each turn to a target that believes it.
+Power Word Heal|9|E|bc|1 action|60 ft|Instant||A creature regains all its HP and is freed from charm, fear, paralysis, poison and stun.
+Ray of Sickness|1|N|sw|1 action|60 ft|Instant||Ranged spell attack for 2d8 poison, and the target is poisoned until the end of your next turn.
+Reincarnate|5|N|d|1 hour|Touch|Instant||Bring back a humanoid dead up to 10 days in a new body of a random species.
+Searing Smite|1|V|p|1 bonus action|Self|1 minute||Bonus action after a melee hit: +1d6 fire, then 1d6 fire each turn until the target makes a Con save.
+Shining Smite|2|T|p|1 bonus action|Self|1 minute|c|Bonus action after a melee hit: +2d6 radiant; the target glows, can't be invisible, and attacks against it have advantage.
+Sorcerous Burst|0|V|s|1 action|120 ft|Instant||Ranged spell attack for 1d8 acid, cold, fire, lightning, poison, psychic or thunder; an 8 lets you roll another d8 (up to your Cha mod).
+Starry Wisp|0|V|bd|1 action|60 ft|Instant||Ranged spell attack for 1d8 radiant; the target glows and can't be invisible until the end of your next turn.
+Summon Dragon|5|C|w|1 action|60 ft|1 hour|c|A draconic spirit (Draconic Spirit stat block) fights beside you, with a breath weapon and flight, for up to an hour.
+Tsunami|8|C|d|1 minute|1 mile|6 rounds|c|A 300-ft wall of water: Str save, 6d10 bludgeoning, and it sweeps creatures along each round as it shrinks.
+Vitriolic Sphere|4|V|sw|1 action|150 ft|Instant||A 20-ft-radius acid burst: Dex save, 10d4 acid and another 5d4 next turn (half the first on a save).`;
+for (const l of SPELL24_NEW.split('\n')) {
+  const [name, lv, sc, cl, time, range, dur, fl, text] = l.split('|');
+  if (SPELL_BY.has(name)) continue;
+  const o = { name, lv: +lv, school: SCHOOLS[sc], cls: '', cls24: cl, time, range, dur, conc: fl.includes('c'), ritual: fl.includes('r'), text, srd52: true };
+  SPELLS.push(o); SPELL_BY.set(name, o);
+}
+SPELLS.sort((a, b) => a.lv - b.lv || a.name.localeCompare(b.name));
+for (const s of SPELLS) if (s.cls24 == null) s.cls24 = '';
+for (const k in SPELL24_LIST) for (const n of SPELL24_LIST[k]) { const s = SPELL_BY.get(n); if (s && !s.cls24.includes(k)) s.cls24 += k; }
+// the class letters a spell is on, for this hero's rules
+const spellCls = (h, s) => (is24(h) ? s.cls24 : s.cls);
+Object.assign(CANTRIP_ATK, { 'Sorcerous Burst': ['atk', '', 'd8', 'chosen type'], 'Starry Wisp': ['atk', '', 'd8', 'radiant'] });
 
 // ================================================================ heroes: character creation and a live, play-ready sheet
 const HERO_KEY = 'atlas-heroes-v1';
@@ -6787,7 +6845,7 @@ function newHero(blank) {
     hpMax: 0, hp: null, temp: 0, hdUsed: 0, slotsUsed: [0, 0, 0, 0, 0, 0, 0, 0, 0], pactUsed: 0, uses: {}, death: [0, 0], insp: false, conds: [], exh: 0, xp: 0,
     subclass: '', subNotes: '', trait: '', ideal: '', bond: '', flaw: '', bondNpc: null, bondKind: '', notes: '', created: market.day,
     bgAsi: { mode: '21' }, bgAbil: [], bgFeat: '', feat24: '', mi: {}, mi2: {}, miList: '', miList2: '', skilled: [],
-    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate', orgs: {}
+    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate', orgs: {}, dt: {}, learned: { langs: [], tools: [] }
   };
 }
 const raceSub = (h) => { const R = raceOf(h); if (!R.subs) return null; const k = R.subs[h.sub] ? h.sub : Object.keys(R.subs)[0]; return R.subs[k]; };
@@ -6920,11 +6978,12 @@ function derive(h) {
   const ordWeap = v24 && ((h.cls === 'cleric' && h.order === 'protector') || (h.cls === 'druid' && h.order === 'warden')) ? ['martial'] : [];
   D.armorProfs = new Set(C.armor.concat(srd ? C.subArmor || [] : [], ordArmor, (S && S.armor) || []));
   D.weaponProfs = new Set(C.weapons.concat(ordWeap, R.weapons || [], (S && S.weapons) || []));
-  const tools = [].concat(C.tools || [], B.tools || [], (S && S.tools) || [], R.toolChoice && h.tool ? [h.tool] : []);
+  const tools = [].concat(C.tools || [], B.tools || [], (S && S.tools) || [], R.toolChoice && h.tool ? [h.tool] : [], (h.learned && h.learned.tools) || []);
   D.tools = tools;
   const langs = new Set(R.langs.concat(C.langs || [], h.cls === 'sorcerer' && srd && !v24 ? ['Draconic'] : []));
   for (const l of h.raceLangs) langs.add(l);
   for (const l of h.bgLangs) langs.add(l);
+  for (const l of (h.learned && h.learned.langs) || []) langs.add(l);
   D.langs = langs;
   // hit points
   const hd = C.hd, con = D.mod.con;
@@ -7130,7 +7189,7 @@ function derive(h) {
   if (h.goldMode === 'gold' && !h.goldRoll && !v24) T('gear', 'Roll your starting gold.');
   if (D.cast) {
     const K = D.cast;
-    const nonCls = h.cls === 'bard' ? h.spells.filter((n) => !(SPELL_BY.get(n) || { cls: '' }).cls.includes('b')).length : 0;
+    const nonCls = h.cls === 'bard' ? h.spells.filter((n) => !spellCls(h, SPELL_BY.get(n) || { cls: '', cls24: '' }).includes('b')).length : 0;
     if (h.cantrips.length < K.cantripsN) T('spells', 'Choose ' + (K.cantripsN - h.cantrips.length) + ' more cantrip' + (K.cantripsN - h.cantrips.length > 1 ? 's' : '') + '.');
     if (K.knownN && h.spells.length < K.knownN) T('spells', 'Choose ' + (K.knownN - h.spells.length) + ' more spell' + (K.knownN - h.spells.length > 1 ? 's' : '') + ' known.');
     if (K.bookN && h.spells.length < K.bookN) T('spells', 'Add ' + (K.bookN - h.spells.length) + ' more spell' + (K.bookN - h.spells.length > 1 ? 's' : '') + ' to your spellbook.');
@@ -7204,8 +7263,8 @@ function classSpells(h, lv, maxLv, all) {
   if (lv === 0 && is24(h) && h.style === 'blessed' && h.cls === 'paladin') key = 'c';
   if (lv === 0 && is24(h) && h.style === 'druidic' && h.cls === 'ranger') key = 'd';
   // 2024 Magical Secrets: the bard, cleric, druid and wizard lists only
-  const wide = all && is24(h) && h.cls === 'bard' && !hasPact(h, 'tome') ? (s) => /[bcdw]/.test(s.cls) : all ? () => true : null;
-  return SPELLS.filter((s) => s.lv <= maxLv && s.lv === lv && ((wide && wide(s)) || s.cls.includes(key) || (C.expanded && (!h.subclass || h.subclass === C.sub[1]) && C.expanded.includes(s.name))));
+  const wide = all && is24(h) && h.cls === 'bard' && !hasPact(h, 'tome') ? (s) => /[bcdw]/.test(s.cls24) : all ? () => true : null;
+  return SPELLS.filter((s) => s.lv <= maxLv && s.lv === lv && ((wide && wide(s)) || spellCls(h, s).includes(key) || (C.expanded && (!h.subclass || h.subclass === C.sub[1]) && C.expanded.includes(s.name))));
 }
 function spellOK(h, K, name, lv0) {
   const sp = SPELL_BY.get(name); if (!sp) return false;
@@ -7551,13 +7610,13 @@ function stepSpells(h, D) {
     o += '<h4>' + ordinal(l) + ' level <small class="meta">' + (K.slots[l - 1] ? K.slots[l - 1] + ' slot' + (K.slots[l - 1] > 1 ? 's' : '') : K.type === 'pact' ? 'pact slots' : '') + '</small></h4><ul class="spells">' + list.map((s) => {
       const on = h.spells.includes(s.name);
       const prep = K.mode === 'book' && on ? '<button type="button" class="prep' + (h.prepared.includes(s.name) ? ' on' : '') + '" data-hr="prep" data-v="' + esc(s.name) + '" aria-pressed="' + h.prepared.includes(s.name) + '" aria-label="Prepare ' + esc(s.name) + ' today" title="Prepared today">' + (h.prepared.includes(s.name) ? '●' : '○') + '</button>' : '';
-      const foreign = secrets && !s.cls.includes('b') ? '<em class="tag">secret</em>' : '';
+      const foreign = secrets && !spellCls(h, s).includes('b') ? '<em class="tag">secret</em>' : '';
       return spellRow(s, on, 'spell', foreign, h.spells.length >= cap, prep);
     }).join('') + '</ul>';
   }
   o += '</section>';
   if (h.cls === 'warlock' && D.lv >= 11) {
-    o += '<section><h3>Mystic Arcanum</h3>' + [[11, 6], [13, 7], [15, 8], [17, 9]].filter(([at]) => D.lv >= at).map(([, sl]) => fieldSel('hc-arc' + sl, ordinal(sl) + '-level spell (once per long rest)', [['', 'Choose…']].concat(SPELLS.filter((s) => s.lv === sl && s.cls.includes('k')).map((s) => [s.name, s.name])), h.arcanum[sl] || '')).join('') + '</section>';
+    o += '<section><h3>Mystic Arcanum</h3>' + [[11, 6], [13, 7], [15, 8], [17, 9]].filter(([at]) => D.lv >= at).map(([, sl]) => fieldSel('hc-arc' + sl, ordinal(sl) + '-level spell (once per long rest)', [['', 'Choose…']].concat(SPELLS.filter((s) => s.lv === sl && spellCls(h, s).includes('k')).map((s) => [s.name, s.name])), h.arcanum[sl] || '')).join('') + '</section>';
   }
   return o;
 }
@@ -7587,7 +7646,7 @@ function heroSheet(h, D, S) {
   const C = CLS(h);
   const hp = h.hp == null ? D.hpMax : h.hp;
   const reg = heroGuildMember(h);
-  let o = readyBox(D);
+  let o = readyBox(D) + guildNoticeHtml(h);
   o += '<div id="hrRoll" class="rollbar" aria-live="polite">' + (heroes.log[0] ? rollCard(heroes.log[0]) : '<span class="rc-l">Tap any bonus to roll it</span>') + '</div>';
   o += '<div class="rollctl"><div class="seg" role="group" aria-label="Roll mode">' + [[-1, 'Disadvantage'], [0, 'Normal'], [1, 'Advantage']].map(([v, l]) => '<button type="button" data-hr="adv" data-v="' + v + '" aria-pressed="' + (heroes.adv === v) + '">' + l + '</button>').join('') + '</div><div class="dice">' + [4, 6, 8, 10, 12, 20, 100].map((d) => '<button type="button" data-hr="die" data-v="' + d + '">d' + d + '</button>').join('') + '</div></div>';
   // identity line
@@ -7617,6 +7676,7 @@ function heroSheet(h, D, S) {
   // limited uses
   if (D.uses.length) o += '<section><h3>Limited uses</h3><ul class="uses">' + D.uses.map((u) => { const used = h.uses[u.key] || 0, left = Math.max(0, u.max - used); return '<li><div><b>' + esc(u.n) + '</b><small>' + (u.rest === 'short' ? 'short or long rest' : u.rest === 'one' ? 'long rest; one back on a short rest' : 'long rest') + (u.note ? ' · ' + esc(u.note) : '') + '</small></div>' + (u.max >= 99 ? '<span class="small">Unlimited</span>' : u.max > 8 ? '<span class="pool"><button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|1" aria-label="Spend one">−</button><b>' + left + '</b>/' + u.max + '<button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|-1" aria-label="Regain one">+</button></span>' : '<span class="pips">' + Array.from({ length: u.max }, (_, i) => '<button type="button" class="pip' + (i < left ? ' on' : '') + '" data-hr="usepip" data-v="' + u.key + '|' + i + '|' + u.max + '" aria-label="' + esc(u.n) + ' ' + (i + 1) + '"></button>').join('') + '</span>') + '</li>'; }).join('') + '</ul></section>';
   o += heroGuildsHtml(h);
+  o += downtimeHtml(h);
   // spells
   o += sheetSpells(h, D);
   // skills
@@ -7831,7 +7891,7 @@ $('inspector').addEventListener('click', (ev) => {
       heroLog(h, 'hero', 'Joined the Adventurers\' Guild at Copper rank');
       toast((h.name || 'Your hero') + ' joins the Adventurers\' Guild at Copper rank.'); break;
     }
-    case 'toguild': { const s = SBY.get(h.home); setTool('guilds'); if (s) { market.sid = s.id; people.sid = s.id; } guildUI.tab = 'board'; guildUI.q = null; guildUI.org = null; renderPanel(); return; }
+    case 'toguild': { const s = SBY.get(h.home); setTool('guilds', false, true); if (s) { market.sid = s.id; people.sid = s.id; } guildUI.tab = 'board'; guildUI.q = null; guildUI.org = null; renderPanel(); return; }
     case 'del': if (heroes.confirmDel !== h.id) { heroes.confirmDel = h.id; renderPanel(); return; } heroes.list = heroes.list.filter((x) => x.id !== h.id); heroes.cur = heroes.list[0] ? heroes.list[0].id : null; heroes.confirmDel = null; heroes.step = 'sheet'; heroChanged(null); toast('Hero deleted.'); return;
     case 'noop': return;
     default: return;
@@ -8230,7 +8290,7 @@ $('inspector').addEventListener('click', (ev) => {
     case 'open': openMonster(v, false); flyToSpawn(v); return;
     case 'back': monUI.id = null; renderPanel(); return;
     case 'fly': flyToSpawn(v); return;
-    case 'tomarket': setTool('market', true); market.tab = 'bounties'; if (monUI.sid) market.sid = monUI.sid; renderPanel(); return;
+    case 'tomarket': setTool('market', true, true); market.tab = 'bounties'; if (monUI.sid) market.sid = monUI.sid; renderPanel(); return;
     case 'place': { const n = Math.max(1, Math.min(50, +(($('mo-count') || {}).value) || monUI.count)); monUI.count = n; monUI.place = { name: v, custom: !MON[v] && MON_SRD[v] ? { cr: MON_SRD[v][4], ac: MON_SRD[v][1], hp: MON_SRD[v][2], type: MON_SRD[v][0] } : undefined }; monUI.move = null; toast('Tap the map to place ' + (n > 1 ? n + ' × ' : '') + v + '.'); renderPanel(); return; }
     case 'placecustom': { const nm = (($('mo-cname') || {}).value || '').trim(); if (!nm) { toast('Give the creature a name first.'); return; } const n = Math.max(1, Math.min(50, +(($('mo-count') || {}).value) || 1)); monUI.count = n; monUI.place = { name: nm.slice(0, 60), custom: { cr: $('mo-ccr').value, ac: clamp(+$('mo-cac').value || 12, 1, 30), hp: clamp(+$('mo-chp').value || 10, 1, 999), type: 'creature' } }; toast('Tap the map to place ' + nm + '.'); renderPanel(); return; }
     case 'cancelplace': monUI.place = null; renderPanel(); return;
@@ -8390,10 +8450,10 @@ document.addEventListener('click', (ev) => {
   if (!t) return;
   ev.preventDefault(); ev.stopPropagation();
   if ((t.dataset.monSpawn || t.dataset.monNear) && isPlayer()) { toast('Monster whereabouts are for the DM.'); return; }
-  if (t.dataset.quest) { const [qid, sid] = t.dataset.quest.split('|'); setTool('guilds', true); market.sid = sid; people.sid = sid; guildUI.org = null; guildUI.tab = 'board'; guildUI.q = qid; panelMin = false; renderPanel(); const el = $('inspector'); if (el) el.scrollTop = 0; }
-  else if (t.dataset.questBoard) { setTool('guilds', true); market.sid = t.dataset.questBoard; guildUI.org = null; guildUI.q = null; guildUI.tab = 'board'; panelMin = false; renderPanel(); }
+  if (t.dataset.quest) { const [qid, sid] = t.dataset.quest.split('|'); setTool('guilds', true, true); market.sid = sid; people.sid = sid; guildUI.org = null; guildUI.tab = 'board'; guildUI.q = qid; panelMin = false; renderPanel(); const el = $('inspector'); if (el) el.scrollTop = 0; }
+  else if (t.dataset.questBoard) { setTool('guilds', true, true); market.sid = t.dataset.questBoard; guildUI.org = null; guildUI.q = null; guildUI.tab = 'board'; panelMin = false; renderPanel(); }
   else if (t.dataset.monSpawn) openMonster(t.dataset.monSpawn, true);
-  else if (t.dataset.monNear) { setTool('monsters', true); monUI.sid = t.dataset.monNear; monUI.id = null; monUI.tab = 'near'; renderPanel(); const s = SBY.get(monUI.sid); if (s) flyVis(s.x, s.y, Math.max(view.s, 1.2)); }
+  else if (t.dataset.monNear) { setTool('monsters', true, true); monUI.sid = t.dataset.monNear; monUI.id = null; monUI.tab = 'near'; renderPanel(); const s = SBY.get(monUI.sid); if (s) flyVis(s.x, s.y, Math.max(view.s, 1.2)); }
 }, true);
 
 // ================================================================ living ecology, price explanations and the party chronicle
@@ -8621,7 +8681,7 @@ function chronicle() {
   out.sort((a, b) => b.d - a.d || b.i - a.i);
   return out;
 }
-const CHRON_ICON = { quest: '◆', mon: '✶', travel: '➜', hero: '★', buy: '¤', npc: '☉', down: '✝', guild: '⚑' };
+const CHRON_ICON = { quest: '◆', mon: '✶', travel: '➜', hero: '★', buy: '¤', npc: '☉', down: '✝', guild: '⚑', dt: '☾' };
 function chronPanel() {
   const P = gst().party, at = P.at ? SBY.get(P.at) : null, day = market.day;
   let h = '<div class="mk-head"><div><div class="eyebrow">Heroes · Chronicle</div><h2>' + esc(P.name || 'The party') + '</h2></div>' + CLOSE_BTN + '</div>';
@@ -10737,7 +10797,7 @@ function activityTab(s, day) {
 
 // ================================================================ campaign: safe saving, backups, stable worlds, DM and player modes, merging (v20)
 const GEN_VERSION = 20;          // bump whenever generated content changes
-const APP_VERSION = 27;          // the release number shown to people (CHANGELOG.md)
+const APP_VERSION = 28;          // the release number shown to people (CHANGELOG.md)
 // what changed in generated content at each version, shown when an older world is opened
 const GEN_CHANGES = {
   13: 'Town layouts redrawn by terrain and culture.',
@@ -12205,6 +12265,12 @@ function shopRows() {
   const q = (market.shop.q || '').trim().toLowerCase(), cat = market.shop.cat;
   return SRD.items.filter((it) => (cat === 'all' || it.cat === cat) && (!q || it.search.includes(q)));
 }
+// the price here, with a picked hero's member price beneath it
+function memberCell(it, s, gp) {
+  const h = shopHero(), d = h ? memberDisc(h, s, shopKindSrd(it)) : { v: 0 };
+  if (!d.v) return coinHtml(gp);
+  return d.v >= 1 ? '<s class="was">' + coinHtml(gp) + '</s><small class="gj-disc">free · ' + esc(d.by) + '</small>' : coinHtml(gp * (1 - d.v)) + '<small class="gj-disc">−' + Math.round(d.v * 100) + '% ' + esc(d.by) + '</small>';
+}
 function shopListHtml(s, day) {
   if (!SRD.items) return SRD.failed.items ? '<p class="meta">The full SRD item list could not load here. Open the atlas from its web address to see every item; the Town tab still prices the everyday goods.</p>' : '<p class="meta">Loading the full SRD item list…</p>';
   const rows = shopRows(), MAX = 160;
@@ -12217,7 +12283,7 @@ function shopListHtml(s, day) {
     const nm = it.cat === 'Magic items' ? extLink(AID.item(it.name), it.name) : esc(it.name);
     h += '<tr class="item' + (r.ok ? '' : ' na') + '" data-shop="open" data-v="' + esc(it.id) + '" tabindex="0" aria-expanded="' + open + '"><td>' + nm + (it.unit ? ' <small>(' + esc(it.unit) + ')</small>' : '') + (it.rarity ? ' <em class="rar rr-' + it.rarity.replace(/\s/g, '') + '">' + esc(it.rarity) + '</em>' : '') +
       (open ? '<small class="note">' + esc(it.type ? fixType(it.type) + '. ' : '') + esc(it.desc) + '</small>' : '') + '</td>' +
-      '<td class="num">' + (it.base ? coinHtml(it.base) : '—') + '</td><td class="num">' + (r.ok ? coinHtml(r.gp) : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
+      '<td class="num">' + (it.base ? coinHtml(it.base) : '—') + '</td><td class="num">' + (r.ok ? memberCell(it, s, r.gp) : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
   }
   return h + '</tbody></table>';
 }
@@ -12231,11 +12297,19 @@ function innBill(s, day) {
   const stay = INN_STAY[lq] * Lv.lodging, meal = INN_MEAL[mq] * Lv.meal, stable = 0.5 * Math.sqrt(Lv.feed * Lv.lodging);
   const n = F.nights, g = F.guests, hrs = F.horses;
   const rows = [['Rooms', n * g * stay, g + ' × ' + n + ' night' + (n === 1 ? '' : 's') + ' at ' + money(stay)], ['Meals', n * g * meal, g + ' × ' + n + ' day' + (n === 1 ? '' : 's') + ' at ' + money(meal)]];
+  // a picked hero's guild may put them up for free (only the hero: their companions still pay)
+  const hero = shopHero(), ML = hero ? memberLodging(hero, s) : null, note = [], hn = hero ? esc(hero.name || 'the hero') : '';
+  if (ML && g >= 1 && n >= 1) {
+    if (ML.lodge >= lq) { rows[0][1] -= n * stay; rows[0][2] += '; ' + hn + ' stays free'; note.push(hn + ' sleeps free: ' + ML.by.join(', ') + '.'); }
+    else if (ML.cot != null && lq <= 1) { rows[0][1] -= n * Math.max(0, stay - ML.cot); rows[0][2] += '; ' + hn + ' takes a cot at ' + money(ML.cot); note.push('A cot in the guild hall\'s bunkroom for ' + hn + '.'); }
+    else if (ML.lodge >= 0 && ML.by.length) note.push('Choose ' + INN_Q[ML.lodge].toLowerCase() + ' lodging or simpler for ' + hn + ' to stay free (' + ML.by[0] + ').');
+    if (ML.meals >= mq) { rows[1][1] -= n * meal; rows[1][2] += '; ' + hn + ' eats free'; }
+  }
   if (hrs) rows.push(['Stabling', n * hrs * stable, hrs + ' × ' + n + ' at ' + money(stable)]);
   const warn = [];
   if (s.tier < INN_TIER[lq]) warn.push(F.lodge + ' rooms are hard to find in a ' + sizeOf(s).name.toLowerCase() + '.');
   if (s.tier < INN_TIER[mq]) warn.push(F.meal + ' meals are hard to find in a ' + sizeOf(s).name.toLowerCase() + '.');
-  return { rows, total: rows.reduce((a, r) => a + r[1], 0), warn };
+  return { rows, total: rows.reduce((a, r) => a + r[1], 0), warn: warn.concat(note) };
 }
 function innHtml(s, day) {
   const B = innBill(s, day);
@@ -12249,6 +12323,7 @@ function shopTab(day) {
   const F = market.inn, sel1 = (id, cur) => '<select id="' + id + '" data-inn="' + id + '">' + INN_Q.map((q, i) => '<option value="' + q + '"' + (q === cur ? ' selected' : '') + (s.tier < INN_TIER[i] ? ' class="rare"' : '') + '>' + q + '</option>').join('') + '</select>';
   const num = (id, v, max, lab) => '<div class="field"><label class="lab" for="' + id + '">' + lab + '</label><input id="' + id + '" data-inn="' + id + '" type="number" min="0" max="' + max + '" value="' + v + '"></div>';
   let h = '<div class="town-h"><div><div class="eyebrow">' + TIERS[s.tier].name + ' · shops and inn</div><h3 class="town-name">' + tLink(s) + '</h3></div></div>';
+  h += shopHeroHtml(s);
   h += '<section><h3>At the inn</h3><div class="row2"><div class="field"><label class="lab" for="inn-l">Lodging</label>' + sel1('inn-l', F.lodge) + '</div><div class="field"><label class="lab" for="inn-m">Meals</label>' + sel1('inn-m', F.meal) + '</div></div>' +
     '<div class="row3">' + num('inn-n', F.nights, 365, 'Nights') + num('inn-g', F.guests, 50, 'Guests') + num('inn-h', F.horses, 50, 'Horses') + '</div><div id="innOut">' + innHtml(s, day) + '</div>' +
     '<p class="hint">Player\'s Handbook lifestyle prices for an inn stay and a day\'s meals, at this town\'s prices today. Stabling is 5 sp a day before local costs.</p></section>';
@@ -13660,17 +13735,18 @@ function shellWrap(html) {
   for (const b of document.querySelectorAll('#side .tool.sec')) b.setAttribute('aria-pressed', String(b.dataset.tool === 'explore' ? (tool === 'explore' && !(sel && sel.kind !== 'settle')) || (c.kind === 'place') : b.dataset.tool === tool));
   return sideHead(c) + '<div class="side-body">' + (html || '') + '</div>';
 }
-function openPlace(sid, tab, fly) {
+function openPlace(sid, tab, fly, sub) {
   const s = SBY.get(sid);
   if (!s) return;
   const R = realmOfS(s);
   if (R) navR = R.cap.id;
   closePopovers();
   sel = { kind: 'settle', id: sid };
-  if (tab === 'market') { market.sid = sid; setTool('market', true); if (market.tab === 'overview') market.tab = 'town'; }
-  else if (tab === 'people') { people.sid = sid; people.npc = null; people.place = null; if (people.tab === 'tracked') people.tab = 'residents'; setTool('people', true); }
-  else if (tab === 'guilds') { market.sid = sid; people.sid = sid; guildUI.q = null; guildUI.org = null; setTool('guilds', true); }
-  else setTool('explore', true);
+  // one panel draw per tap: the tool switch stays quiet and the place draws once its tab is set
+  if (tab === 'market') { market.sid = sid; setTool('market', true, true); if (sub) market.tab = sub; else if (market.tab === 'overview') market.tab = 'town'; }
+  else if (tab === 'people') { people.sid = sid; people.npc = null; people.place = null; if (sub) people.tab = sub; else if (people.tab === 'tracked') people.tab = 'residents'; setTool('people', true, true); }
+  else if (tab === 'guilds') { market.sid = sid; people.sid = sid; guildUI.q = null; guildUI.org = null; if (sub) guildUI.tab = sub; setTool('guilds', true, true); }
+  else setTool('explore', true, true);
   renderPanel();
   const box = $('inspector'); if (box) box.scrollTop = 0;
   if (fly) { flyVis(s.x, s.y, view.s >= TOWN_ZOOM[s.tier] ? view.s : TOWN_ZOOM[s.tier]); pulseTown(s.id); }
@@ -13696,22 +13772,18 @@ $('inspector').addEventListener('click', (e) => {
   else if (go === 'done') { setTool('explore'); }
   else if (go === 'gl') {
     const [sid, tab, sub] = v.split('|');
-    if (tab === 'market') market.tab = sub;
-    else if (tab === 'guilds') guildUI.tab = sub;
-    else if (tab === 'people') people.tab = sub;
-    openPlace(sid, tab, false);
-    if (tab === 'market' && market.tab !== sub) { market.tab = sub; renderPanel(); }
+    openPlace(sid, tab, false, sub);
   }
-  else if (go === 'person') { const p = npcById(v); if (p && SBY.get(p.sid)) { openPlace(p.sid, 'people', false); people.npc = p.id; renderPanel(); if (typeof flyToPerson === 'function') flyToPerson(p); } }
+  else if (go === 'person') { const p = npcById(v); if (p && SBY.get(p.sid)) { people.sid = p.sid; people.place = null; sel = { kind: 'settle', id: p.sid }; setTool('people', true, true); people.npc = p.id; renderPanel(); if (typeof flyToPerson === 'function') flyToPerson(p); } }
   else if (go === 'more') { navMore[v] = true; renderPanel(); }
   else if (go === 'sect') {
     sel = null;
-    if (v === 'markets') { setTool('market'); market.tab = 'overview'; market.sid = null; renderPanel(); }
-    else if (v === 'events') { setTool('market'); market.sid = null; market.tab = 'events'; renderPanel(); }
-    else if (v === 'tracked') { setTool('people'); people.tab = 'tracked'; people.npc = null; renderPanel(); }
+    if (v === 'markets') { setTool('market', false, true); market.tab = 'overview'; market.sid = null; renderPanel(); }
+    else if (v === 'events') { setTool('market', false, true); market.sid = null; market.tab = 'events'; renderPanel(); }
+    else if (v === 'tracked') { setTool('people', false, true); people.tab = 'tracked'; people.npc = null; renderPanel(); }
     else if (v === 'heroes') setTool('heroes');
     else if (v === 'monsters') setTool('monsters');
-    else if (v === 'party') { const at = gst().party.at; if (at && SBY.get(at)) openPlace(at, 'overview', true); else { setTool('heroes'); heroes.step = 'chron'; renderPanel(); } }
+    else if (v === 'party') { const at = gst().party.at; if (at && SBY.get(at)) openPlace(at, 'overview', true); else { setTool('heroes', false, true); heroes.step = 'chron'; renderPanel(); } }
   }
 });
 $('inspector').addEventListener('input', (e) => {
@@ -13803,6 +13875,8 @@ function todayHtml() {
     if (k.startsWith('p:')) { const p = npcById(k.slice(2)); if (p && SBY.get(p.sid)) chips.push('<button type="button" class="chip" data-nav="person" data-v="' + esc(p.id) + '">' + esc(npcName(withOv(p))) + '</button>'); }
     else { const s = SBY.get(k); if (s && !(at && at.id === s.id)) chips.push('<button type="button" class="chip" data-nav="place" data-v="' + esc(s.id) + '">' + esc(s.name) + '</button>'); }
   }
+  const gch = guildTodayChips();
+  if (gch.length) h += '<div class="gl-recent"><span class="lab">Guild business</span><div class="chips">' + gch.join('') + '</div></div>';
   if (chips.length) h += '<div class="gl-recent"><span class="lab">Jump back to</span><div class="chips">' + chips.join('') + '</div></div>';
   return h + '</section>';
 }
@@ -13971,7 +14045,7 @@ function gjCard(h, k, day) {
     '<p class="meta">' + (at ? 'Joined in ' + tLink(at) + ', ' : 'Joined ') + dateText(m.day || 0) + (G.dues ? ' · dues ' + money(G.dues) + ' a month, ' + (lapsed ? '<b>overdue since ' + dateText(m.paid || 0) + '</b>' : 'paid to ' + dateText(m.paid || 0)) : '') + '</p>' +
     (lapsed ? '<p class="small warn-t">Benefits are suspended until the dues are paid.</p>' : '<ul class="gj-perks">' + perks.map(([, n, d]) => '<li><b>' + esc(n) + '</b> ' + esc(d) + '</li>').join('') + '</ul>') +
     (next.length && !lapsed ? '<p class="small">Next rank adds: ' + next.map((p) => esc(p[1])).join(', ') + (k === 'adventurers' ? ' (earn merit on quests)' : m.r == null ? ' (after time served and more levels)' : '') + '.</p>' : '') +
-    '<div class="actions">' + (G.dues ? '<button type="button" class="btn sm' + (lapsed ? ' primary' : '') + '" data-gj="pay" data-v="' + esc(h.id) + '|' + k + '">Pay a month (' + money(G.dues) + ')</button>' : '') +
+    '<div class="actions">' + (k === 'watch' && watchWageDays(h, day) ? '<button type="button" class="btn sm primary" data-gj="collect" data-v="' + esc(h.id) + '|watch">Collect wages (' + money(watchWageDays(h, day) * G.wage) + ')</button>' : '') + (G.dues ? '<button type="button" class="btn sm' + (lapsed ? ' primary' : '') + '" data-gj="pay" data-v="' + esc(h.id) + '|' + k + '">Pay a month (' + money(G.dues) + ')</button>' : '') +
     (dm ? '<button type="button" class="btn sm" data-gj="down" data-v="' + esc(h.id) + '|' + k + '"' + (r <= 0 ? ' disabled' : '') + '>Demote</button><button type="button" class="btn sm" data-gj="up" data-v="' + esc(h.id) + '|' + k + '"' + (r >= 3 ? ' disabled' : '') + '>Promote</button>' : '') +
     '<button type="button" class="btn sm danger" data-gj="leave" data-v="' + esc(h.id) + '|' + k + '">Leave</button></div></li>';
 }
@@ -14011,6 +14085,7 @@ document.addEventListener('click', (ev) => {
   if (a === 'join') { if (gjJoin(h, k, SBY.get(sid) || gjTown(h))) toast((h.name || 'Your hero') + ' is now ' + (k === 'rulers' ? 'sworn to the realm' : 'a member of the ' + ORGS[k].short) + '.'); }
   else if (a === 'leave') gjLeave(h, k);
   else if (a === 'pay') gjPay(h, k);
+  else if (a === 'collect') gjCollect(h);
   else if (a === 'up') gjSetRank(h, k, 1);
   else if (a === 'down') gjSetRank(h, k, -1);
   heroSave();
@@ -14032,6 +14107,139 @@ document.addEventListener('click', (ev) => {
   guildCommit('Register ' + (h.name || 'hero'), (g) => { g.party.members.push({ id: 'h:' + h.id, name: h.name || 'Unnamed', cls: CLS(h).name, level: h.level, merit: 0 }); });
   renderPanel();
 });
+
+// ---------------------------------------------------------------- member prices in the Market's Shop and at the inn (v28)
+// Pick a hero on the Shop tab and the prices and inn bill are worked out for them: their guilds' discounts in this
+// town, free lodging where a guild gives it, and half-price healing for the faithful.
+function shopKindSrd(it) {
+  const n = it.name;
+  if (it.cat === 'Weapons') return 'weapon';
+  if (it.cat === 'Armor') return 'armor';
+  if (it.cat === 'Tools') return /thieves'|disguise/i.test(n) ? 'shady' : 'tool';
+  if (it.cat === 'Magic items') return /potion of healing/i.test(n) ? 'cure' : /^spell scroll/i.test(n) ? 'scroll' : 'magic';
+  if (it.cat === 'Services') return /healer/i.test(n) ? 'heal' : /toll/i.test(n) ? 'toll' : 'service';
+  if (it.cat === 'Lodging') return /stabling|bath/i.test(n) ? 'service' : 'lodge';
+  if (it.cat === 'Wages') return 'wage';
+  if (it.cat === 'Food' || it.cat === 'Drink') return 'food';
+  if (/^(Crystal|Orb|Rod|Staff|Wand|Component pouch|Spellbook|Sprig of mistletoe|Totem|Wooden staff|Yew wand)/i.test(n)) return 'arcane';
+  if (/^(Amulet|Emblem|Reliquary)/i.test(n)) return 'holy';
+  if (/antitoxin|healer's kit/i.test(n)) return 'cure';
+  if (/pack$/i.test(n)) return 'pack';
+  return 'gear';
+}
+// the best member price for a hero buying a kind of thing in a town
+function memberDisc(h, s, kind) {
+  let best = { v: 0, by: '' };
+  if (!h || !h.orgs || !s) return best;
+  const take = (v, by) => { if (v > best.v) best = { v, by }; };
+  for (const k in h.orgs) {
+    const m = h.orgs[k];
+    if (!m || !GJ[k] || gjLapsed(m) || !gjAt(s, k)) continue;
+    const r = Math.max(0, gjRank(h, k));
+    // merchants' prices cover goods, not lodging, services or wages
+    if (k === 'merchants' && /^(lodge|service|heal|toll|wage)$/.test(kind)) continue;
+    const f = GJ_DISC[k], t = f && f(kind);
+    if (t) take(t[r], ORGS[k].short);
+    if (k === 'temple' && kind === 'heal') take(0.5, 'Temple');
+    if (k === 'adventurers' && kind === 'heal' && r >= 1) take(0.5, 'Adventurers');
+    if (k === 'rulers' && kind === 'toll') take(1, 'Writ of passage');
+    if (k === 'mages' && kind === 'scroll' && r >= 2) take(0.25, 'Mages');
+  }
+  return best;
+}
+// free or cheap lodging a member can claim in a town: { lodge: highest free lodging (0-5) or -1, meals: highest free meals, cot: price of a cot or null, by }
+function memberLodging(h, s) {
+  const out = { lodge: -1, meals: -1, cot: null, by: [] };
+  if (!h || !h.orgs || !s) return out;
+  const give = (l, m, by) => { if (l > out.lodge) out.lodge = l; if (m > out.meals) out.meals = m; out.by.push(by); };
+  for (const k in h.orgs) {
+    const m = h.orgs[k];
+    if (!m || !GJ[k] || gjLapsed(m) || !gjAt(s, k)) continue;
+    const r = Math.max(0, gjRank(h, k));
+    if (k === 'temple') give(2, 2, 'the temple');
+    if (k === 'watch') give(1, -1, 'the watch house');
+    if (k === 'thieves') give(0, -1, 'a guild safehouse');
+    if (k === 'rulers' && r >= 1) give(3, 3, 'crown lodging (on crown business)');
+    if (k === 'adventurers' && guildLevel(s, 'adventurers') >= 1) { if (r >= 3) give(3, 3, 'the guild hall'); else { out.cot = 0.1; out.by.push('a cot in the hall\'s bunkroom'); } }
+  }
+  return out;
+}
+const shopHero = () => (market.shop && market.shop.hero ? (heroes.list || []).find((x) => x.id === market.shop.hero) || null : null);
+function shopHeroHtml(s) {
+  const hs = heroes.list || [];
+  if (!hs.length) return '';
+  const h = shopHero();
+  let o = '<div class="field"><label class="lab" for="shop-hero">Prices for</label><select id="shop-hero"><option value="">Anyone</option>' + hs.map((x) => '<option value="' + esc(x.id) + '"' + (h && h.id === x.id ? ' selected' : '') + '>' + esc(x.name || 'Unnamed hero') + '</option>').join('') + '</select></div>';
+  if (h) {
+    const keys = Object.keys(h.orgs || {}).filter((k) => GJ[k]);
+    const here = keys.filter((k) => !gjLapsed(gjMember(h, k)) && gjAt(s, k)), away = keys.filter((k) => !here.includes(k));
+    o += '<p class="small">' + (here.length ? 'Member prices for ' + esc(h.name || 'this hero') + ' from the ' + here.map((k) => esc(ORGS[k].short) + ' (' + esc(gjRankName(h, k)) + ')').join(', ') + '.' : esc(h.name || 'This hero') + ' has no guild discounts in ' + esc(s.name) + '.') + (away.length ? ' <span class="meta">Not here or dues owed: ' + away.map((k) => esc(ORGS[k].short)).join(', ') + '.</span>' : '') + '</p>';
+  }
+  return o;
+}
+document.addEventListener('change', (ev) => {
+  const t = ev.target;
+  if (!t || t.id !== 'shop-hero') return;
+  market.shop.hero = t.value || null;
+  renderPanel();
+});
+
+// ---------------------------------------------------------------- dues and wages as the calendar runs (v28)
+// Nothing is written as days pass (in a shared world each player's device owns its heroes); instead the hero's sheet
+// and the World page's Today show what is owed and what can be collected, worked out from the day.
+function watchWageDays(h, day) {
+  const m = gjMember(h, 'watch');
+  if (!m) return 0;
+  const from = m.wageFrom != null ? m.wageFrom : m.day || 0;
+  return Math.max(0, Math.floor(((day == null ? market.day : day) - from) / 10));   // one day in ten on patrol
+}
+function guildNotices(h, day) {
+  day = day == null ? market.day : day;
+  const out = [];
+  for (const k of Object.keys(h.orgs || {})) {
+    const m = h.orgs[k];
+    if (!m || !GJ[k]) continue;
+    if (gjLapsed(m, day)) out.push({ k, kind: 'dues', text: money(GJ[k].dues * Math.max(1, Math.ceil((day - (m.paid || 0)) / 30))) + ' dues owed to the ' + ORGS[k].short + ' since ' + dateText(m.paid || 0) + '; benefits are suspended.' });
+  }
+  const wd = watchWageDays(h, day);
+  if (wd > 0) out.push({ k: 'watch', kind: 'wage', text: wd + ' day' + (wd === 1 ? '' : 's') + ' on patrol: ' + money(wd * GJ.watch.wage) + ' in wages to collect from the Watch.' });
+  return out;
+}
+function gjCollect(h) {
+  const m = gjMember(h, 'watch'), wd = watchWageDays(h);
+  if (!m || !wd) return;
+  const pay = Math.round(wd * GJ.watch.wage * 100) / 100;
+  h.goldDelta += pay;
+  h.orgs = Object.assign({}, h.orgs, { watch: Object.assign({}, m, { wageFrom: (m.wageFrom != null ? m.wageFrom : m.day || 0) + wd * 10 }) });
+  heroLog(h, 'guild', 'Collected ' + money(pay) + ' in wages from the Watch');
+  toast((h.name || 'Your hero') + ' collects ' + money(pay) + '.');
+}
+function guildNoticeHtml(h) {
+  const N = guildNotices(h);
+  if (!N.length) return '';
+  return '<div class="gj-notices">' + N.map((n) => '<p class="small ' + (n.kind === 'dues' ? 'warn-t' : '') + '">' + esc(n.text) + ' ' + (n.kind === 'dues' ? '<button type="button" class="btn sm" data-gj="pay" data-v="' + esc(h.id) + '|' + n.k + '">Pay a month</button>' : '<button type="button" class="btn sm primary" data-gj="collect" data-v="' + esc(h.id) + '|watch">Collect</button>') + '</p>').join('') + '</div>';
+}
+// for the World page: which heroes owe dues or have wages waiting
+function guildTodayChips() {
+  const out = [];
+  for (const h of heroes.list || []) for (const n of guildNotices(h)) out.push('<button type="button" class="chip' + (n.kind === 'dues' ? ' warn' : '') + '" data-hero="' + esc(h.id) + '">' + esc(h.name || 'Hero') + ': ' + (n.kind === 'dues' ? 'dues to the ' + esc(ORGS[n.k].short) : 'wages waiting') + '</button>');
+  return out;
+}
+
+// ---------------------------------------------------------------- fellow members get a warmer welcome (v28)
+// A person who belongs to an organisation a hero serves (dues paid) thinks better of the party: +15, or +25 once a
+// hero holds the third rank or higher. It adds to the DM's own setting and is shown with its reason.
+function kinBonus(p) {
+  const org = GROUP_ORG[p.group] || (!isPlayer() && /thieves/.test(p.secretJob || '') ? 'thieves' : null);
+  if (!org || !GJ[org]) return { v: 0, why: '' };
+  let best = null;
+  for (const h of heroes.list || []) { const m = gjMember(h, org); if (!m || gjLapsed(m)) continue; const r = gjRank(h, org); if (!best || r > best.r) best = { h, r }; }
+  if (!best) return { v: 0, why: '' };
+  const v = best.r >= 2 ? 25 : 15;
+  // a secret thief's warmth counts only on the DM's screen, so players never learn of it this way
+  return { v, why: '+' + v + ': ' + (best.h.name || 'a hero') + ' is a fellow member of the ' + ORGS[org].short + ' (' + gjRankName(best.h, org) + ')', org };
+}
+function dispShown(p) { return clamp(dispOf(p) + kinBonus(p).v, -100, 100); }
 // ================================================================ what is happening at a place (v27)
 // Every place in a town (the hall, market, temples, taverns, inns, the watch, guild halls, banks, docks, shops and
 // districts) gets a short scene for the chosen time of day: how busy it is and who is there, what usually goes on
@@ -14226,6 +14434,210 @@ document.addEventListener('click', (ev) => {
   const b = ev.target.closest('[data-plhour]');
   if (!b) return;
   people.hour = clamp(+b.dataset.plhour | 0, 0, 23);
+  renderPanel();
+});
+// ================================================================ downtime (v28)
+// Between adventures a hero can spend days crafting, working, training, researching, carousing, serving a temple
+// or recuperating. Each activity uses the town's prices and the hero's guilds: the Craft Guilds' workshops double
+// crafting progress, the Mages' Circle library helps research, the Temple welcomes service, and guild lodging makes
+// living cheaper. Results go into the hero's gold, inventory, languages and tools, and chronicle. The world's calendar
+// stays with the DM: downtime is recorded from the current day.
+const DT_ACTS = [
+  ['craft', 'Crafting', 'Make a weapon, armour or gear. You pay half its price in materials and make progress each day.'],
+  ['work', 'Working', 'Earn a living at a trade or by performing. A check decides how well it pays.'],
+  ['train', 'Training', 'Learn a new language or tool with a teacher.'],
+  ['research', 'Research', 'Dig for lore in a library or among the town\'s scholars.'],
+  ['carouse', 'Carousing', 'Spend freely in the taverns and make new contacts, good or bad.'],
+  ['service', 'Religious service', 'Serve at a temple and earn its favour.'],
+  ['rest', 'Recuperating', 'Rest properly to shake off poison and exhaustion.']
+];
+const DT_LIFE = ['Poor', 'Modest', 'Comfortable'];
+const dt = { act: 'craft', days: 5, life: 'Modest', item: '', train: '', tKind: 'lang', last: null };
+const TOOLS_LEARN = ["Alchemist's supplies", "Brewer's supplies", "Calligrapher's supplies", "Carpenter's tools", "Cartographer's tools", "Cobbler's tools", "Cook's utensils", "Glassblower's tools", "Herbalism kit", "Jeweler's tools", "Leatherworker's tools", "Mason's tools", "Navigator's tools", "Painter's supplies", "Potter's tools", "Smith's tools", "Thieves' tools", "Tinker's tools", "Weaver's tools", "Woodcarver's tools", 'Disguise kit', 'Forgery kit', 'Poisoner\'s kit', 'Lute', 'Flute', 'Drum'];
+// where the hero spends downtime: the party's town, else their home
+function dtTown(h) { const at = gst().party.at; return (at && SBY.get(at)) || (h.home ? SBY.get(h.home) : null); }
+// a day's living at a lifestyle in this town, less what a guild provides
+function dtLiving(h, s, life) {
+  const q = INN_Q.indexOf(life), Lv = priceLevels(s, market.day), ML = memberLodging(h, s);
+  const stay = q <= ML.lodge ? 0 : INN_STAY[q] * Lv.lodging, meal = q <= ML.meals ? 0 : INN_MEAL[q] * Lv.meal;
+  return { day: stay + meal, free: q <= ML.lodge, by: ML.by };
+}
+const dtMember = (h, k) => { const m = gjMember(h, k); return !!m && !gjLapsed(m); };
+const dtRules24 = (h) => is24(h);
+// how many gold pieces of an item's value a day of crafting makes: 5 (2014) or 10 (2024), doubled in a guild workshop
+function dtCraftRate(h, s) { return (dtRules24(h) ? 10 : 5) * (dtMember(h, 'crafts') && gjAt(s, 'crafts') ? 2 : 1); }
+function dtCanCraft(h, D, it) {
+  if (!it) return 'Choose what to make.';
+  if (!D.tools.length) return 'Crafting needs proficiency with a tool.';
+  if (it.kind === 'weapon' || it.kind === 'armor') { if (!D.tools.some((t) => /smith|leatherworker|woodcarver|tinker/i.test(t)) && !(dtMember(h, 'crafts'))) return 'Arms and armour need smith\'s, leatherworker\'s or woodcarver\'s tools (or a Craft Guild workshop).'; }
+  return '';
+}
+const d20 = () => 1 + Math.floor(Math.random() * 20);
+// carry out the days and say what happened
+function dtRun(h) {
+  const D = derive(h), s = dtTown(h), days = clamp(dt.days | 0, 1, 120);
+  if (!s) { toast('Choose a hometown first, or place the party in a town.'); return null; }
+  const L = dtLiving(h, s, dt.life), lines = [], day0 = market.day;
+  // nothing sticks unless the hero can pay: keep a copy to put back
+  const snap = JSON.stringify({ dt: h.dt || {}, inv: h.inv, learned: h.learned || { langs: [], tools: [] }, exh: h.exh || 0, conds: h.conds || [] });
+  const undo = () => { const o = JSON.parse(snap); h.dt = o.dt; h.inv = o.inv; h.learned = o.learned; h.exh = o.exh; h.conds = o.conds; };
+  let cost = Math.round(L.day * days * 100) / 100, gain = 0;
+  const res = { title: '', lines, days, town: s.name };
+  const live = L.free ? 'Living ' + dt.life.toLowerCase() + ' at ' + L.by[0] + ' cost nothing.' : 'Living ' + dt.life.toLowerCase() + ' for ' + days + ' day' + (days === 1 ? '' : 's') + ' cost ' + money(cost) + '.';
+  switch (dt.act) {
+    case 'craft': {
+      const it = ITEM.get(dt.item), why = dtCanCraft(h, D, it);
+      if (why) { toast(why); return null; }
+      const cur = Object.assign({ item: it.name, gp: 0, mat: false }, h.dt && h.dt.craft && h.dt.craft.item === it.name ? h.dt.craft : {});
+      const price = it.cost;
+      if (!cur.mat) { cost += Math.round(price / 2 * 100) / 100; cur.mat = true; lines.push('Materials for ' + it.name + ': ' + money(price / 2) + '.'); }
+      const rate = dtCraftRate(h, s);
+      cur.gp = Math.min(price, cur.gp + rate * days);
+      if (cur.gp >= price) {
+        h.inv = h.inv.concat([{ n: it.name, q: 1 }]);
+        h.dt = Object.assign({}, h.dt, { craft: null });
+        res.title = 'Made ' + aan(it.name).toLowerCase() + ' ' + it.name.toLowerCase();
+        lines.push('Finished: ' + it.name + ' is in the inventory.');
+      } else {
+        h.dt = Object.assign({}, h.dt, { craft: cur });
+        res.title = 'Worked on ' + it.name.toLowerCase();
+        lines.push('Progress: ' + money(cur.gp) + ' of ' + money(price) + ' (' + money(rate) + ' a day' + (rate > (dtRules24(h) ? 10 : 5) ? ' in the guild workshop' : '') + '); about ' + Math.ceil((price - cur.gp) / rate) + ' more day' + (Math.ceil((price - cur.gp) / rate) === 1 ? '' : 's') + '.');
+      }
+      break;
+    }
+    case 'work': {
+      const opts = ['Athletics', 'Performance', 'Persuasion', 'Sleight of Hand'].map((k) => [k, D.skillBonus(k)]).sort((a, b) => b[1] - a[1]);
+      const toolB = D.tools.length ? D.mod.int + D.pb : -99;
+      const [sk, bonus] = toolB > opts[0][1] ? ['a trade (' + D.tools[0] + ')', toolB] : opts[0];
+      const roll = d20(), tot = roll + bonus;
+      const tier = tot >= 21 ? 3 : tot >= 15 ? 2 : tot >= 10 ? 1 : 0, Lv = priceLevels(s, market.day);
+      const perDay = [0.1, 1, 2, 4][tier] * Math.sqrt(Lv.lodging * Lv.meal);
+      const guild = (dtMember(h, 'merchants') && gjAt(s, 'merchants')) || (dtMember(h, 'crafts') && gjAt(s, 'crafts')) ? 1.25 : 1;
+      gain = Math.round(perDay * days * guild * 100) / 100;
+      res.title = 'Worked ' + days + ' days';
+      lines.push('Check with ' + sk + ': ' + roll + ' + ' + bonus + ' = ' + tot + ' → ' + ['poor', 'modest', 'comfortable', 'wealthy'][tier] + ' pay, ' + money(perDay * guild) + ' a day' + (guild > 1 ? ' (guild rates)' : '') + '. Earned ' + money(gain) + '.');
+      break;
+    }
+    case 'train': {
+      const name = dt.train;
+      if (!name) { toast('Choose a language or tool to learn.'); return null; }
+      const known = dt.tKind === 'lang' ? D.langs.has(name) : D.tools.includes(name);
+      if (known) { toast('Already known.'); return null; }
+      const need = 250, fee = 1 * days;   // 250 days with a teacher at 1 gp a day
+      const cur = Object.assign({ name, kind: dt.tKind, days: 0 }, h.dt && h.dt.train && h.dt.train.name === name ? h.dt.train : {});
+      cur.days += days * (dtMember(h, 'mages') && gjAt(s, 'mages') && dt.tKind === 'lang' ? 2 : 1);
+      cost += fee;
+      if (cur.days >= need) {
+        const Lr = Object.assign({ langs: [], tools: [] }, h.learned);
+        h.learned = { langs: dt.tKind === 'lang' ? Lr.langs.concat([name]) : Lr.langs, tools: dt.tKind === 'tool' ? Lr.tools.concat([name]) : Lr.tools };
+        h.dt = Object.assign({}, h.dt, { train: null });
+        res.title = 'Learned ' + name; lines.push('Training complete: ' + name + ' is now on the sheet.');
+      } else {
+        h.dt = Object.assign({}, h.dt, { train: cur });
+        res.title = 'Trained in ' + name; lines.push('Progress: ' + cur.days + ' of ' + need + ' days. The teacher\'s fee is 1 gp a day.');
+      }
+      break;
+    }
+    case 'research': {
+      const lib = dtMember(h, 'mages') && gjAt(s, 'mages'), big = s.tier >= 3;
+      const b = Math.max(D.skillBonus('Arcana'), D.skillBonus('History'), D.skillBonus('Religion'));
+      const r1 = d20(), r2 = d20(), roll = lib ? Math.max(r1, r2) : r1, tot = roll + b + Math.floor(days / 5);
+      cost += days * (lib ? 0 : 1);
+      const facts = tot >= 25 ? 3 : tot >= 18 ? 2 : tot >= 12 ? 1 : 0;
+      res.title = 'Researched for ' + days + ' days';
+      lines.push((lib ? 'In the Mages\' Circle library (advantage): ' + r1 + ' and ' + r2 : 'Check: ' + roll) + ' + ' + b + (days >= 5 ? ' + ' + Math.floor(days / 5) + ' for the time spent' : '') + ' = ' + tot + '.');
+      lines.push(facts ? 'You uncover ' + facts + ' useful piece' + (facts === 1 ? '' : 's') + ' of lore: the DM tells you what.' : 'Nothing useful turns up.' + (big ? '' : ' A bigger town\'s scholars might help.'));
+      if (!lib) lines.push('Scholars and books cost 1 gp a day.');
+      break;
+    }
+    case 'carouse': {
+      const q = INN_Q.indexOf(dt.life), spend = [0, 2, 5, 10][Math.max(0, Math.min(3, q))] * days / 5 * Math.sqrt(priceLevels(s, market.day).drink || 1);
+      cost += Math.round(spend * 100) / 100;
+      const roll = d20() + D.skillBonus('Persuasion');
+      const res0 = roll >= 21 ? 2 : roll >= 16 ? 1 : roll >= 6 ? 0 : -1;
+      const pool = residents(s).filter((p) => (p.status || 'Alive') === 'Alive' && p.age >= 16);
+      const who = pool.length ? withOv(pool[Math.floor(Math.random() * pool.length)]) : null;
+      res.title = 'Caroused in ' + s.name;
+      lines.push('Spent ' + money(spend) + ' on drink and company. Persuasion: ' + roll + '.');
+      if (who) lines.push(res0 < 0 ? 'You made an enemy: ' + pLink(who) + ' (' + esc(who.job) + ') took offence.' : res0 === 0 ? 'A new acquaintance: ' + pLink(who) + ' (' + esc(who.job) + ').' : 'A new friend' + (res0 > 1 ? ' and ally' : '') + ': ' + pLink(who) + ' (' + esc(who.job) + ').');
+      res.contact = who ? { id: who.id, kind: res0 } : null;
+      break;
+    }
+    case 'service': {
+      const t = placesOf(s).list.find((x) => x.kind === 'temple');
+      if (!t) { toast('There is no temple in ' + s.name + '.'); return null; }
+      const member = dtMember(h, 'temple');
+      const favours = Math.floor(days / 10) + (member && days >= 5 ? 1 : 0);
+      res.title = 'Served at ' + t.name;
+      lines.push('Served at ' + placeLink(s, t.key) + ', a house of ' + esc(t.god || 'the gods') + '. Board and lodging are given to those who serve.');
+      cost = 0;
+      lines.push(favours ? 'The temple owes you ' + favours + ' favour' + (favours === 1 ? '' : 's') + ': healing, shelter or a word with the high priest, as the DM decides.' : 'Serve at least 10 days (5 as a member of the Temple) to earn a favour.');
+      break;
+    }
+    case 'rest': {
+      const steps = Math.floor(days / 3);
+      const before = [h.exh || 0, (h.conds || []).includes('Poisoned')];
+      if (steps) { h.exh = Math.max(0, (h.exh || 0) - steps); h.conds = (h.conds || []).filter((c) => c !== 'Poisoned'); }
+      res.title = 'Recuperated for ' + days + ' days';
+      lines.push(steps ? 'Exhaustion ' + before[0] + ' → ' + h.exh + (before[1] ? '; no longer poisoned' : '') + '. (Atlas rule: every 3 days of rest ends poison and lowers exhaustion by 1.)' : 'Rest at least 3 days to recover.');
+      break;
+    }
+  }
+  if (cost > goldOf(h) + gain + 1e-9) { undo(); toast('Not enough gold: this would cost ' + money(cost) + '.'); return null; }
+  if (dt.act !== 'service') lines.push(live);
+  h.goldDelta += Math.round((gain - cost) * 100) / 100;
+  res.net = Math.round((gain - cost) * 100) / 100;
+  heroLog(h, 'dt', res.title + ' (' + days + ' day' + (days === 1 ? '' : 's') + ', from ' + dateText(day0) + ', in ' + s.name + ')' + (res.net ? '; ' + (res.net > 0 ? '+' : '−') + money(Math.abs(res.net)) : ''));
+  return res;
+}
+function downtimeHtml(h) {
+  const s = dtTown(h), D = derive(h);
+  let o = '<section class="dt"><h3>Downtime</h3>';
+  if (!s) return o + '<p class="meta">Choose a hometown on the Basics step, or place the party in a town, to spend downtime there.</p></section>';
+  const L = dtLiving(h, s, dt.life), A = DT_ACTS.find((a) => a[0] === dt.act) || DT_ACTS[0];
+  o += '<p class="small">In ' + tLink(s) + ' from ' + dateText(market.day) + '. ' + esc(A[2]) + '</p>';
+  o += '<div class="row3">' + fieldSel('dt-act', 'Activity', DT_ACTS.map((a) => [a[0], a[1]]), dt.act) +
+    '<div class="field"><label class="lab" for="dt-days">Days</label><input id="dt-days" type="number" min="1" max="120" value="' + dt.days + '"></div>' +
+    fieldSel('dt-life', 'Living', DT_LIFE.map((x) => [x, x]), dt.life) + '</div>';
+  if (dt.act === 'craft') {
+    const list = WEAPONS.filter((w) => w.dmg !== '—').concat(ARMORS, GEAR.filter((g) => g.cost >= 1)).filter((it) => it.cost > 0);
+    const cur = h.dt && h.dt.craft;
+    o += fieldSel('dt-item', 'Make', [['', 'Choose…']].concat(list.map((it) => [it.name, it.name + ' (' + money(it.cost) + ')'])), dt.item || (cur ? cur.item : ''));
+    const it = ITEM.get(dt.item || (cur ? cur.item : '')), why = dtCanCraft(h, D, it);
+    if (it) o += '<p class="small">' + (why ? '<span class="warn-t">' + esc(why) + '</span>' : (cur && cur.item === it.name && cur.mat ? 'Materials paid' : 'Materials ' + money(it.cost / 2)) + '; ' + money(dtCraftRate(h, s)) + ' of progress a day' + (dtCraftRate(h, s) > (is24(h) ? 10 : 5) ? ' in the Craft Guilds\' workshop' : '') + ', so about ' + Math.ceil((it.cost - (cur && cur.item === it.name ? cur.gp : 0)) / dtCraftRate(h, s)) + (cur && cur.item === it.name ? ' more' : '') + ' days.') + '</p>';
+    if (cur) o += '<p class="small">Under way: ' + esc(cur.item) + ', ' + money(cur.gp) + ' of ' + money((ITEM.get(cur.item) || {}).cost || 0) + '.</p>';
+  }
+  if (dt.act === 'train') {
+    const kind = dt.tKind, Lr = h.learned || {}, cur = h.dt && h.dt.train;
+    o += '<div class="row2">' + fieldSel('dt-tkind', 'Learn', [['lang', 'A language'], ['tool', 'A tool']], kind) +
+      fieldSel('dt-train', kind === 'lang' ? 'Language' : 'Tool', [['', 'Choose…']].concat((kind === 'lang' ? LANGS.filter((l) => !D.langs.has(l)) : TOOLS_LEARN.filter((t) => !D.tools.includes(t))).map((x) => [x, x])), dt.train) + '</div>';
+    o += '<p class="small">250 days with a teacher, at 1 gp a day.' + (kind === 'lang' && dtMember(h, 'mages') && gjAt(s, 'mages') ? ' The Mages\' Circle teaches languages twice as fast.' : '') + (cur ? ' Under way: ' + esc(cur.name) + ', ' + cur.days + ' days.' : '') + ((Lr.langs || []).length || (Lr.tools || []).length ? ' Learned so far: ' + esc((Lr.langs || []).concat(Lr.tools || []).join(', ')) + '.' : '') + '</p>';
+  }
+  o += '<p class="small">Living ' + dt.life.toLowerCase() + ': ' + (L.free ? 'free at ' + esc(L.by[0]) : money(L.day) + ' a day here') + '.</p>';
+  o += '<div class="actions"><button type="button" class="btn primary" data-dt="run" data-v="' + esc(h.id) + '">Spend ' + dt.days + ' day' + (dt.days === 1 ? '' : 's') + '</button></div>';
+  if (dt.last && dt.last.hid === h.id) o += '<div class="dt-out"><b>' + esc(dt.last.title) + '</b>' + dt.last.lines.map((l) => '<p class="small">' + l + '</p>').join('') + '</div>';
+  return o + '</section>';
+}
+document.addEventListener('change', (ev) => {
+  const t = ev.target;
+  if (!t || !/^dt-/.test(t.id || '')) return;
+  if (t.id === 'dt-act') dt.act = t.value;
+  else if (t.id === 'dt-days') dt.days = clamp(Math.round(+t.value || 1), 1, 120);
+  else if (t.id === 'dt-life') dt.life = t.value;
+  else if (t.id === 'dt-item') dt.item = t.value;
+  else if (t.id === 'dt-tkind') { dt.tKind = t.value; dt.train = ''; }
+  else if (t.id === 'dt-train') dt.train = t.value;
+  renderPanel();
+});
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-dt="run"]');
+  if (!b) return;
+  const h = (heroes.list || []).find((x) => x.id === b.dataset.v);
+  if (!h) return;
+  const r = dtRun(h);
+  if (!r) return;
+  dt.last = Object.assign({ hid: h.id }, r);
+  heroSave();
   renderPanel();
 });
 
@@ -14725,7 +15137,8 @@ function deleteSelected() {
 }
 
 // ================================================================ UI
-function setTool(t, keepSel) {
+// quiet: the caller draws the panel itself once it has finished setting things up
+function setTool(t, keepSel, quiet) {
   if (isPlayer() && PLAYER_HIDDEN_TOOLS.includes(t)) { toast('That tool is for the DM.'); return; }
   tool = t;
   panelMin = false;
@@ -14743,7 +15156,7 @@ function setTool(t, keepSel) {
   if (t === 'explore' && sel && sel.kind === 'event') sel = null;
   for (const b of document.querySelectorAll('.tool[data-tool]')) b.setAttribute('aria-pressed', String(b.dataset.tool === t));
   canvas.dataset.tool = t;
-  renderPanel();
+  if (!quiet) renderPanel();
   requestRender();
 }
 let toastTimer = 0;
@@ -14917,7 +15330,7 @@ $('inspector').addEventListener('click', (e) => {
   if (!b) return;
   const act = b.dataset.act, v = b.dataset.v;
   switch (act) {
-    case 'close': panelMin = false; if (tool === 'market' || tool === 'people' || tool === 'guilds') { sel = null; setTool('explore'); break; } if (sel) sel = null; else setTool('explore'); renderPanel(); requestRender(); break;
+    case 'close': panelMin = false; if (tool === 'market' || tool === 'people' || tool === 'guilds') { sel = null; setTool('explore'); break; } if (sel) sel = null; else setTool('explore', false, true); renderPanel(); requestRender(); break;
     case 'minimise': panelMin = true; renderPanel(); break;
     case 'restore': panelMin = false; renderPanel(); break;
     case 'tier': settleTier = +v; renderPanel(); break;
@@ -14930,8 +15343,8 @@ $('inspector').addEventListener('click', (e) => {
     case 'delete': deleteSelected(); break;
     case 'setrtype': if (sel) { patchRoad(sel.id, +v); } break;
     case 'setlsize': if (sel) patchLabel(sel.id, { size: v }, 'Resize label'); break;
-    case 'openpeople': { const id = sel && sel.kind === 'settle' ? sel.id : market.sid; if (id && SBY.get(id)) { sel = { kind: 'settle', id }; setTool('people', true); people.sid = id; people.npc = null; people.tab = 'residents'; renderPanel(); } break; }
-    case 'openmarket': { const s = selObj(); if (s) { setTool('market', true); market.sid = s.id; market.tab = 'town'; renderPanel(); } break; }
+    case 'openpeople': { const id = sel && sel.kind === 'settle' ? sel.id : market.sid; if (id && SBY.get(id)) { sel = { kind: 'settle', id }; setTool('people', true, true); people.sid = id; people.npc = null; people.tab = 'residents'; renderPanel(); } break; }
+    case 'openmarket': { const s = selObj(); if (s) { setTool('market', true, true); market.sid = s.id; market.tab = 'town'; renderPanel(); } break; }
     case 'roadreset': if (sel && sel.kind === 'road') resetRoadShape(sel.id); requestRender(); break;
     case 'locate': { const s = selObj(); if (s && sel.kind === 'settle') { flyVis(s.x, s.y, view.s >= TOWN_ZOOM[s.tier] ? view.s : TOWN_ZOOM[s.tier]); pulseTown(s.id); } break; }
     case 'zoomto': { const s = selObj(); if (s) flyTo(s.x, s.y, clamp(Math.min(vw, vh) * 0.42 / settleR(s), PLAN_S * 1.2, MAXS)); break; }
@@ -15130,7 +15543,7 @@ function goSearch(r) {
   if (r.kind === 'monp') { openMonster(r.id, true); return; }
   if (r.kind === 'ext') { window.open(r.url, '_blank', 'noopener'); return; }
   if (r.kind === 'realm') { const R = REALMS.find((x) => x.name === r.name); if (R) { goRealm(R.cap.id); return; } }
-  if (r.kind === 'settle' || r.kind === 'label') { setTool('explore'); sel = { kind: r.kind, id: r.id }; renderPanel(); }
+  if (r.kind === 'settle' || r.kind === 'label') { setTool('explore', false, true); sel = { kind: r.kind, id: r.id }; renderPanel(); }
   flyTo(r.x, r.y, r.s);
 }
 

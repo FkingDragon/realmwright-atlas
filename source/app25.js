@@ -121,6 +121,12 @@ function shopRows() {
   const q = (market.shop.q || '').trim().toLowerCase(), cat = market.shop.cat;
   return SRD.items.filter((it) => (cat === 'all' || it.cat === cat) && (!q || it.search.includes(q)));
 }
+// the price here, with a picked hero's member price beneath it
+function memberCell(it, s, gp) {
+  const h = shopHero(), d = h ? memberDisc(h, s, shopKindSrd(it)) : { v: 0 };
+  if (!d.v) return coinHtml(gp);
+  return d.v >= 1 ? '<s class="was">' + coinHtml(gp) + '</s><small class="gj-disc">free · ' + esc(d.by) + '</small>' : coinHtml(gp * (1 - d.v)) + '<small class="gj-disc">−' + Math.round(d.v * 100) + '% ' + esc(d.by) + '</small>';
+}
 function shopListHtml(s, day) {
   if (!SRD.items) return SRD.failed.items ? '<p class="meta">The full SRD item list could not load here. Open the atlas from its web address to see every item; the Town tab still prices the everyday goods.</p>' : '<p class="meta">Loading the full SRD item list…</p>';
   const rows = shopRows(), MAX = 160;
@@ -133,7 +139,7 @@ function shopListHtml(s, day) {
     const nm = it.cat === 'Magic items' ? extLink(AID.item(it.name), it.name) : esc(it.name);
     h += '<tr class="item' + (r.ok ? '' : ' na') + '" data-shop="open" data-v="' + esc(it.id) + '" tabindex="0" aria-expanded="' + open + '"><td>' + nm + (it.unit ? ' <small>(' + esc(it.unit) + ')</small>' : '') + (it.rarity ? ' <em class="rar rr-' + it.rarity.replace(/\s/g, '') + '">' + esc(it.rarity) + '</em>' : '') +
       (open ? '<small class="note">' + esc(it.type ? fixType(it.type) + '. ' : '') + esc(it.desc) + '</small>' : '') + '</td>' +
-      '<td class="num">' + (it.base ? coinHtml(it.base) : '—') + '</td><td class="num">' + (r.ok ? coinHtml(r.gp) : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
+      '<td class="num">' + (it.base ? coinHtml(it.base) : '—') + '</td><td class="num">' + (r.ok ? memberCell(it, s, r.gp) : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
   }
   return h + '</tbody></table>';
 }
@@ -147,11 +153,19 @@ function innBill(s, day) {
   const stay = INN_STAY[lq] * Lv.lodging, meal = INN_MEAL[mq] * Lv.meal, stable = 0.5 * Math.sqrt(Lv.feed * Lv.lodging);
   const n = F.nights, g = F.guests, hrs = F.horses;
   const rows = [['Rooms', n * g * stay, g + ' × ' + n + ' night' + (n === 1 ? '' : 's') + ' at ' + money(stay)], ['Meals', n * g * meal, g + ' × ' + n + ' day' + (n === 1 ? '' : 's') + ' at ' + money(meal)]];
+  // a picked hero's guild may put them up for free (only the hero: their companions still pay)
+  const hero = shopHero(), ML = hero ? memberLodging(hero, s) : null, note = [], hn = hero ? esc(hero.name || 'the hero') : '';
+  if (ML && g >= 1 && n >= 1) {
+    if (ML.lodge >= lq) { rows[0][1] -= n * stay; rows[0][2] += '; ' + hn + ' stays free'; note.push(hn + ' sleeps free: ' + ML.by.join(', ') + '.'); }
+    else if (ML.cot != null && lq <= 1) { rows[0][1] -= n * Math.max(0, stay - ML.cot); rows[0][2] += '; ' + hn + ' takes a cot at ' + money(ML.cot); note.push('A cot in the guild hall\'s bunkroom for ' + hn + '.'); }
+    else if (ML.lodge >= 0 && ML.by.length) note.push('Choose ' + INN_Q[ML.lodge].toLowerCase() + ' lodging or simpler for ' + hn + ' to stay free (' + ML.by[0] + ').');
+    if (ML.meals >= mq) { rows[1][1] -= n * meal; rows[1][2] += '; ' + hn + ' eats free'; }
+  }
   if (hrs) rows.push(['Stabling', n * hrs * stable, hrs + ' × ' + n + ' at ' + money(stable)]);
   const warn = [];
   if (s.tier < INN_TIER[lq]) warn.push(F.lodge + ' rooms are hard to find in a ' + sizeOf(s).name.toLowerCase() + '.');
   if (s.tier < INN_TIER[mq]) warn.push(F.meal + ' meals are hard to find in a ' + sizeOf(s).name.toLowerCase() + '.');
-  return { rows, total: rows.reduce((a, r) => a + r[1], 0), warn };
+  return { rows, total: rows.reduce((a, r) => a + r[1], 0), warn: warn.concat(note) };
 }
 function innHtml(s, day) {
   const B = innBill(s, day);
@@ -165,6 +179,7 @@ function shopTab(day) {
   const F = market.inn, sel1 = (id, cur) => '<select id="' + id + '" data-inn="' + id + '">' + INN_Q.map((q, i) => '<option value="' + q + '"' + (q === cur ? ' selected' : '') + (s.tier < INN_TIER[i] ? ' class="rare"' : '') + '>' + q + '</option>').join('') + '</select>';
   const num = (id, v, max, lab) => '<div class="field"><label class="lab" for="' + id + '">' + lab + '</label><input id="' + id + '" data-inn="' + id + '" type="number" min="0" max="' + max + '" value="' + v + '"></div>';
   let h = '<div class="town-h"><div><div class="eyebrow">' + TIERS[s.tier].name + ' · shops and inn</div><h3 class="town-name">' + tLink(s) + '</h3></div></div>';
+  h += shopHeroHtml(s);
   h += '<section><h3>At the inn</h3><div class="row2"><div class="field"><label class="lab" for="inn-l">Lodging</label>' + sel1('inn-l', F.lodge) + '</div><div class="field"><label class="lab" for="inn-m">Meals</label>' + sel1('inn-m', F.meal) + '</div></div>' +
     '<div class="row3">' + num('inn-n', F.nights, 365, 'Nights') + num('inn-g', F.guests, 50, 'Guests') + num('inn-h', F.horses, 50, 'Horses') + '</div><div id="innOut">' + innHtml(s, day) + '</div>' +
     '<p class="hint">Player\'s Handbook lifestyle prices for an inn stay and a day\'s meals, at this town\'s prices today. Stabling is 5 sp a day before local costs.</p></section>';
