@@ -197,6 +197,37 @@ Relative-neighbourhood graph per tier: highways between cities/capitals (within 
 - **shellWrap(html):** adds a sticky header with breadcrumbs, and for a place its name (an editable title for the DM), size and population, a "show on map" button, and the Overview, Market, People and Guilds tabs. Inside a place, the tool panels' own titles and calendars are hidden.
 - **realmStats:** groups every settlement by realmOf() in one pass, cached per mkVer.
 
+## Guild membership for heroes (v27)
+- `h.orgs[k] = { k, sid, day, paid, r }`.
+  - `paid` is the paid-through day (null when there are no dues).
+  - `r` is the DM's rank override (null means automatic: 1 month → 1; 4 months and level 5 → 2; 12 months and level 9 → 3).
+  - Adventurers' Guild rank comes from roster merit: Copper/Iron → 0, Bronze/Silver → 1, Gold → 2, Platinum+ → 3.
+- **Requirements (`gjNeed`):**
+  - Rulers: level 3+ or the noble background;
+  - Crafts: any tool proficiency;
+  - Mages: casts spells or has Arcana;
+  - Thieves: `thievesFind` (rogue, criminal, Stealth, Sleight of Hand or thieves' tools);
+  - the Watch and the Thieves' Guild exclude each other.
+- **Fees and dues:**
+  - Adventurers 0/0; Rulers 0/0; Temple 0/1; Watch 0/0 (pays 1 sp a day);
+  - Merchants 10/2; Crafts 5/1; Mages 25/5; Thieves 10/3.
+  - Joining costs the fee plus the first month.
+- **Discounts (`GJ_DISC`):**
+  - the best one applies, never stacked;
+  - only while dues are paid, and only where `orgHere(home, k)`;
+  - `itemKind` sorts items into weapon, armor, pack, arcane, holy, cure, shady, tool and gear.
+- **Selling:** half price, 60% for Merchants (65% from Factor) or the Thieves' fence.
+
+## What's happening at a place (v27)
+- `placeScene(s, pl, day, hour)` builds the scene from:
+  - the routine line for the kind of place and the part of the day (`SCENE`, `GUILD_SCENE`);
+  - up to two events (`EV_SCENE`). Plague, famine and festivals at strength 0.3+ replace the routine line. Occupation replaces the war line.
+  - the season (`SCENE_SEASON`, indoor or outdoor) and the rest day;
+  - `sceneDetail`: market mover, hall agenda, temple god, inn rooms, gaol prisoners, docks ships, bank rate, guild relations and jobs, district landmarks;
+  - how busy it is (`BUSY` × size, events and people present) and `presentAt` (via `whereAt`).
+- `sceneRumour` gives an open quest at `hallFor(s)` or an event hook. `sceneAround` gives the three nearest places.
+- Everything is hashed from place, day and hour, so it is stable. The time buttons set `people.hour` (shared with Around town now).
+
 ## Finding things (v26)
 - **Place Overview** starts with `glanceHtml(s)`. Its tiles are:
   - **Market:** `basketIndex`;

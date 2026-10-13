@@ -6,6 +6,24 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-13 — v27: heroes join guilds; places come alive
+*By: project owner (prepared with Claude)*
+
+- **index.html**, guild membership:
+  - heroes can join any organisation in a town: the Adventurers' Guild, the Rulers, the Temple, the Watch, the Merchants' Guild, the Craft Guilds, the Mages' Circle, and (if it approaches them) the Thieves' Guild;
+  - each has a fee, dues, four ranks and fitting benefits;
+  - member prices and better selling prices show on the Gear step, and fellow members are noted on people's pages.
+- **index.html**, place scenes: every named place shows **What's happening** at dawn, morning, midday, afternoon, evening and night. A scene covers:
+  - who is in;
+  - the town's events and the season;
+  - something particular to the place;
+  - a rumour;
+  - the places around it.
+- **source/**: new `app32.js` and `app33.js`, plus the tests `gjoin.js` and `scene.js`.
+- **docs/world-atlas.md**: notes for v27.
+- **backups/index_2026-10-13_v27.html**: a copy of this version.
+- Tests: 291 automated checks pass.
+
 ## 2026-10-13 — v26: finding things faster
 *By: project owner (prepared with Claude)*
 

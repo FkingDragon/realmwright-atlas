@@ -1037,6 +1037,39 @@ details.editbox > * + * { margin-top: 10px; }
 .gl-recent { display: grid; gap: 5px; }
 .gl-recent .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .gl-recent .chip { min-height: 30px; }
+/* v27 guild membership */
+.gj-list, .gj-join, .gj-perks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.gj-list > li { border: 1px solid var(--line); border-left: 4px solid var(--gc, var(--line)); border-radius: 8px; background: var(--panel); padding: 9px 10px; display: grid; gap: 5px; }
+.gj-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.gj-top b { font-size: 14.5px; margin-right: auto; }
+.gj-perks li { font-size: 13px; line-height: 1.45; color: var(--text); }
+.gj-perks li b { color: var(--brass-hi); font-weight: 600; }
+.gj-perks li small { color: var(--muted); }
+.gj-join > li { display: flex; gap: 10px; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-left: 4px solid var(--gc, var(--line)); border-radius: 8px; background: var(--panel); padding: 8px 10px; }
+.gj-join > li > div { display: grid; gap: 2px; min-width: 0; }
+.gj-join small { color: var(--muted); font-size: 12px; }
+.gj-join .gj-gist { color: #cfc8b6; }
+.gj-join .btn { flex: none; }
+.warn-t { color: #e8b75a !important; }
+.gj-disc { display: block; color: #8fd18a; font-size: 11px; white-space: nowrap; }
+.gj-kin { margin: 0; font-size: 13.5px; }
+.gj-kin .lab { margin-right: 6px; font-size: 10.5px; }
+.hguilds h4, .gj-org h4 { margin: 10px 0 6px; }
+.gj-wait { margin-top: 8px; }
+/* v27 what's happening at a place */
+.scene { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 10px; display: grid; gap: 8px; }
+.scene-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.scene-h h3 { margin: 0; border: 0; padding: 0; }
+.scene-t { display: grid; grid-template-columns: repeat(6, 1fr); }
+.scene-t button { padding: 6px 2px; font-size: 11.5px; min-height: 30px; }
+.scene-p { margin: 0; font-size: 14px; line-height: 1.6; }
+.scene-who, .scene-rumour { margin: 0; line-height: 1.55; }
+.scene-who small { color: var(--muted); }
+.scene-who .lab, .scene-rumour .lab { margin-right: 6px; font-size: 10.5px; }
+.scene h4 { margin: 2px 0 0; }
+.scene-around { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
+.scene-around small { color: var(--muted); margin-left: 4px; }
+@media (max-width: 420px) { .scene-t { grid-template-columns: repeat(3, 1fr); } }
 /* v25 accessibility: skip links, a quiet announcer, and comfortable targets */
 .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--brass); color: var(--ink); font-weight: 700; padding: 10px 14px; border-radius: 8px; text-decoration: none; }
 .skip:focus { top: 8px; outline: 2px solid var(--text); }
@@ -1102,8 +1135,8 @@ details.editbox > * + * { margin-top: 10px; }
       <li><b>Map tools</b> sit along the top of the map: <b>Select</b>, then <b>Settle</b>, <b>Road</b>, <b>Paint</b>, <b>Tiles</b>, <b>Label</b> and <b>Measure</b> add your own places, routes, terrain, battle maps and notes. Their options open in the side panel; press Done when finished.</li>
       <li><b>Tiles</b> paints the battle map square by square: ground, props such as tables, beds and campfires, and walls, doors, windows and fences along the grid lines. Fill a patch, or drag out a whole building. Players see your changes; undo works per stroke.</li>
       <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill.</li>
-      <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day.</li>
-      <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town with a danger rating for your party, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for.</li>
+      <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day. Every named place, from the palace to a cobbler's shop, shows <b>what's happening</b> there at dawn, morning, midday, afternoon, evening or night: who is in, the town's events, the season, something overheard, and the places around it.</li>
+      <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town with a danger rating for your party, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for. <b>Heroes can join</b> any organisation in a town, from their sheet or the organisation's page: each has a fee, monthly dues, four ranks and benefits that fit it, such as member prices on the Gear step, better selling prices, lodging, healing, authority or a fence.</li>
       <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character.</li>
       <li><b>Monsters</b> shows creature groups living in their natural habitats, plus rare wanderers and haunts. They appear and move on over the weeks, while lairs stay for months. Place your own from the Bestiary (all 334 SRD creatures with full stat blocks, or a custom one), track each creature's hit points and initiative, and mark them slain. Monsters near a town raise its danger, which brings more monster quests, bigger rewards and higher bounties on the Market's Bounties tab. Zoomed out, nearby groups gather into one marker showing the most dangerous of them, with a count; tap it to zoom in.</li>
       <li><b>Links</b> Underlined names go somewhere: towns, realms, people, organisations and events all open their own page and move the map to them. Press the open tool again, a tab you are already on, or the – button to fold the panel into a slim bar; tap the bar to bring it back.</li><li><b>Measure</b> gives distance and overland travel time between any two points.</li>
@@ -4159,6 +4192,7 @@ function personView(p, day) {
   if (p.group === 'adventurer' && p.level) h += '<p class="meta">' + rankBadge(rankOf(p.merit)) + ' ' + p.merit.toLocaleString('en-GB') + ' merit' + (p.companyName ? ' · member of ' + (s ? oLink('adventurers', s.id, p.companyName) : esc(p.companyName)) : ' · works alone') + '</p>';
   h += influenceBlock(p);
   h += heroBondsFor(p);
+  h += guildKinHtml(p);
   h += lossesHtml(p, day);
   // relationships
   h += '<section><h3>Relationships (' + rels.length + ')</h3>' + egoGraph(p, rels);
@@ -4845,6 +4879,8 @@ function membersTab(s, day) {
         '<div class="actions"><button type="button" class="btn sm" data-gd="demote" data-v="' + esc(m.id) + '"' + (r === 0 ? ' disabled' : '') + '>Demote</button><button type="button" class="btn sm" data-gd="promote" data-v="' + esc(m.id) + '"' + (!next ? ' disabled' : '') + '>Promote</button><button type="button" class="btn sm" data-gd="lvl" data-v="' + esc(m.id) + '">Level up</button></div></li>';
     }).join('') + '</ul><p class="meta">Earnings so far: <b>' + money(P.gold || 0) + '</b>. Completed quests add merit to every member; ranks rise automatically.</p>';
   } else h += '<p class="meta">Add each player character to register them with the Adventurers\' Guild. Everyone starts at Copper rank.</p>';
+  { const wait = (heroes.list || []).filter((x) => gjMember(x, 'adventurers') && !heroGuildMember(x));
+    if (wait.length && !isPlayer()) h += '<div class="gj-wait"><p class="meta"><b>Registered from their own sheet:</b> add them to the roster so quests give them merit.</p><ul class="gj-join">' + wait.map((x) => '<li><div><b>' + esc(x.name || 'Unnamed hero') + '</b><small>Level ' + x.level + ' ' + esc(CLS(x).name) + '</small></div><button type="button" class="btn sm primary" data-gd-roster="' + esc(x.id) + '">Add to roster</button></li>').join('') + '</ul></div>'; }
   h += '<div class="pcform"><input id="gp-pc" maxlength="40" placeholder="Character name" aria-label="Character name"><select id="gp-cls" aria-label="Class">' + CLASSES.map((c) => '<option>' + c + '</option>').join('') + '</select><input id="gp-lv" type="number" min="1" max="20" value="1" aria-label="Level"><button type="button" class="btn primary" data-gd="addpc">Register</button></div></section>';
   h += '<section><h3>Ranks</h3><ul class="ranks">' + RANKS.map((r, i) => '<li>' + rankBadge(i, true) + '<span>' + r[1].toLocaleString('en-GB') + ' merit</span><small>about level ' + r[2] + '+ · jobs ' + money(REWARD[i][0]) + '–' + money(REWARD[i][1]) + '</small></li>').join('') + '</ul></section>';
   const hall = hallFor(s);
@@ -5457,6 +5493,7 @@ function orgView(s, key, day) {
   h += '<dl class="stats">' + stat('Members', fmtInt(est)) + stat('Notables here', key === 'adventurers' ? fmtInt(est) : mem.length) + stat('Party standing', (partyRep(key) > 0 ? '+' : '') + partyRep(key)) + '</dl>';
   h += branchSection(s, key);
   if (lead) h += '<p class="meta">Led here by <button type="button" class="link" data-pp="npc" data-v="' + esc(lead.id) + '">' + esc(npcName(lead)) + '</button> <small>(' + esc(lead.job) + ')</small></p>';
+  h += orgJoinHtml(s, key);
   h += '<section><h3>How it works</h3><p>' + esc(W.what) + '</p><ul class="facts"><li><span>Money</span><div>' + esc(W.money) + '</div></li><li><span>Holds</span><div>' + esc(W.power) + '</div></li></ul></section>';
   // what its powerful members want
   const pw = powerful(s).filter((p) => GROUP_ORG[p.group] === key);
@@ -6750,7 +6787,7 @@ function newHero(blank) {
     hpMax: 0, hp: null, temp: 0, hdUsed: 0, slotsUsed: [0, 0, 0, 0, 0, 0, 0, 0, 0], pactUsed: 0, uses: {}, death: [0, 0], insp: false, conds: [], exh: 0, xp: 0,
     subclass: '', subNotes: '', trait: '', ideal: '', bond: '', flaw: '', bondNpc: null, bondKind: '', notes: '', created: market.day,
     bgAsi: { mode: '21' }, bgAbil: [], bgFeat: '', feat24: '', mi: {}, mi2: {}, miList: '', miList2: '', skilled: [],
-    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate'
+    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate', orgs: {}
   };
 }
 const raceSub = (h) => { const R = raceOf(h); if (!R.subs) return null; const k = R.subs[h.sub] ? h.sub : Object.keys(R.subs)[0]; return R.subs[k]; };
@@ -7114,7 +7151,8 @@ function ordinal(n) { return n + (n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'r
 
 // ---------------------------------------------------------------- local prices at the hometown
 const GOOD_ALIAS = { 'Light crossbow': 'Crossbow, light' };
-function shopPrice(h, it) {
+// the town's own price, before any guild discount (shopPrice in app32 adds those)
+function shopPriceLocal(h, it) {
   const s = h.home ? SBY.get(h.home) : null;
   if (!s) return { price: it.cost, ok: true, local: false };
   const day = market.day;
@@ -7462,7 +7500,7 @@ function stepGear(h, D) {
   o += '<section><h3>Inventory</h3><ul class="inv">' + (inv.length ? inv.map((x) => {
     const it = ITEM.get(x.n);
     const info = it ? (it.kind === 'weapon' ? it.dmg + ' ' + it.type : it.kind === 'armor' ? (it.type === 'shield' ? '+2 AC' : 'AC ' + it.ac + (it.type === 'light' ? ' + Dex' : it.type === 'medium' ? ' + Dex (max 2)' : '')) : it.note) : '';
-    return '<li><span><b>' + esc(x.n) + (x.q > 1 ? ' ×' + x.q : '') + '</b>' + (info ? '<small>' + esc(info) + '</small>' : '') + '</span>' + (x.src === 'bought' && it ? '<button type="button" class="btn sm" data-hr="sell" data-v="' + x.i + '" title="Sell for half price">Sell</button>' : '') + '<button type="button" class="x sm" data-hr="rm" data-v="' + esc(x.key) + '" aria-label="Remove ' + esc(x.n) + '">×</button></li>';
+    return '<li><span><b>' + esc(x.n) + (x.q > 1 ? ' ×' + x.q : '') + '</b>' + (info ? '<small>' + esc(info) + '</small>' : '') + '</span>' + (x.src === 'bought' && it ? '<button type="button" class="btn sm" data-hr="sell" data-v="' + x.i + '" title="' + (sellRate(h).by ? 'Sell for ' + Math.round(sellRate(h).r * 100) + '% of the price (' + esc(sellRate(h).by) + ')' : 'Sell for half price') + '">Sell</button>' : '') + '<button type="button" class="x sm" data-hr="rm" data-v="' + esc(x.key) + '" aria-label="Remove ' + esc(x.n) + '">×</button></li>';
   }).join('') : '<li class="meta">Nothing yet.</li>') + '</ul>';
   o += '<div class="relform"><input id="hc-item" maxlength="60" placeholder="Add any other item" aria-label="Item name"><button type="button" class="btn" data-hr="additem">Add</button></div>';
   o += '<p class="meta">Gold: <b>' + money(goldOf(h)) + '</b> <button type="button" class="btn sm" data-hr="gold" data-v="-1">−1 gp</button><button type="button" class="btn sm" data-hr="gold" data-v="1">+1 gp</button><button type="button" class="btn sm" data-hr="gold" data-v="10">+10 gp</button></p>';
@@ -7477,7 +7515,7 @@ function stepGear(h, D) {
   o += '<table class="shop"><tbody>' + list.map((it) => {
     const p = shopPrice(h, it);
     const info = it.kind === 'weapon' ? it.dmg + ' ' + it.type + (weaponProf(D, it) ? '' : ' · not proficient') : it.kind === 'armor' ? (it.type === 'shield' ? '+2 AC' : 'AC ' + it.ac + ' · ' + it.type) + (D.armorProfs.has(it.type) ? '' : ' · not proficient') : it.note;
-    return '<tr' + (p.ok ? '' : ' class="na"') + '><td><b>' + esc(it.name) + '</b>' + (info ? '<small>' + esc(info) + '</small>' : '') + '</td><td class="num">' + (p.ok ? money(p.price) : 'Not sold here') + '</td><td>' + (p.ok ? '<button type="button" class="btn sm" data-hr="buy" data-v="' + esc(it.name) + '"' + (p.price > gold + 1e-9 ? ' disabled title="Not enough gold"' : '') + '>Buy</button>' : '') + '</td></tr>';
+    return '<tr' + (p.ok ? '' : ' class="na"') + '><td><b>' + esc(it.name) + '</b>' + (info ? '<small>' + esc(info) + '</small>' : '') + '</td><td class="num">' + (p.ok ? money(p.price) + (p.disc ? '<small class="gj-disc" title="' + esc(p.by) + ' member price">−' + Math.round(p.disc * 100) + '% ' + esc(p.by) + '</small>' : '') : 'Not sold here') + '</td><td>' + (p.ok ? '<button type="button" class="btn sm" data-hr="buy" data-v="' + esc(it.name) + '"' + (p.price > gold + 1e-9 ? ' disabled title="Not enough gold"' : '') + '>Buy</button>' : '') + '</td></tr>';
   }).join('') + '</tbody></table></section>';
   return o;
 }
@@ -7578,6 +7616,7 @@ function heroSheet(h, D, S) {
     (D.notes.length ? '<p class="small">' + D.notes.map(esc).join(' ') + '</p>' : '') + '</section>';
   // limited uses
   if (D.uses.length) o += '<section><h3>Limited uses</h3><ul class="uses">' + D.uses.map((u) => { const used = h.uses[u.key] || 0, left = Math.max(0, u.max - used); return '<li><div><b>' + esc(u.n) + '</b><small>' + (u.rest === 'short' ? 'short or long rest' : u.rest === 'one' ? 'long rest; one back on a short rest' : 'long rest') + (u.note ? ' · ' + esc(u.note) : '') + '</small></div>' + (u.max >= 99 ? '<span class="small">Unlimited</span>' : u.max > 8 ? '<span class="pool"><button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|1" aria-label="Spend one">−</button><b>' + left + '</b>/' + u.max + '<button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|-1" aria-label="Regain one">+</button></span>' : '<span class="pips">' + Array.from({ length: u.max }, (_, i) => '<button type="button" class="pip' + (i < left ? ' on' : '') + '" data-hr="usepip" data-v="' + u.key + '|' + i + '|' + u.max + '" aria-label="' + esc(u.n) + ' ' + (i + 1) + '"></button>').join('') + '</span>') + '</li>'; }).join('') + '</ul></section>';
+  o += heroGuildsHtml(h);
   // spells
   o += sheetSpells(h, D);
   // skills
@@ -7741,7 +7780,7 @@ $('inspector').addEventListener('click', (ev) => {
     case 'rollgold': if (is24(h)) break; { const [n, d, m] = C.gold; const r = rollExpr(n + 'd' + d); h.goldRoll = r.total * m; showRoll('Starting gold', n + 'd' + d + ': ' + r.parts.join(' ') + (m > 1 ? ' × ' + m : ''), h.goldRoll, ''); break; }
     case 'shopcat': heroes.shopCat = v; renderPanel(); return;
     case 'buy': { const it = ITEM.get(v); if (!it) return; const p = shopPrice(h, it); if (!p.ok) return; if (p.price > goldOf(h) + 1e-9) { toast('Not enough gold.'); return; } h.goldDelta -= Math.round(p.price * 100) / 100; const ex = h.inv.find((x) => x.n === v); if (ex && it.kind !== 'pack') ex.q = (ex.q || 1) + 1; else h.inv.push({ n: v, q: 1 }); heroLog(h, 'buy', 'Bought ' + v + ' for ' + money(p.price) + (h.home && SBY.get(h.home) ? ' in ' + SBY.get(h.home).name : '')); toast('Bought ' + v + ' for ' + money(p.price) + '.'); break; }
-    case 'sell': { const x = h.inv[+v]; if (!x) return; const it = ITEM.get(x.n); const p = it ? shopPrice(h, it).price / 2 : 0; h.goldDelta += Math.round(p * 100) / 100; if ((x.q || 1) > 1) x.q -= 1; else h.inv.splice(+v, 1); heroLog(h, 'buy', 'Sold ' + x.n + ' for ' + money(p)); toast('Sold ' + x.n + ' for ' + money(p) + '.'); break; }
+    case 'sell': { const x = h.inv[+v]; if (!x) return; const it = ITEM.get(x.n); const p = it ? shopPrice(h, it).full * sellRate(h).r : 0; h.goldDelta += Math.round(p * 100) / 100; if ((x.q || 1) > 1) x.q -= 1; else h.inv.splice(+v, 1); heroLog(h, 'buy', 'Sold ' + x.n + ' for ' + money(p)); toast('Sold ' + x.n + ' for ' + money(p) + '.'); break; }
     case 'rm': { if (v.startsWith('i')) { const i = +v.slice(1); const x = h.inv[i]; if (x && (x.q || 1) > 1) x.q -= 1; else h.inv.splice(i, 1); } else if (!h.removed.includes(v)) h.removed.push(v); break; }
     case 'additem': { const f = $('hc-item'); const n = f && f.value.trim(); if (!n) return; h.inv.push({ n: n.slice(0, 60), q: 1 }); break; }
     case 'gold': h.goldDelta += +v; if (goldOf(h) < 0) h.goldDelta -= goldOf(h); break;
@@ -8582,7 +8621,7 @@ function chronicle() {
   out.sort((a, b) => b.d - a.d || b.i - a.i);
   return out;
 }
-const CHRON_ICON = { quest: '◆', mon: '✶', travel: '➜', hero: '★', buy: '¤', npc: '☉', down: '✝' };
+const CHRON_ICON = { quest: '◆', mon: '✶', travel: '➜', hero: '★', buy: '¤', npc: '☉', down: '✝', guild: '⚑' };
 function chronPanel() {
   const P = gst().party, at = P.at ? SBY.get(P.at) : null, day = market.day;
   let h = '<div class="mk-head"><div><div class="eyebrow">Heroes · Chronicle</div><h2>' + esc(P.name || 'The party') + '</h2></div>' + CLOSE_BTN + '</div>';
@@ -10492,7 +10531,7 @@ function placeView(s, key, day) {
     hall: 'Where ' + (owner ? pLink(owner) : 'the rulers') + ' ' + (sizeOf(s).k === 'hamlet' ? 'lives and settles disputes' : 'holds court and keeps the records') + '.',
     market: sizeOf(s).k === 'hamlet' || sizeOf(s).k === 'village' ? 'The open green where folk meet, trade and graze their animals.' : 'Stalls, the town well and the busiest crowds in ' + esc(s.name) + '.',
     temple: 'A house of ' + esc(pl.god || 'the gods') + ', a god of ' + (pl.dom || 'many things').toLowerCase() + '.',
-    tavern: owner ? 'Run by ' + pLink(owner) + '.' : 'A busy tavern.', inn: owner ? 'Rooms and stabling, run by ' + pLink(owner) + '.' : 'Rooms and stabling for travellers.',
+    tavern: owner ? 'Run by ' + pLink(owner) + '.' : 'A public house.', inn: owner ? 'Rooms and stabling, run by ' + pLink(owner) + '.' : 'Rooms and stabling for travellers.',
     law: key === 'barracks' ? 'Home of the garrison.' : key === 'gaol' ? 'Cells for debtors, drunks and worse.' : 'Where the constable lives and keeps the stocks.',
     guild: pl.org ? 'The ' + esc(ORGS[pl.org].name) + ' branch in ' + esc(s.name) + ': ' + oLink(pl.org, s.id, BRANCH[pl.org][guildLevel(s, pl.org)].toLowerCase()) + '.' + (owner ? ' Led by ' + pLink(owner) + '.' : '') : '',
     money: owner ? 'Lends, changes money and holds deposits. Owned by ' + pLink(owner) + '.' : 'Money-changers.',
@@ -10501,6 +10540,7 @@ function placeView(s, key, day) {
     district: ''
   }[pl.kind] || '';
   if (desc) h += '<p>' + desc + '</p>';
+  h += sceneHtml(s, pl, day);
   if (owner && owner.status === 'Dead') h += '<p class="meta">' + esc(npcName(owner)) + ' is dead' + (owner.fate ? ' (' + esc(owner.fate.charAt(0).toLowerCase() + owner.fate.slice(1)) + ')' : '') + '; family or a partner keeps the place going.</p>';
   if (pl.kind === 'district') {
     const al = aldermenOf(s).find((x) => x.d.name === pl.name);
@@ -10697,7 +10737,7 @@ function activityTab(s, day) {
 
 // ================================================================ campaign: safe saving, backups, stable worlds, DM and player modes, merging (v20)
 const GEN_VERSION = 20;          // bump whenever generated content changes
-const APP_VERSION = 26;          // the release number shown to people (CHANGELOG.md)
+const APP_VERSION = 27;          // the release number shown to people (CHANGELOG.md)
 // what changed in generated content at each version, shown when an older world is opened
 const GEN_CHANGES = {
   13: 'Town layouts redrawn by terrain and culture.',
@@ -13766,6 +13806,428 @@ function todayHtml() {
   if (chips.length) h += '<div class="gl-recent"><span class="lab">Jump back to</span><div class="chips">' + chips.join('') + '</div></div>';
   return h + '</section>';
 }
+// ================================================================ guild membership for heroes (v27)
+// Any hero can join the organisations of a town: the Adventurers' Guild, the realm's service, the Temple, the Watch,
+// the Merchants' Guild, the Craft Guilds, the Mages' Circle, or (if they have the talents) the Thieves' Guild.
+// Each has a joining fee and monthly dues, four ranks, and benefits that fit it. Shop discounts and better selling
+// prices are applied on the hero's Gear step; the rest are listed on the hero's sheet for the table to use.
+// Memberships live on the hero (h.orgs), so players can join from their own device in a shared world.
+const GJ = {
+  adventurers: { fee: 0, dues: 0, ranks: null, verb: 'Register',
+    perks: [[0, 'Quest board', 'Take quests at any guild hall and climb the ranks from Copper to Adamantine.'], [0, 'Hall stores', 'Potions of Healing, packs and adventuring gear 10% cheaper in a town with a guild hall.'], [0, 'Bunkroom', 'A cot in a hall\'s bunkroom for 1 sp a night.'],
+      [1, 'Guild healer', 'Healing at the hall at half the temple\'s price (from Bronze).'], [2, 'Known company', 'Clients ask for you by name: one quest a month comes straight to you (from Gold).'], [3, 'Hall rights', 'Free comfortable lodging and meals at any hall (from Platinum).']] },
+  rulers: { fee: 0, dues: 0, ranks: ['Retainer', 'Knight of the Realm', 'Envoy', 'Lord of the Realm'], verb: 'Swear service',
+    perks: [[0, 'Writ of passage', 'No road or bridge tolls inside the realm; the guard waves you through.'], [0, 'Audience', 'An audience with the ruler or their chancellor within a few days of asking.'],
+      [1, 'Crown lodging', 'Free comfortable lodging and meals at the realm\'s castles and manors while on crown business.'], [2, 'Letters of introduction', 'Advantage on Persuasion checks with officials of the realm.'], [3, 'Land and title', 'A small holding and a title of your own, worth 5 gp a week in rents.']] },
+  temple: { fee: 0, dues: 1, ranks: ['Lay follower', 'Acolyte', 'Defender of the Faith', 'High Votary'], verb: 'Take the vows',
+    perks: [[0, 'Shelter of the faithful', 'Free modest lodging and meals at the temple, and healing spells for the cost of materials.'], [0, 'Temple apothecary', 'Potions of Healing, antitoxin and healer\'s kits 20% cheaper (25% and 30% as you rise); holy symbols at a quarter off.'],
+      [1, 'Blessing', 'Once a week a priest casts Bless or Cure Wounds for you without charge.'], [2, 'Sanctuary', 'The temple shelters you from the law for as long as you stay within its walls.'], [3, 'Divine favour', 'Once per adventure the temple casts Raise Dead or Greater Restoration for you, for the cost of components.']] },
+  watch: { fee: 0, dues: 0, ranks: ['Recruit', 'Constable', 'Sergeant', 'Captain'], verb: 'Enlist', wage: 0.1,
+    perks: [[0, 'Wages', 'Paid 1 sp for each day on duty (one day in ten on patrol).'], [0, 'The armoury', 'Weapons and armour 10% cheaper.'], [0, 'Barracks', 'Free poor lodging at the watch house.'],
+      [1, 'Authority', 'You may arrest lawbreakers in the realm and go armed where others may not.'], [2, 'Informants', 'The watch shares what it knows of crimes and wanted people.'], [3, 'Command', 'A squad of 1d4 + 2 guards answers to you.']] },
+  merchants: { fee: 10, dues: 2, ranks: ['Associate', 'Member', 'Factor', 'Master Merchant'], verb: 'Join',
+    perks: [[0, 'Guild prices', 'Everything 10% cheaper where the guild has a branch (12%, 15% and 20% as you rise).'], [0, 'Fair buyers', 'Sell goods for 60% of their price instead of half (65% from Factor).'],
+      [1, 'Market letters', 'Ask the guild which nearby towns pay most for what you carry.'], [2, 'Credit', 'Borrow up to 100 gp per rank from the guild bank at 10% a month.'], [3, 'Caravans', 'Free passage with guild caravans along the roads.']] },
+  crafts: { fee: 5, dues: 1, ranks: ['Apprentice', 'Journeyman', 'Master', 'Guild Elder'], verb: 'Join',
+    perks: [[0, 'Workshop prices', 'Weapons, armour and tools 15% cheaper (20% from Journeyman, 25% from Master).'], [0, 'Workshop', 'Use the guild\'s workshops for downtime crafting: twice the usual progress each day.'],
+      [1, 'Repairs', 'Arms and armour mended at cost.'], [2, 'Commissions', 'Order masterwork items; the guild finds the materials.'], [3, 'Your own mark', 'Things you craft sell for their full price.']] },
+  mages: { fee: 25, dues: 5, ranks: ['Initiate', 'Adept', 'Magister', 'Archmage of the Circle'], verb: 'Join',
+    perks: [[0, 'The library', 'Advantage on Arcana and History checks to research magic, after a day in the library.'], [0, 'Arcane supplies', 'Spellbooks, foci and component pouches 20% cheaper (25%, 30% and 35% as you rise).'], [0, 'Copying', 'Wizards copy spells into their book for half the gold.'],
+      [1, 'Identify', 'The circle identifies magic items for free.'], [2, 'Scrolls', 'Spell scrolls of spells the circle knows at three quarters of the price.'], [3, 'Teleportation circle', 'Use the circle\'s teleportation circle once a month.']] },
+  thieves: { fee: 10, dues: 3, ranks: ['Cutpurse', 'Footpad', 'Shadow', 'Guildmaster\'s Hand'], verb: 'Join',
+    perks: [[0, 'Fence', 'Sell anything for 60% of its price, no questions asked.'], [0, 'Safehouses', 'Free squalid lodging in the guild\'s safehouses.'], [0, 'Tools of the trade', 'Thieves\' tools and disguise kits 25% cheaper.'],
+      [1, 'Rumours', 'Once a week ask about one person: the DM tells you a secret about them.'], [2, 'Hideout', 'The guild hides you from the watch for a week.'], [3, 'Favours', 'Call on the guild for a job or an alibi once a month.']] }
+};
+const GJ_RIVAL = { watch: 'thieves', thieves: 'watch' };
+// what kind of thing an item is, for guild discounts
+function itemKind(it) {
+  if (it.kind === 'weapon') return 'weapon';
+  if (it.kind === 'armor') return 'armor';
+  if (it.kind === 'pack') return 'pack';
+  const n = it.name;
+  if (/^Arcane focus|^Druidic focus|^Spellbook|^Component pouch|^Book \(occult/.test(n)) return 'arcane';
+  if (/^Holy symbol/.test(n)) return 'holy';
+  if (/Potion of Healing|Antitoxin|Healer's kit/.test(n)) return 'cure';
+  if (/Thieves' tools|Disguise kit/.test(n)) return 'shady';
+  if (/kit$|tools$|supplies$|^Lute|^Flute|^Drum/.test(n)) return 'tool';
+  return 'gear';
+}
+// the discount each guild gives, by item kind and rank (0 to 3)
+const GJ_DISC = {
+  adventurers: (k) => (k === 'cure' || k === 'pack' || k === 'gear' ? [0.1, 0.1, 0.1, 0.1] : null),
+  temple: (k) => (k === 'cure' ? [0.2, 0.2, 0.25, 0.3] : k === 'holy' ? [0.25, 0.25, 0.25, 0.25] : null),
+  watch: (k) => (k === 'weapon' || k === 'armor' ? [0.1, 0.1, 0.1, 0.1] : null),
+  merchants: () => [0.1, 0.12, 0.15, 0.2],
+  crafts: (k) => (k === 'weapon' || k === 'armor' || k === 'tool' || k === 'shady' ? [0.15, 0.2, 0.25, 0.25] : null),
+  mages: (k) => (k === 'arcane' ? [0.2, 0.25, 0.3, 0.35] : null),
+  thieves: (k) => (k === 'shady' ? [0.25, 0.25, 0.25, 0.25] : null)
+};
+const gjMember = (h, k) => (h && h.orgs && h.orgs[k]) || null;
+const gjLapsed = (m, day) => !!m && GJ_DUES(m) > 0 && (m.paid || 0) < (day == null ? market.day : day);
+function GJ_DUES(m) { return (GJ[m.k] || {}).dues || 0; }
+// a member's rank, 0 to 3: the Adventurers' Guild from merit; the rest by time served and level, unless the DM set it
+function gjRank(h, k, day) {
+  const m = gjMember(h, k); if (!m) return -1;
+  if (k === 'adventurers') { const g = heroGuildMember(h), r = g ? rankOf(g.merit || 0) : 0; return r >= 5 ? 3 : r >= 4 ? 2 : r >= 2 ? 1 : 0; }
+  if (m.r != null) return clamp(m.r | 0, 0, 3);
+  const months = ((day == null ? market.day : day) - (m.day || 0)) / 30, lv = h.level | 0;
+  return months >= 12 && lv >= 9 ? 3 : months >= 4 && lv >= 5 ? 2 : months >= 1 ? 1 : 0;
+}
+function gjRankName(h, k) {
+  if (k === 'adventurers') { const g = heroGuildMember(h); return RANKS[g ? rankOf(g.merit || 0) : 0][0]; }
+  return GJ[k].ranks[gjRank(h, k)];
+}
+// can this hero join? '' if so, otherwise the reason
+function gjNeed(h, k) {
+  const D = derive(h);
+  if (GJ_RIVAL[k] && gjMember(h, GJ_RIVAL[k])) return 'Not while you serve the ' + (k === 'watch' ? 'Thieves\' Guild' : 'Watch') + '.';
+  if (k === 'rulers' && D.lv < 3 && h.bg !== 'noble') return 'The crown takes proven heroes (level 3 or higher) or the nobly born.';
+  if (k === 'crafts' && !D.tools.length) return 'You need to be proficient with a tool.';
+  if (k === 'mages' && !D.cast && !D.raceSpells.length && !D.skills.has('Arcana')) return 'The circle takes spellcasters and students of Arcana.';
+  if (k === 'thieves' && !thievesFind(h, D)) return 'The guild only approaches those with a thief\'s talents.';
+  return '';
+}
+// the Thieves' Guild is secret: it finds rogues, criminals and the light-fingered
+function thievesFind(h, D) { D = D || derive(h); return h.cls === 'rogue' || h.bg === 'criminal' || D.skills.has('Stealth') || D.skills.has('Sleight of Hand') || D.tools.some((t) => /thieves/i.test(t)); }
+// where a membership gives shop benefits: the town must have that organisation
+function gjAt(s, k) { return !!s && orgHere(s, k); }
+// the best guild discount on an item at the hero's home town
+function guildDisc(h, it) {
+  const s = h && h.home ? SBY.get(h.home) : null, kind = itemKind(it);
+  let best = { v: 0, by: '' };
+  if (!h || !h.orgs || !s) return best;
+  for (const k in h.orgs) {
+    const m = h.orgs[k], f = GJ_DISC[k];
+    if (!m || !f || gjLapsed(m) || !gjAt(s, k)) continue;
+    const t = f(kind); if (!t) continue;
+    const v = t[Math.max(0, gjRank(h, k))];
+    if (v > best.v) best = { v, by: ORGS[k].short };
+  }
+  return best;
+}
+// how much of an item's price the hero gets back when selling
+function sellRate(h) {
+  const s = h && h.home ? SBY.get(h.home) : null;
+  let r = 0.5, by = '';
+  if (!h || !h.orgs) return { r, by };
+  const mm = gjMember(h, 'merchants'), th = gjMember(h, 'thieves');
+  if (mm && !gjLapsed(mm) && gjAt(s, 'merchants')) { const v = gjRank(h, 'merchants') >= 2 ? 0.65 : 0.6; if (v > r) { r = v; by = 'Merchants'; } }
+  if (th && !gjLapsed(th) && gjAt(s, 'thieves') && 0.6 > r) { r = 0.6; by = 'Thieves\' fence'; }
+  return { r, by };
+}
+// the town a hero joins in: the town open in the Guilds tab, else the hero's home
+function gjTown(h) { const s = (tool === 'guilds' || tool === 'market') && market.sid ? SBY.get(market.sid) : null; return s || (h.home ? SBY.get(h.home) : null); }
+// organisations a hero could join in a town (the Thieves' Guild only if it would approach them)
+function gjOpen(h, s) { return s ? ORG_KEYS.filter((k) => GJ[k] && orgHere(s, k) && (k !== 'thieves' || !isPlayer() || thievesFind(h))) : []; }
+function gjCost(k) { const G = GJ[k]; return G.fee + G.dues; }
+// join, leave, pay dues, and (DM) promote or demote
+function gjJoin(h, k, s) {
+  const why = gjNeed(h, k);
+  if (why) { toast(why); return false; }
+  if (gjMember(h, k)) { toast('Already a member.'); return false; }
+  const cost = gjCost(k);
+  if (cost > goldOf(h) + 1e-9) { toast('Joining costs ' + money(cost) + ' (fee and the first month\'s dues). Not enough gold.'); return false; }
+  h.orgs = Object.assign({}, h.orgs, { [k]: { k, sid: s ? s.id : h.home || null, day: market.day, paid: GJ[k].dues ? market.day + 30 : null, r: null } });
+  if (cost) h.goldDelta -= cost;
+  heroLog(h, 'guild', (k === 'rulers' ? 'Swore service to ' + (realmOfS(s) ? realmOfS(s).name : 'the realm') : 'Joined the ' + ORGS[k].name.replace(/^The /, '')) + (s ? ' in ' + s.name : '') + (cost ? ' (' + money(cost) + ')' : ''));
+  // the Adventurers' Guild also keeps a roster with merit and ranks: the DM's copy of the world records it
+  if (k === 'adventurers' && !isPlayer() && !heroGuildMember(h)) guildCommit('Register ' + (h.name || 'hero'), (g) => { g.party.members.push({ id: 'h:' + h.id, name: h.name || 'Unnamed', cls: CLS(h).name, level: h.level, merit: 0 }); });
+  return true;
+}
+function gjLeave(h, k) {
+  if (!gjMember(h, k)) return;
+  const o = Object.assign({}, h.orgs); delete o[k]; h.orgs = o;
+  heroLog(h, 'guild', 'Left the ' + ORGS[k].name.replace(/^The /, ''));
+}
+function gjPay(h, k) {
+  const m = gjMember(h, k), d = GJ[k].dues;
+  if (!m || !d) return;
+  if (d > goldOf(h) + 1e-9) { toast('Dues are ' + money(d) + '. Not enough gold.'); return; }
+  h.goldDelta -= d;
+  h.orgs = Object.assign({}, h.orgs, { [k]: Object.assign({}, m, { paid: Math.max(m.paid || 0, market.day) + 30 }) });
+  heroLog(h, 'guild', 'Paid ' + money(d) + ' dues to the ' + ORGS[k].short);
+}
+function gjSetRank(h, k, d) {
+  const m = gjMember(h, k);
+  if (!m || k === 'adventurers' || isPlayer()) return;
+  h.orgs = Object.assign({}, h.orgs, { [k]: Object.assign({}, m, { r: clamp(gjRank(h, k) + d, 0, 3) }) });
+}
+// a hero's guilds: the memberships with their ranks, dues and benefits, and what they could join
+function heroGuildsHtml(h) {
+  const day = market.day, s = gjTown(h), keys = Object.keys(h.orgs || {}).filter((k) => GJ[k]);
+  let o = '<section class="hguilds"><h3>Guilds and orders</h3>';
+  if (keys.length) o += '<ul class="gj-list">' + keys.map((k) => gjCard(h, k, day)).join('') + '</ul>';
+  else o += '<p class="meta">' + esc(h.name || 'Your hero') + ' belongs to no guild yet. Members get discounts, lodging, help and favours that fit each one.</p>';
+  const open = gjOpen(h, s).filter((k) => !gjMember(h, k));
+  if (s && open.length) o += '<h4>Join in ' + tLink(s) + '</h4><ul class="gj-join">' + open.map((k) => gjJoinRow(h, k, s)).join('') + '</ul>';
+  else if (!s) o += '<p class="meta">Choose a hometown on the Basics step, or open a town\'s Guilds tab, to see what you can join.</p>';
+  return o + '</section>';
+}
+function gjCard(h, k, day) {
+  const m = gjMember(h, k), G = GJ[k], r = gjRank(h, k), lapsed = gjLapsed(m, day), at = m.sid && SBY.get(m.sid);
+  const perks = G.perks.filter(([min]) => min <= r), next = G.perks.filter(([min]) => min === r + 1);
+  const dm = !isPlayer() && k !== 'adventurers';
+  return '<li' + gcStyle(k) + '><div class="gj-top"><b>' + (at ? oLink(k, at.id) : esc(ORGS[k].name)) + '</b><span class="pill' + (lapsed ? '' : ' on') + '">' + esc(gjRankName(h, k)) + '</span>' + (lapsed ? '<span class="pill">dues owed</span>' : '') + '</div>' +
+    '<p class="meta">' + (at ? 'Joined in ' + tLink(at) + ', ' : 'Joined ') + dateText(m.day || 0) + (G.dues ? ' · dues ' + money(G.dues) + ' a month, ' + (lapsed ? '<b>overdue since ' + dateText(m.paid || 0) + '</b>' : 'paid to ' + dateText(m.paid || 0)) : '') + '</p>' +
+    (lapsed ? '<p class="small warn-t">Benefits are suspended until the dues are paid.</p>' : '<ul class="gj-perks">' + perks.map(([, n, d]) => '<li><b>' + esc(n) + '</b> ' + esc(d) + '</li>').join('') + '</ul>') +
+    (next.length && !lapsed ? '<p class="small">Next rank adds: ' + next.map((p) => esc(p[1])).join(', ') + (k === 'adventurers' ? ' (earn merit on quests)' : m.r == null ? ' (after time served and more levels)' : '') + '.</p>' : '') +
+    '<div class="actions">' + (G.dues ? '<button type="button" class="btn sm' + (lapsed ? ' primary' : '') + '" data-gj="pay" data-v="' + esc(h.id) + '|' + k + '">Pay a month (' + money(G.dues) + ')</button>' : '') +
+    (dm ? '<button type="button" class="btn sm" data-gj="down" data-v="' + esc(h.id) + '|' + k + '"' + (r <= 0 ? ' disabled' : '') + '>Demote</button><button type="button" class="btn sm" data-gj="up" data-v="' + esc(h.id) + '|' + k + '"' + (r >= 3 ? ' disabled' : '') + '>Promote</button>' : '') +
+    '<button type="button" class="btn sm danger" data-gj="leave" data-v="' + esc(h.id) + '|' + k + '">Leave</button></div></li>';
+}
+function gjJoinRow(h, k, s) {
+  const G = GJ[k], why = gjNeed(h, k);
+  return '<li' + gcStyle(k) + '><div><b>' + oLink(k, s.id) + '</b><small>' + (G.fee ? money(G.fee) + ' to join' : 'free to join') + (G.dues ? ', then ' + money(G.dues) + ' a month' : G.wage ? '; pays a wage' : '') + '</small>' +
+    '<small class="gj-gist">' + G.perks.filter(([m]) => m === 0).map((p) => esc(p[1])).join(' · ') + '</small>' + (why ? '<small class="warn-t">' + esc(why) + '</small>' : '') + '</div>' +
+    '<button type="button" class="btn sm' + (why ? '' : ' primary') + '" data-gj="join" data-v="' + esc(h.id) + '|' + k + '|' + esc(s.id) + '"' + (why ? ' disabled' : '') + '>' + G.verb + '</button></li>';
+}
+// on an organisation's page: what members get, and joining with your heroes
+function orgJoinHtml(s, k) {
+  const G = GJ[k];
+  if (!G) return '';
+  let o = '<section class="gj-org"><h3>Membership</h3><p class="meta">' + (G.fee ? money(G.fee) + ' to join' : 'Free to join') + (G.dues ? ', then ' + money(G.dues) + ' a month' : G.wage ? '; it pays a wage' : '') + '. Ranks: ' + (G.ranks ? G.ranks.join(', ') : 'Copper to Adamantine, by merit') + '.</p>';
+  o += '<ul class="gj-perks">' + G.perks.map(([m, n, d]) => '<li><b>' + esc(n) + '</b>' + (m ? ' <small>(' + esc(G.ranks ? G.ranks[m] : ['', 'Bronze', 'Gold', 'Platinum'][m]) + ')</small>' : '') + ' ' + esc(d) + '</li>').join('') + '</ul>';
+  const hs = heroes.list || [];
+  if (hs.length) o += '<ul class="gj-join">' + hs.map((h) => gjMember(h, k) ? '<li><div><b>' + esc(h.name || 'Unnamed hero') + '</b><small>' + esc(gjRankName(h, k)) + (gjLapsed(gjMember(h, k)) ? ' · dues owed' : ' · member') + '</small></div><button type="button" class="btn sm" data-hero="' + esc(h.id) + '">Open hero</button></li>'
+    : (k === 'thieves' && isPlayer() && !thievesFind(h)) ? '' : (() => { const r = gjJoinRow(h, k, s); return r.replace('<div><b>' + oLink(k, s.id) + '</b>', '<div><b>' + esc(h.name || 'Unnamed hero') + '</b>'); })()).join('') + '</ul>';
+  else o += '<p class="meta">Make a hero in the Heroes section to join.</p>';
+  return o + '</section>';
+}
+// on a person's page: heroes who share an organisation with them
+function guildKinHtml(p) {
+  const org = GROUP_ORG[p.group] || (!isPlayer() && /thieves/.test(p.secretJob || '') ? 'thieves' : null);
+  if (!org || !GJ[org]) return '';
+  const kin = (heroes.list || []).filter((h) => gjMember(h, org) && !gjLapsed(gjMember(h, org)));
+  if (!kin.length) return '';
+  return '<p class="gj-kin"><span class="lab">Fellow member</span> ' + kin.map((h) => '<button type="button" class="link" data-hero="' + esc(h.id) + '">' + esc(h.name || 'Unnamed hero') + '</button> <small>(' + esc(gjRankName(h, org)) + ')</small>').join(' · ') + ' of the ' + esc(ORGS[org].short) + ': expect a warmer welcome.</p>';
+}
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-gj]');
+  if (!b) return;
+  const [hid, k, sid] = (b.dataset.v || '').split('|');
+  const h = (heroes.list || []).find((x) => x.id === hid);
+  if (!h || !GJ[k]) return;
+  const a = b.dataset.gj;
+  if (a === 'join') { if (gjJoin(h, k, SBY.get(sid) || gjTown(h))) toast((h.name || 'Your hero') + ' is now ' + (k === 'rulers' ? 'sworn to the realm' : 'a member of the ' + ORGS[k].short) + '.'); }
+  else if (a === 'leave') gjLeave(h, k);
+  else if (a === 'pay') gjPay(h, k);
+  else if (a === 'up') gjSetRank(h, k, 1);
+  else if (a === 'down') gjSetRank(h, k, -1);
+  heroSave();
+  renderPanel();
+});
+
+// prices on the hero's Gear step: the town's price, less the best guild discount the hero has there
+function shopPrice(h, it) {
+  const p = shopPriceLocal(h, it), d = guildDisc(h, it);
+  return Object.assign({}, p, { full: p.price, price: d.v ? Math.round(p.price * (1 - d.v) * 100) / 100 : p.price, disc: d.v, by: d.by });
+}
+
+// the DM adds a hero who registered from their own sheet to the Adventurers' Guild roster
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-gd-roster]');
+  if (!b || isPlayer()) return;
+  const h = (heroes.list || []).find((x) => x.id === b.dataset.gdRoster);
+  if (!h || heroGuildMember(h)) return;
+  guildCommit('Register ' + (h.name || 'hero'), (g) => { g.party.members.push({ id: 'h:' + h.id, name: h.name || 'Unnamed', cls: CLS(h).name, level: h.level, merit: 0 }); });
+  renderPanel();
+});
+// ================================================================ what is happening at a place (v27)
+// Every place in a town (the hall, market, temples, taverns, inns, the watch, guild halls, banks, docks, shops and
+// districts) gets a short scene for the chosen time of day: how busy it is and who is there, what usually goes on
+// at that hour, what the town's events are doing to it, the season, something particular to the place (prices,
+// agendas, rooms taken, prisoners, ships in port), a rumour, and what is going on at the places around it.
+// Everything is worked out from the day, so a scene reads the same each time it is opened.
+const SCENE_PARTS = [['dawn', 6], ['morning', 9], ['midday', 12], ['afternoon', 15], ['evening', 19], ['night', 23]];
+const SCENE = {
+  hall: { dawn: 'Servants open the shutters and lay the fires before the household wakes.', morning: 'Petitioners queue in the outer hall for a word with {own}.', midday: 'Messengers come and go with sealed letters; clerks copy out writs and tax rolls.',
+    afternoon: 'The court hears disputes over boundaries, debts and inheritances.', evening: 'Torches are lit and {own} dines with guests.', night: 'Guards walk the walls; one high window is still lit.' },
+  market: { dawn: 'Carts rumble in and stallholders set out their wares.', morning: 'The market is at its busiest: hawkers shout prices over the din.', midday: 'Food sellers do brisk trade as the crowd thins.',
+    afternoon: 'Bargain-hunters pick over what is left while traders haggle over the last lots.', evening: 'Stalls are packed away; sweepers and stray dogs take over.', night: 'The square is empty but for the watch on its rounds.' },
+  green: { dawn: 'Geese and goats are turned out onto the green.', morning: 'Neighbours trade eggs, cheese and gossip by the well.', midday: 'Children play while their elders rest in the shade.',
+    afternoon: 'A pedlar has spread a blanket of needles, ribbons and pots.', evening: 'Folk drift home from the fields across the green.', night: 'The green is dark and still.' },
+  temple: { dawn: 'Dawn prayers to {god} are sung.', morning: 'Pilgrims leave offerings while priests hear the troubles of the faithful.', midday: 'The temple is cool, quiet and nearly empty.',
+    afternoon: 'Acolytes tend the sick and teach children their letters.', evening: 'The evening service draws a crowd.', night: 'Candles burn before the altar where a lone priest keeps vigil.' },
+  tavern: { dawn: 'The shutters are closed while the cellarman rolls in fresh barrels.', morning: 'A few early drinkers nurse their cups.', midday: 'Workers crowd in for bread, stew and a quick ale.',
+    afternoon: 'Dice rattle in a corner and travellers swap news.', evening: 'Packed and loud: a fiddler plays and the ale flows.', night: 'Last orders. The keeper turns out the stragglers.' },
+  inn: { dawn: 'Guests breakfast before setting out while ostlers saddle their horses.', morning: 'Maids turn the rooms and the stable is mucked out.', midday: 'New arrivals ask after rooms and stabling.',
+    afternoon: 'Carts and riders pull into the yard.', evening: 'The common room fills with travellers trading news of the road.', night: 'The yard gate is barred; a lamp burns for late arrivals.' },
+  law: { dawn: 'The night watch hands over to the day watch.', morning: 'Last night\'s drunks are let out and fresh charges are read.', midday: 'Guards drill in the yard.',
+    afternoon: 'Patrols set out, and a debtor pleads for more time.', evening: 'The evening watch musters for inspection.', night: 'A lantern hangs at the door and prisoners call through the bars.' },
+  money: { dawn: 'The strongroom is still locked.', morning: 'Clerks weigh coin and record deposits; a merchant waits to ask for a loan.', midday: 'Money-changers do steady business with travellers.',
+    afternoon: 'Bills of exchange are drawn up for distant markets.', evening: 'The day\'s takings are counted and locked away.', night: 'Guards sit up with the strongroom.' },
+  work: { dawn: 'Fishing boats slip out on the tide.', morning: 'Stevedores unload cargo while cranes creak overhead.', midday: 'Gulls fight over scraps; porters rest on the bales.',
+    afternoon: 'Wagons queue to load for the inland roads.', evening: 'Sailors spill into the harbour taverns.', night: 'The quays are dark and quiet.' },
+  shop: { dawn: 'The shutters are still down.', morning: 'The door is open and the first customers drift in.', midday: 'Work goes on at the bench while customers wait.',
+    afternoon: 'A steady trickle of customers.', evening: 'The day\'s last orders are wrapped and the shutters go up.', night: 'Closed for the night.' },
+  guild: { dawn: 'A clerk unbars the doors and sorts the morning\'s letters.', morning: 'Members come and go on guild business.', midday: 'Officers of the guild meet over a long lunch.',
+    afternoon: 'Members come and go on guild business.', evening: 'Members gather to drink and talk shop.', night: 'Shuttered, with a watchman at the door.' },
+  district: { dawn: 'Smoke rises from the first cooking fires.', morning: 'Its streets fill with traders, carts and errand-runners.', midday: 'Doorways are full of neighbours trading gossip.',
+    afternoon: 'Children run between the carts; washing hangs across the lanes.', evening: 'Lamps are lit and the smells of supper drift out.', night: 'Its streets are dark but for the watch\'s lanterns.' }
+};
+const GUILD_SCENE = {
+  adventurers: 'Adventurers crowd the quest board, and a company boasts of its last job.',
+  merchants: 'Factors read prices from distant markets and strike bargains over wine.',
+  crafts: 'Masters inspect apprentices\' work, and a dispute over a shoddy batch is being settled.',
+  mages: 'Robed students hurry between lectures, and something smells of sulphur.',
+  thieves: 'Lookouts loiter outside while the take is divided in a back room.'
+};
+// how busy a kind of place is at each part of the day (0 to 1)
+const BUSY = { hall: [0.2, 0.7, 0.6, 0.6, 0.5, 0.1], market: [0.5, 1, 0.7, 0.6, 0.2, 0], temple: [0.6, 0.4, 0.2, 0.3, 0.8, 0.1], tavern: [0, 0.2, 0.6, 0.5, 1, 0.4], inn: [0.6, 0.3, 0.4, 0.5, 0.9, 0.2],
+  law: [0.4, 0.6, 0.5, 0.5, 0.6, 0.3], guild: [0.1, 0.7, 0.6, 0.7, 0.5, 0.1], money: [0, 0.8, 0.7, 0.6, 0.2, 0], work: [0.6, 1, 0.7, 0.8, 0.4, 0.1], shop: [0, 0.7, 0.6, 0.7, 0.3, 0], district: [0.3, 0.8, 0.7, 0.7, 0.6, 0.1] };
+const BUSY_WORD = (v) => (v >= 0.85 ? 'Crowded' : v >= 0.55 ? 'Busy' : v >= 0.3 ? 'Steady' : v > 0.05 ? 'Quiet' : 'Empty');
+// what an event does to a kind of place: [kind or '*', line]
+const EV_SCENE = {
+  war: { tavern: 'Recruiting sergeants buy rounds for likely young men and women; talk is all of the war with {enemy}.', market: 'Requisition officers seize horses and grain for the war with {enemy}, and arms sell as fast as the smiths can make them.',
+    hall: 'Captains report from the front and the war council sits late.', temple: 'Families pray for loved ones fighting {enemy}.', law: 'Half the watch has gone to the war, and those left are stretched thin.',
+    inn: 'Officers have taken the best rooms.', '*': 'Talk everywhere is of the war with {enemy}.' },
+  plague: { temple: 'The sick fill the nave and the priests work without rest.', tavern: 'Half the benches are empty; people fear the sickness.', market: 'Fewer stalls than usual, and herbs sell at a premium.',
+    inn: 'Rooms stand empty as travellers stay away.', '*': 'Doors are marked with chalk, and people keep their distance from one another.' },
+  famine: { market: 'Bread queues stretch round the square and tempers flare at the grain stalls.', temple: 'A long line waits for the temple\'s thin soup.', hall: 'An angry crowd outside demands the granaries be opened.',
+    tavern: 'No food is served, only weak ale.', '*': 'Thin faces everywhere, and hungry children beg at the doors.' },
+  bandits: { inn: 'Merchants hire guards in the yard before risking the roads.', market: 'Imported goods are scarce: the roads aren\'t safe.', law: 'A bounty on the bandits is nailed to the door.',
+    '*': 'Travellers arrive in armed groups, with tales of ambushes on the road.' },
+  boom: { market: 'Stalls overflow with imported goods and new faces.', inn: 'Every room is taken by merchants and their factors.', money: 'Lenders are busy financing new ventures.', '*': 'New faces and new money are everywhere.' },
+  festival: { market: 'Contests and performers fill the square, and pickpockets work the crowd.', tavern: 'Packed from noon to midnight.', temple: 'Processions set out with offerings and garlands.', '*': 'Bunting hangs across the street, with music and laughter.' },
+  feast: { hall: 'The great hall is laid for {event}.', tavern: 'Leftovers from {event} feed the poor at the back door.', market: 'Cooks buy up meat, wine and spices for {event}.', '*': 'Servants hurry past with platters for {event}.' }
+};
+const SCENE_SEASON = [
+  [[11, 0, 1], 'Snow lies in the streets and everyone crowds near the fire.', 'A great fire roars and wet cloaks steam by the hearth.'],
+  [[2, 3, 4], 'Spring rain puddles the streets; the first green shows in the window boxes.', 'Muddy boots line the door after the spring rain.'],
+  [[5, 6, 7], 'Summer heat bakes the streets, with flies and dust everywhere.', 'The windows are thrown open against the summer heat.'],
+  [[8, 9, 10], 'Harvest carts creak past, piled high, and the air smells of woodsmoke.', 'Autumn wind rattles the shutters.']
+];
+const OUTDOOR = new Set(['market', 'green', 'work', 'district']);
+function sceneHash(s, key, day, n) { return T.hash(hashStr(s.id + '|' + key) & 0xffffff, day, 7300 + n); }
+// who is at a place at an hour, from everyone's daily routine
+function presentAt(s, key, day, hour) {
+  const out = [];
+  for (const p of residents(s)) { const w = whereAt(p, s, day, hour); if (w && w.key === key && !(w.dm && isPlayer())) out.push([p, w]); }
+  return out;
+}
+// the scene at one place, at one hour
+function placeScene(s, pl, day, hour) {
+  const part = HOUR_PART(hour), pi = SCENE_PARTS.findIndex(([k]) => k === part), key = pl.key;
+  const z = sizeOf(s).k, green = pl.kind === 'market' && (z === 'hamlet' || z === 'village');
+  const kind = green ? 'green' : pl.kind, owner = pl.owner ? withOv(npcById(pl.owner) || {}) : null;
+  const fill = (t) => t.replace(/\{own\}/g, owner && owner.id ? pLink(owner) : 'the household').replace(/\{god\}/g, esc(pl.god || 'the gods'));
+  const lines = [];
+  // the usual business at this hour
+  let base = (SCENE[kind] || SCENE.district)[part];
+  if (pl.kind === 'guild' && pl.org && (part === 'morning' || part === 'afternoon')) base = GUILD_SCENE[pl.org] || base;
+  if (pl.kind === 'shop' && owner && owner.id) {
+    const w = whereAt(owner, s, day, hour);
+    base = w && w.key === key ? pLink(owner) + ' is at work here. ' + SCENE.shop[part] : 'Closed for now: ' + pLink(owner) + ' is ' + esc(lowFirst(w ? w.text : 'away')) + '.';
+  }
+  const rest = day % 7 === 6;
+  if (rest && (kind === 'market' || kind === 'shop' || kind === 'money') && (part === 'morning' || part === 'midday' || part === 'afternoon') && pl.kind !== 'shop') base = kind === 'money' ? 'Closed for the rest day.' : 'It is the rest day: only a few stalls are open, selling food and drink.';
+  lines.push(fill(base));
+  // the town's events
+  const L = localInfo(s), mods = modsFor(s, day).slice().sort((a, b) => b[1] - a[1]);
+  for (const [, f, e] of mods.slice(0, 2)) {
+    const E = EV_SCENE[e.type]; if (!E || f < 0.15) continue;
+    let t = E[kind] || E[pl.kind] || E['*'];
+    const enemy = e.type === 'war' ? REALMS[e.ai === L.ri ? e.bi : e.ai] : null;
+    if (e.type === 'war' && occupiedBy(e, s, L.ri, f) >= 0) t = 'Soldiers of ' + esc(enemy ? enemy.name : 'the enemy') + ' stand guard; the town is under occupation.';
+    t = t.replace(/\{enemy\}/g, enemy ? esc(enemy.name) : 'the enemy').replace(/\{event\}/g, esc(e.name));
+    // plague, famine and festivals change the whole feel of a place: their own line replaces the usual routine
+    if (f >= 0.3 && (E[kind] || E[pl.kind]) && (e.type === 'plague' || e.type === 'famine' || e.type === 'festival') && lines.length === 1 && part !== 'night') lines[0] = t;
+    else lines.push(t);
+  }
+  // the season, and the rest day
+  const m = dateParts(day).m, se = SCENE_SEASON.find(([ms]) => ms.includes(m));
+  if (se && sceneHash(s, key, day, 1) < 0.6) lines.push(OUTDOOR.has(kind) ? se[1] : se[2]);
+  if (rest && kind === 'temple' && (part === 'morning' || part === 'evening')) lines.push('It is the rest day, and the benches are full.');
+  // something particular to this place
+  const extra = sceneDetail(s, pl, day, part, L, mods);
+  if (extra) lines.push(extra);
+  // how busy, and who is here
+  const here = presentAt(s, key, day, hour);
+  const restCut = rest && (kind === 'market' || kind === 'money') ? 0.35 : 1;
+  const evBoost = mods.some(([, f, e]) => (e.type === 'festival' || e.type === 'feast' || e.type === 'boom') && f > 0.2) ? 0.2 : mods.some(([, f, e]) => e.type === 'plague' && f > 0.3) ? -0.25 : 0;
+  const busy = clamp((BUSY[pl.kind] || BUSY.district)[pi] * (0.7 + 0.15 * s.tier) * restCut + evBoost + here.length * 0.04 + (sceneHash(s, key, day, 2 + pi) - 0.5) * 0.2, 0, 1);
+  return { part, busy, word: BUSY_WORD(busy), lines, here };
+}
+function sceneDetail(s, pl, day, part, L, mods) {
+  const r = (n) => sceneHash(s, pl.key, day, 20 + n), war = mods.find(([, f, e]) => e.type === 'war' && f > 0.2);
+  switch (pl.kind) {
+    case 'market': {
+      const now = pricesFor(s, day), then = pricesFor(s, day - 7);
+      const mv = BASKET.map((gi) => GOODS[gi]).map((g) => [now[g.i] / then[g.i], g]).filter(([x]) => Math.abs(x - 1) > 0.04).sort((a, b) => Math.abs(Math.log(b[0])) - Math.abs(Math.log(a[0])))[0];
+      return mv ? 'Everyone is talking about ' + esc(mv[1].name.split(',')[0].toLowerCase()) + ', ' + (mv[0] > 1 ? 'up ' : 'down ') + Math.round(Math.abs(mv[0] - 1) * 100) + '% on last week.' : 'Prices are steady this week.';
+    }
+    case 'hall': { const a = agendaList(s).find((x) => x.scope !== 'realm') || agendaList(s)[0]; return a ? pLink(a.p) + ' is pressing on with one aim: ' + esc(lowFirst(a.A.label)) + '.' : ''; }
+    case 'temple': return pl.dom ? 'Its priests serve ' + esc(pl.god || 'the gods') + ', a god of ' + esc(pl.dom.toLowerCase()) + '.' : '';
+    case 'inn': {
+      const rooms = [4, 6, 10, 16, 24][Math.min(4, s.tier)] + Math.floor(r(1) * 4);
+      let occ = 0.45 + r(2) * 0.25;
+      for (const [, f, e] of mods) { if (e.type === 'boom' || e.type === 'festival') occ += 0.35 * f; if (e.type === 'plague') occ -= 0.5 * f; if (e.type === 'war' && occupiedBy(e, s, L.ri, f) < 0) occ += 0.15 * f; }
+      const n = Math.round(rooms * clamp(occ, 0.05, 1));
+      return n >= rooms ? 'Every one of its ' + rooms + ' rooms is taken.' : n + ' of its ' + rooms + ' rooms are taken.';
+    }
+    case 'law': {
+      const thieves = guildLevel(s, 'thieves') || 0, n = Math.round((s.pop / 1500 + thieves * 2) * (0.6 + r(3) * 0.8) + (war ? 2 : 0));
+      return pl.key === 'barracks' ? (war ? 'Half the bunks are empty; the rest are packing for the front.' : 'The garrison is at full strength.') : n ? n + ' prisoner' + (n === 1 ? ' is' : 's are') + ' held in the cells.' : 'The cells stand empty.';
+    }
+    case 'money': { const rate = 2 + (war ? 2 : 0) + (mods.some(([, f, e]) => e.type === 'famine' && f > 0.2) ? 1 : 0) - (mods.some(([, f, e]) => e.type === 'boom' && f > 0.2) ? 1 : 0); return 'Loans go out at ' + rate + '% a month' + (war ? ', dearer than usual with the war on' : '') + '.'; }
+    case 'work': {
+      if (pl.key !== 'docks') return '';
+      let ships = Math.round((2 + s.tier * 2) * (0.6 + r(4) * 0.8));
+      for (const [, f, e] of mods) { if (e.type === 'boom') ships += Math.round(4 * f); if (e.type === 'war' || e.type === 'plague') ships -= Math.round(3 * f); }
+      ships = Math.max(0, ships);
+      return ships ? ships + ' ship' + (ships === 1 ? ' is' : 's are') + ' tied up at the quays.' : 'No ships in port.';
+    }
+    case 'guild': {
+      if (!pl.org) return '';
+      const others = orgsShown(s).filter((k) => k !== pl.org);
+      let worst = null; for (const o of others) { const v = orgRel(pl.org, o, s, day).v; if (!worst || v < worst[1]) worst = [o, v]; }
+      const hall = hallFor(s), jobs = hall ? questsFor(hall, day).filter((q) => q.clientOrg === pl.org && questState(q, day) === 'open').length : 0;
+      return (worst && worst[1] <= -30 ? 'There is bad blood with the ' + esc(ORGS[worst[0]].short) + ' just now. ' : '') + (jobs ? 'It has ' + jobs + ' job' + (jobs === 1 ? '' : 's') + ' posted at the guild hall.' : '');
+    }
+    case 'district': {
+      const inside = placesOf(s).list.filter((o) => o.kind !== 'district' && o.kind !== 'market').filter((o) => { const q = placePos(s, o.key), d = districtAt(s, q.x, q.y); return d && d.key === pl.key; });
+      const al = aldermenOf(s).find((x) => x.d.name === pl.name);
+      return (inside.length ? 'Its landmarks include ' + inside.slice(0, 3).map((o) => placeLink(s, o.key)).join(', ') + '. ' : '') + (al && al.p ? 'Its alderman is ' + pLink(al.p) + '.' : '');
+    }
+  }
+  return '';
+}
+// a rumour heard at the tavern, inn, market or guild hall: an open quest, or the hook of an event nearby
+function sceneRumour(s, pl, day) {
+  if (!['tavern', 'inn', 'market', 'guild'].includes(pl.kind)) return '';
+  const hall = hallFor(s), qs = hall ? questsFor(hall, day).filter((q) => questState(q, day) === 'open') : [];
+  const mods = modsFor(s, day), pick = sceneHash(s, pl.key, day, 40);
+  if (qs.length && (pick < 0.6 || !mods.length)) { const q = qs[Math.floor(pick * 997) % qs.length]; return 'Word is someone is paying for help: <button type="button" class="link" data-quest="' + esc(q.id) + '|' + esc(hall.id) + '">' + esc(q.title.toLowerCase()) + '</button>' + (hall !== s ? ' (at ' + tLink(hall) + ')' : '') + '.'; }
+  if (mods.length) { const e = mods[Math.floor(pick * 991) % mods.length][2]; return esc(EVT[e.type].hook) + ' (' + eLink(e) + ')'; }
+  return '';
+}
+// the places nearest this one, and what is going on at each now
+function sceneAround(s, pl, day, hour) {
+  const me = placePos(s, pl.key), part = HOUR_PART(hour), pi = SCENE_PARTS.findIndex(([k]) => k === part);
+  const list = placesOf(s).list.filter((o) => o.key !== pl.key && o.kind !== 'district' && !(o.secret && isPlayer())).map((o) => { const q = placePos(s, o.key); return [o, Math.hypot(q.x - me.x, q.y - me.y)]; }).sort((a, b) => a[1] - b[1]).slice(0, 3);
+  return list.map(([o, d]) => {
+    const n = presentAt(s, o.key, day, hour).length, b = clamp((BUSY[o.kind] || BUSY.district)[pi] * (0.7 + 0.15 * s.tier) + n * 0.04, 0, 1);
+    return '<li>' + placeLink(s, o.key) + ' <small>' + (d * 5280 < 30 ? 'right here' : fmtDist(d) + ' away') + ' · ' + BUSY_WORD(b).toLowerCase() + (n ? ', ' + n + ' notable' + (n === 1 ? '' : 's') + ' there' : '') + '</small></li>';
+  }).join('');
+}
+function sceneHtml(s, pl, day) {
+  const hour = people.hour, sc = placeScene(s, pl, day, hour);
+  let h = '<section class="scene"><div class="scene-h"><h3>What\'s happening</h3><span class="pill ' + (sc.busy >= 0.55 ? 'on' : '') + '">' + sc.word + '</span></div>';
+  h += '<div class="seg sm scene-t" role="group" aria-label="Time of day">' + SCENE_PARTS.map(([k, hr]) => '<button type="button" data-plhour="' + hr + '" aria-pressed="' + (sc.part === k) + '">' + k.charAt(0).toUpperCase() + k.slice(1) + '</button>').join('') + '</div>';
+  h += '<p class="scene-p">' + sc.lines.join(' ') + '</p>';
+  if (sc.here.length) h += '<p class="small scene-who"><span class="lab">Here now</span> ' + sc.here.slice(0, 6).map(([p, w]) => pLink(p) + ' <small>' + esc(lowFirst(w.text).replace(' at ' + pl.name, '').replace(' at ' + lowFirst(pl.name), '')) + '</small>').join(' · ') + (sc.here.length > 6 ? ' and ' + (sc.here.length - 6) + ' more' : '') + '</p>';
+  const ru = sceneRumour(s, pl, day);
+  if (ru) h += '<p class="small scene-rumour"><span class="lab">Overheard</span> ' + ru + '</p>';
+  const ar = sceneAround(s, pl, day, hour);
+  if (ar) h += '<h4>Around it</h4><ul class="scene-around">' + ar + '</ul>';
+  return h + '</section>';
+}
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-plhour]');
+  if (!b) return;
+  people.hour = clamp(+b.dataset.plhour | 0, 0, 23);
+  renderPanel();
+});
 
 // ================================================================ tools & interaction state
 let tool = 'explore';

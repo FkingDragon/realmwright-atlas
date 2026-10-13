@@ -465,6 +465,7 @@ function personView(p, day) {
   if (p.group === 'adventurer' && p.level) h += '<p class="meta">' + rankBadge(rankOf(p.merit)) + ' ' + p.merit.toLocaleString('en-GB') + ' merit' + (p.companyName ? ' · member of ' + (s ? oLink('adventurers', s.id, p.companyName) : esc(p.companyName)) : ' · works alone') + '</p>';
   h += influenceBlock(p);
   h += heroBondsFor(p);
+  h += guildKinHtml(p);
   h += lossesHtml(p, day);
   // relationships
   h += '<section><h3>Relationships (' + rels.length + ')</h3>' + egoGraph(p, rels);

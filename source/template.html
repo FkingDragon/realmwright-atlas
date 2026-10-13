@@ -1033,6 +1033,39 @@ details.editbox > * + * { margin-top: 10px; }
 .gl-recent { display: grid; gap: 5px; }
 .gl-recent .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .gl-recent .chip { min-height: 30px; }
+/* v27 guild membership */
+.gj-list, .gj-join, .gj-perks { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.gj-list > li { border: 1px solid var(--line); border-left: 4px solid var(--gc, var(--line)); border-radius: 8px; background: var(--panel); padding: 9px 10px; display: grid; gap: 5px; }
+.gj-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.gj-top b { font-size: 14.5px; margin-right: auto; }
+.gj-perks li { font-size: 13px; line-height: 1.45; color: var(--text); }
+.gj-perks li b { color: var(--brass-hi); font-weight: 600; }
+.gj-perks li small { color: var(--muted); }
+.gj-join > li { display: flex; gap: 10px; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-left: 4px solid var(--gc, var(--line)); border-radius: 8px; background: var(--panel); padding: 8px 10px; }
+.gj-join > li > div { display: grid; gap: 2px; min-width: 0; }
+.gj-join small { color: var(--muted); font-size: 12px; }
+.gj-join .gj-gist { color: #cfc8b6; }
+.gj-join .btn { flex: none; }
+.warn-t { color: #e8b75a !important; }
+.gj-disc { display: block; color: #8fd18a; font-size: 11px; white-space: nowrap; }
+.gj-kin { margin: 0; font-size: 13.5px; }
+.gj-kin .lab { margin-right: 6px; font-size: 10.5px; }
+.hguilds h4, .gj-org h4 { margin: 10px 0 6px; }
+.gj-wait { margin-top: 8px; }
+/* v27 what's happening at a place */
+.scene { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 10px; display: grid; gap: 8px; }
+.scene-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.scene-h h3 { margin: 0; border: 0; padding: 0; }
+.scene-t { display: grid; grid-template-columns: repeat(6, 1fr); }
+.scene-t button { padding: 6px 2px; font-size: 11.5px; min-height: 30px; }
+.scene-p { margin: 0; font-size: 14px; line-height: 1.6; }
+.scene-who, .scene-rumour { margin: 0; line-height: 1.55; }
+.scene-who small { color: var(--muted); }
+.scene-who .lab, .scene-rumour .lab { margin-right: 6px; font-size: 10.5px; }
+.scene h4 { margin: 2px 0 0; }
+.scene-around { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
+.scene-around small { color: var(--muted); margin-left: 4px; }
+@media (max-width: 420px) { .scene-t { grid-template-columns: repeat(3, 1fr); } }
 /* v25 accessibility: skip links, a quiet announcer, and comfortable targets */
 .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--brass); color: var(--ink); font-weight: 700; padding: 10px 14px; border-radius: 8px; text-decoration: none; }
 .skip:focus { top: 8px; outline: 2px solid var(--text); }
@@ -1098,8 +1131,8 @@ details.editbox > * + * { margin-top: 10px; }
       <li><b>Map tools</b> sit along the top of the map: <b>Select</b>, then <b>Settle</b>, <b>Road</b>, <b>Paint</b>, <b>Tiles</b>, <b>Label</b> and <b>Measure</b> add your own places, routes, terrain, battle maps and notes. Their options open in the side panel; press Done when finished.</li>
       <li><b>Tiles</b> paints the battle map square by square: ground, props such as tables, beds and campfires, and walls, doors, windows and fences along the grid lines. Fill a patch, or drag out a whole building. Players see your changes; undo works per stroke.</li>
       <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill.</li>
-      <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day.</li>
-      <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town with a danger rating for your party, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for.</li>
+      <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day. Every named place, from the palace to a cobbler's shop, shows <b>what's happening</b> there at dawn, morning, midday, afternoon, evening or night: who is in, the town's events, the season, something overheard, and the places around it.</li>
+      <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town with a danger rating for your party, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for. <b>Heroes can join</b> any organisation in a town, from their sheet or the organisation's page: each has a fee, monthly dues, four ranks and benefits that fit it, such as member prices on the Gear step, better selling prices, lodging, healing, authority or a fence.</li>
       <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character.</li>
       <li><b>Monsters</b> shows creature groups living in their natural habitats, plus rare wanderers and haunts. They appear and move on over the weeks, while lairs stay for months. Place your own from the Bestiary (all 334 SRD creatures with full stat blocks, or a custom one), track each creature's hit points and initiative, and mark them slain. Monsters near a town raise its danger, which brings more monster quests, bigger rewards and higher bounties on the Market's Bounties tab. Zoomed out, nearby groups gather into one marker showing the most dangerous of them, with a count; tap it to zoom in.</li>
       <li><b>Links</b> Underlined names go somewhere: towns, realms, people, organisations and events all open their own page and move the map to them. Press the open tool again, a tab you are already on, or the – button to fold the panel into a slim bar; tap the bar to bring it back.</li><li><b>Measure</b> gives distance and overland travel time between any two points.</li>

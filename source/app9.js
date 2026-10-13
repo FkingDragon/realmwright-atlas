@@ -136,6 +136,7 @@ function orgView(s, key, day) {
   h += '<dl class="stats">' + stat('Members', fmtInt(est)) + stat('Notables here', key === 'adventurers' ? fmtInt(est) : mem.length) + stat('Party standing', (partyRep(key) > 0 ? '+' : '') + partyRep(key)) + '</dl>';
   h += branchSection(s, key);
   if (lead) h += '<p class="meta">Led here by <button type="button" class="link" data-pp="npc" data-v="' + esc(lead.id) + '">' + esc(npcName(lead)) + '</button> <small>(' + esc(lead.job) + ')</small></p>';
+  h += orgJoinHtml(s, key);
   h += '<section><h3>How it works</h3><p>' + esc(W.what) + '</p><ul class="facts"><li><span>Money</span><div>' + esc(W.money) + '</div></li><li><span>Holds</span><div>' + esc(W.power) + '</div></li></ul></section>';
   // what its powerful members want
   const pw = powerful(s).filter((p) => GROUP_ORG[p.group] === key);

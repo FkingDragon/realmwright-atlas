@@ -51,6 +51,8 @@ The build joins the modules in the order listed in `build.py`. Each one starts w
 | `app28.js`, `app29.js` | Households, Around town now, the town Chronicle and Recent changes |
 | `app30.js` | The layout: the side panel, the breadcrumbs, place tabs and the framed map |
 | `app31.js` | 2024 class features, spellcasting, epic boons, metamagic, invocations and starting equipment |
+| `app32.js` | Guild membership for heroes: fees, dues, ranks and benefits |
+| `app33.js` | What's happening at each place, hour by hour |
 
 ## Rules for changes
 

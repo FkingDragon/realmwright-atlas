@@ -25,7 +25,7 @@ function newHero(blank) {
     hpMax: 0, hp: null, temp: 0, hdUsed: 0, slotsUsed: [0, 0, 0, 0, 0, 0, 0, 0, 0], pactUsed: 0, uses: {}, death: [0, 0], insp: false, conds: [], exh: 0, xp: 0,
     subclass: '', subNotes: '', trait: '', ideal: '', bond: '', flaw: '', bondNpc: null, bondKind: '', notes: '', created: market.day,
     bgAsi: { mode: '21' }, bgAbil: [], bgFeat: '', feat24: '', mi: {}, mi2: {}, miList: '', miList2: '', skilled: [],
-    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate'
+    order: '', strike7: '', boon: '', boonAb: '', land24: 'Temperate', orgs: {}
   };
 }
 const raceSub = (h) => { const R = raceOf(h); if (!R.subs) return null; const k = R.subs[h.sub] ? h.sub : Object.keys(R.subs)[0]; return R.subs[k]; };
@@ -389,7 +389,8 @@ function ordinal(n) { return n + (n === 1 ? 'st' : n === 2 ? 'nd' : n === 3 ? 'r
 
 // ---------------------------------------------------------------- local prices at the hometown
 const GOOD_ALIAS = { 'Light crossbow': 'Crossbow, light' };
-function shopPrice(h, it) {
+// the town's own price, before any guild discount (shopPrice in app32 adds those)
+function shopPriceLocal(h, it) {
   const s = h.home ? SBY.get(h.home) : null;
   if (!s) return { price: it.cost, ok: true, local: false };
   const day = market.day;
@@ -737,7 +738,7 @@ function stepGear(h, D) {
   o += '<section><h3>Inventory</h3><ul class="inv">' + (inv.length ? inv.map((x) => {
     const it = ITEM.get(x.n);
     const info = it ? (it.kind === 'weapon' ? it.dmg + ' ' + it.type : it.kind === 'armor' ? (it.type === 'shield' ? '+2 AC' : 'AC ' + it.ac + (it.type === 'light' ? ' + Dex' : it.type === 'medium' ? ' + Dex (max 2)' : '')) : it.note) : '';
-    return '<li><span><b>' + esc(x.n) + (x.q > 1 ? ' ×' + x.q : '') + '</b>' + (info ? '<small>' + esc(info) + '</small>' : '') + '</span>' + (x.src === 'bought' && it ? '<button type="button" class="btn sm" data-hr="sell" data-v="' + x.i + '" title="Sell for half price">Sell</button>' : '') + '<button type="button" class="x sm" data-hr="rm" data-v="' + esc(x.key) + '" aria-label="Remove ' + esc(x.n) + '">×</button></li>';
+    return '<li><span><b>' + esc(x.n) + (x.q > 1 ? ' ×' + x.q : '') + '</b>' + (info ? '<small>' + esc(info) + '</small>' : '') + '</span>' + (x.src === 'bought' && it ? '<button type="button" class="btn sm" data-hr="sell" data-v="' + x.i + '" title="' + (sellRate(h).by ? 'Sell for ' + Math.round(sellRate(h).r * 100) + '% of the price (' + esc(sellRate(h).by) + ')' : 'Sell for half price') + '">Sell</button>' : '') + '<button type="button" class="x sm" data-hr="rm" data-v="' + esc(x.key) + '" aria-label="Remove ' + esc(x.n) + '">×</button></li>';
   }).join('') : '<li class="meta">Nothing yet.</li>') + '</ul>';
   o += '<div class="relform"><input id="hc-item" maxlength="60" placeholder="Add any other item" aria-label="Item name"><button type="button" class="btn" data-hr="additem">Add</button></div>';
   o += '<p class="meta">Gold: <b>' + money(goldOf(h)) + '</b> <button type="button" class="btn sm" data-hr="gold" data-v="-1">−1 gp</button><button type="button" class="btn sm" data-hr="gold" data-v="1">+1 gp</button><button type="button" class="btn sm" data-hr="gold" data-v="10">+10 gp</button></p>';
@@ -752,7 +753,7 @@ function stepGear(h, D) {
   o += '<table class="shop"><tbody>' + list.map((it) => {
     const p = shopPrice(h, it);
     const info = it.kind === 'weapon' ? it.dmg + ' ' + it.type + (weaponProf(D, it) ? '' : ' · not proficient') : it.kind === 'armor' ? (it.type === 'shield' ? '+2 AC' : 'AC ' + it.ac + ' · ' + it.type) + (D.armorProfs.has(it.type) ? '' : ' · not proficient') : it.note;
-    return '<tr' + (p.ok ? '' : ' class="na"') + '><td><b>' + esc(it.name) + '</b>' + (info ? '<small>' + esc(info) + '</small>' : '') + '</td><td class="num">' + (p.ok ? money(p.price) : 'Not sold here') + '</td><td>' + (p.ok ? '<button type="button" class="btn sm" data-hr="buy" data-v="' + esc(it.name) + '"' + (p.price > gold + 1e-9 ? ' disabled title="Not enough gold"' : '') + '>Buy</button>' : '') + '</td></tr>';
+    return '<tr' + (p.ok ? '' : ' class="na"') + '><td><b>' + esc(it.name) + '</b>' + (info ? '<small>' + esc(info) + '</small>' : '') + '</td><td class="num">' + (p.ok ? money(p.price) + (p.disc ? '<small class="gj-disc" title="' + esc(p.by) + ' member price">−' + Math.round(p.disc * 100) + '% ' + esc(p.by) + '</small>' : '') : 'Not sold here') + '</td><td>' + (p.ok ? '<button type="button" class="btn sm" data-hr="buy" data-v="' + esc(it.name) + '"' + (p.price > gold + 1e-9 ? ' disabled title="Not enough gold"' : '') + '>Buy</button>' : '') + '</td></tr>';
   }).join('') + '</tbody></table></section>';
   return o;
 }
@@ -853,6 +854,7 @@ function heroSheet(h, D, S) {
     (D.notes.length ? '<p class="small">' + D.notes.map(esc).join(' ') + '</p>' : '') + '</section>';
   // limited uses
   if (D.uses.length) o += '<section><h3>Limited uses</h3><ul class="uses">' + D.uses.map((u) => { const used = h.uses[u.key] || 0, left = Math.max(0, u.max - used); return '<li><div><b>' + esc(u.n) + '</b><small>' + (u.rest === 'short' ? 'short or long rest' : u.rest === 'one' ? 'long rest; one back on a short rest' : 'long rest') + (u.note ? ' · ' + esc(u.note) : '') + '</small></div>' + (u.max >= 99 ? '<span class="small">Unlimited</span>' : u.max > 8 ? '<span class="pool"><button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|1" aria-label="Spend one">−</button><b>' + left + '</b>/' + u.max + '<button type="button" class="btn sm" data-hr="use" data-v="' + u.key + '|-1" aria-label="Regain one">+</button></span>' : '<span class="pips">' + Array.from({ length: u.max }, (_, i) => '<button type="button" class="pip' + (i < left ? ' on' : '') + '" data-hr="usepip" data-v="' + u.key + '|' + i + '|' + u.max + '" aria-label="' + esc(u.n) + ' ' + (i + 1) + '"></button>').join('') + '</span>') + '</li>'; }).join('') + '</ul></section>';
+  o += heroGuildsHtml(h);
   // spells
   o += sheetSpells(h, D);
   // skills
@@ -1016,7 +1018,7 @@ $('inspector').addEventListener('click', (ev) => {
     case 'rollgold': if (is24(h)) break; { const [n, d, m] = C.gold; const r = rollExpr(n + 'd' + d); h.goldRoll = r.total * m; showRoll('Starting gold', n + 'd' + d + ': ' + r.parts.join(' ') + (m > 1 ? ' × ' + m : ''), h.goldRoll, ''); break; }
     case 'shopcat': heroes.shopCat = v; renderPanel(); return;
     case 'buy': { const it = ITEM.get(v); if (!it) return; const p = shopPrice(h, it); if (!p.ok) return; if (p.price > goldOf(h) + 1e-9) { toast('Not enough gold.'); return; } h.goldDelta -= Math.round(p.price * 100) / 100; const ex = h.inv.find((x) => x.n === v); if (ex && it.kind !== 'pack') ex.q = (ex.q || 1) + 1; else h.inv.push({ n: v, q: 1 }); heroLog(h, 'buy', 'Bought ' + v + ' for ' + money(p.price) + (h.home && SBY.get(h.home) ? ' in ' + SBY.get(h.home).name : '')); toast('Bought ' + v + ' for ' + money(p.price) + '.'); break; }
-    case 'sell': { const x = h.inv[+v]; if (!x) return; const it = ITEM.get(x.n); const p = it ? shopPrice(h, it).price / 2 : 0; h.goldDelta += Math.round(p * 100) / 100; if ((x.q || 1) > 1) x.q -= 1; else h.inv.splice(+v, 1); heroLog(h, 'buy', 'Sold ' + x.n + ' for ' + money(p)); toast('Sold ' + x.n + ' for ' + money(p) + '.'); break; }
+    case 'sell': { const x = h.inv[+v]; if (!x) return; const it = ITEM.get(x.n); const p = it ? shopPrice(h, it).full * sellRate(h).r : 0; h.goldDelta += Math.round(p * 100) / 100; if ((x.q || 1) > 1) x.q -= 1; else h.inv.splice(+v, 1); heroLog(h, 'buy', 'Sold ' + x.n + ' for ' + money(p)); toast('Sold ' + x.n + ' for ' + money(p) + '.'); break; }
     case 'rm': { if (v.startsWith('i')) { const i = +v.slice(1); const x = h.inv[i]; if (x && (x.q || 1) > 1) x.q -= 1; else h.inv.splice(i, 1); } else if (!h.removed.includes(v)) h.removed.push(v); break; }
     case 'additem': { const f = $('hc-item'); const n = f && f.value.trim(); if (!n) return; h.inv.push({ n: n.slice(0, 60), q: 1 }); break; }
     case 'gold': h.goldDelta += +v; if (goldOf(h) < 0) h.goldDelta -= goldOf(h); break;

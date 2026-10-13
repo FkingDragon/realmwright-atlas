@@ -224,7 +224,7 @@ function chronicle() {
   out.sort((a, b) => b.d - a.d || b.i - a.i);
   return out;
 }
-const CHRON_ICON = { quest: '◆', mon: '✶', travel: '➜', hero: '★', buy: '¤', npc: '☉', down: '✝' };
+const CHRON_ICON = { quest: '◆', mon: '✶', travel: '➜', hero: '★', buy: '¤', npc: '☉', down: '✝', guild: '⚑' };
 function chronPanel() {
   const P = gst().party, at = P.at ? SBY.get(P.at) : null, day = market.day;
   let h = '<div class="mk-head"><div><div class="eyebrow">Heroes · Chronicle</div><h2>' + esc(P.name || 'The party') + '</h2></div>' + CLOSE_BTN + '</div>';

@@ -254,7 +254,7 @@ function placeView(s, key, day) {
     hall: 'Where ' + (owner ? pLink(owner) : 'the rulers') + ' ' + (sizeOf(s).k === 'hamlet' ? 'lives and settles disputes' : 'holds court and keeps the records') + '.',
     market: sizeOf(s).k === 'hamlet' || sizeOf(s).k === 'village' ? 'The open green where folk meet, trade and graze their animals.' : 'Stalls, the town well and the busiest crowds in ' + esc(s.name) + '.',
     temple: 'A house of ' + esc(pl.god || 'the gods') + ', a god of ' + (pl.dom || 'many things').toLowerCase() + '.',
-    tavern: owner ? 'Run by ' + pLink(owner) + '.' : 'A busy tavern.', inn: owner ? 'Rooms and stabling, run by ' + pLink(owner) + '.' : 'Rooms and stabling for travellers.',
+    tavern: owner ? 'Run by ' + pLink(owner) + '.' : 'A public house.', inn: owner ? 'Rooms and stabling, run by ' + pLink(owner) + '.' : 'Rooms and stabling for travellers.',
     law: key === 'barracks' ? 'Home of the garrison.' : key === 'gaol' ? 'Cells for debtors, drunks and worse.' : 'Where the constable lives and keeps the stocks.',
     guild: pl.org ? 'The ' + esc(ORGS[pl.org].name) + ' branch in ' + esc(s.name) + ': ' + oLink(pl.org, s.id, BRANCH[pl.org][guildLevel(s, pl.org)].toLowerCase()) + '.' + (owner ? ' Led by ' + pLink(owner) + '.' : '') : '',
     money: owner ? 'Lends, changes money and holds deposits. Owned by ' + pLink(owner) + '.' : 'Money-changers.',
@@ -263,6 +263,7 @@ function placeView(s, key, day) {
     district: ''
   }[pl.kind] || '';
   if (desc) h += '<p>' + desc + '</p>';
+  h += sceneHtml(s, pl, day);
   if (owner && owner.status === 'Dead') h += '<p class="meta">' + esc(npcName(owner)) + ' is dead' + (owner.fate ? ' (' + esc(owner.fate.charAt(0).toLowerCase() + owner.fate.slice(1)) + ')' : '') + '; family or a partner keeps the place going.</p>';
   if (pl.kind === 'district') {
     const al = aldermenOf(s).find((x) => x.d.name === pl.name);
