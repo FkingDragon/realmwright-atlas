@@ -627,16 +627,26 @@ function minBar(html) {
 function head(title, sub, eyebrow) {
   return '<div class="ihead"><div>' + (eyebrow ? '<div class="eyebrow">' + eyebrow + '</div>' : '') + '<h2>' + esc(title) + '</h2></div><button type="button" class="x" data-act="close" aria-label="Close panel">×</button></div>' + (sub ? '<p class="sub">' + esc(sub) + '</p>' : '');
 }
+let placeEditOpen = false;
+document.addEventListener('toggle', (e) => { if (e.target && e.target.id === 'placeEdit') placeEditOpen = e.target.open; }, true);
 function settlePanel(s) {
   const P = profile(s);
   const realm = P.realm ? (s.tier === 4 && P.realm.cap.id === s.id ? 'Seat of ' + P.realm.name : P.realm.name) : '';
   let h = '<div class="ihead"><div class="grow"><div class="eyebrow">' + esc(P.tierName) + ' · ' + esc(T.NAMES[P.b]) + (P.coastal ? ' · coastal' : '') + '</div>' +
-    '<input id="f-name" class="title-in" value="' + esc(s.name) + '" aria-label="Settlement name" maxlength="40"' + (isPlayer() ? ' readonly' : '') + '></div><button type="button" class="x locate" data-act="locate" aria-label="Show on map" title="Show on map"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button type="button" class="x" data-act="close" aria-label="Close panel">×</button></div>';
+    '<input class="title-in" value="' + esc(s.name) + '" aria-hidden="true" tabindex="-1" maxlength="40" readonly></div><button type="button" class="x locate" data-act="locate" aria-label="Show on map" title="Show on map"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button type="button" class="x" data-act="close" aria-label="Close panel">×</button></div>';
+  h += glanceHtml(s);
   if (realm) h += '<p class="sub">' + (s.tier === 4 && P.realm.cap.id === s.id ? 'Seat of ' + rLink(P.realm) : rLink(P.realm)) + '</p>';
   h += '<p class="meta orgline"><b>Organisations:</b> ' + orgsShown(s).map((k) => oLink(k, s.id, ORGS[k].short) + branchTag(s, k)).join(' · ') + (guildLevel(s, 'adventurers') < 1 && hallFor(s) ? ' · nearest guild hall in ' + tLink(hallFor(s)) : '') + '</p>';
+  if (!isPlayer()) h += '<div class="field"><label class="lab" for="f-notes">Notes</label><textarea id="f-notes" rows="2" placeholder="Rulers, rumours, quest hooks…">' + esc(s.notes || '') + '</textarea></div>';
+  if (!isPlayer()) h += '<details class="editbox" id="placeEdit"' + (placeEditOpen ? ' open' : '') + '><summary>Edit this place <small>size, population' + (s.tier === 4 ? ', realm name' : '') + ', wealth and defence</small></summary>';
   h += '<div class="row2 dm-only"><div class="field"><label class="lab" for="f-tier">Size</label><select id="f-tier">' + [1, 2, 3, 4].map((t) => '<option value="' + t + '"' + (t === s.tier ? ' selected' : '') + '>' + ['', 'Hamlet or village', 'Town', 'City', 'Capital (seat of a realm)'][t] + '</option>').join('') + '</select></div>' +
     '<div class="field"><label class="lab" for="f-pop">Population</label><input id="f-pop" type="number" inputmode="numeric" min="10" max="200000" step="10" value="' + s.pop + '"></div></div><p class="meta sizenote">Counts as a <b>' + sizeOf(s).name.toLowerCase() + '</b> (' + SIZE_RANGE[sizeOf(s).k] + ')' + (isCapital(s) ? ' and is the seat of its realm' : '') + '. Changing the population moves it between hamlet, village, town, city and metropolis.</p>';
-  if (s.tier === 4) h += '<div class="field"><label class="lab" for="f-realm">Realm name</label><input id="f-realm" value="' + esc(s.realm || '') + '" maxlength="60"></div>';
+  if (s.tier === 4 && !isPlayer()) h += '<div class="field"><label class="lab" for="f-realm">Realm name</label><input id="f-realm" value="' + esc(s.realm || '') + '" maxlength="60"></div>';
+  if (!isPlayer()) {
+    const opt = (cur, auto, names) => '<option value=""' + (cur == null ? ' selected' : '') + '>Auto (' + names[auto] + ')</option>' + names.map((n, i) => '<option value="' + i + '"' + (cur === i ? ' selected' : '') + '>' + n + '</option>').join('');
+    h += '<div class="row2"><div class="field"><label class="lab" for="f-wealth">Wealth</label><select id="f-wealth">' + opt(s.wealth, autoWealth(s), WEALTH_LV) + '</select></div><div class="field"><label class="lab" for="f-defence">Defence</label><select id="f-defence">' + opt(s.defence, autoDefence(s), DEFENCE_LV) + '</select></div></div>' +
+      '<p class="meta">Change how hard hard times hit: wealth softens famine and plague, defences soften war and bandits. Auto leaves the world as generated.</p></details>';
+  }
   if (popNow(s) !== s.pop) h += '<p class="meta"><b>' + fmtInt(popNow(s)) + ' people today</b> (usually ' + fmtInt(s.pop) + '; see History).</p>';
   h += '<dl class="stats">' +
     stat('Buildings', fmtInt(P.buildings)) + stat('Town area', fmtInt(P.acres) + ' acres') + stat('Farmland', (P.farm < 10 ? P.farm.toFixed(1) : fmtInt(P.farm)) + ' sq mi') +
@@ -650,13 +660,6 @@ function settlePanel(s) {
   h += layoutHtml(s);
   h += '<section><h3>Wildlife nearby</h3><ul class="fauna">' + P.fauna.map(([n, cr]) => '<li><span>' + monLink(n) + '</span><em class="r-' + rarity(cr) + '">' + rarity(cr) + '</em><b>CR ' + cr + '</b></li>').join('') + '</ul></section>';
   { const ld = townPeople(s, LEADERS[s.tier].length).list.map(withOv); const gmR = roster(s); if (gmR) ld.push(withOv(gmR.list[0])); h += '<section><h3>Notable people</h3><ul class="rels">' + ld.map((p) => '<li><i style="background:' + (GROUP_COL[p.group] || '#999') + '"></i><span><button type="button" class="link" data-pp="npc" data-v="' + esc(p.id) + '">' + esc(npcName(p)) + '</button><small>' + esc(p.job) + '</small></span><span></span></li>').join('') + '</ul></section>'; }
-  h += marketSummary(s);
-  if (!isPlayer()) {
-    const opt = (cur, auto, names) => '<option value=""' + (cur == null ? ' selected' : '') + '>Auto (' + names[auto] + ')</option>' + names.map((n, i) => '<option value="' + i + '"' + (cur === i ? ' selected' : '') + '>' + n + '</option>').join('');
-    h += '<div class="row2"><div class="field"><label class="lab" for="f-wealth">Wealth</label><select id="f-wealth">' + opt(s.wealth, autoWealth(s), WEALTH_LV) + '</select></div><div class="field"><label class="lab" for="f-defence">Defence</label><select id="f-defence">' + opt(s.defence, autoDefence(s), DEFENCE_LV) + '</select></div></div>' +
-      '<p class="meta">Change how hard hard times hit: wealth softens famine and plague, defences soften war and bandits. Auto leaves the world as generated.</p>';
-  }
-  if (!isPlayer()) h += '<div class="field"><label class="lab" for="f-notes">Notes</label><textarea id="f-notes" rows="3" placeholder="Rulers, rumours, quest hooks…">' + esc(s.notes || '') + '</textarea></div>';
   h += '<div class="actions"><button type="button" class="btn primary" data-act="zoomto">View streets</button><button type="button" class="btn" data-act="openpeople">Residents</button>' + (gst().party.at === s.id ? '<span class="pill on">The party is here</span>' : '<button type="button" class="btn" data-party="' + esc(s.id) + '">Move the party here</button>') + '' + (isPlayer() ? '' : '<button type="button" class="btn danger" data-act="delete">Delete</button>') + '</div>';
   h += '<p class="hint">' + (tool === 'settle' ? 'Drag the marker to move it. Tap empty land to deselect, then tap again to found a new settlement.' : 'To move it, open the Settle tool and drag it there.') + ' Shop counts follow medieval support values: one shoemaker per 150 people, one bookseller per 6,300.</p>';
   return h;

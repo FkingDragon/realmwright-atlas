@@ -6,6 +6,25 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-13 — v26: finding things faster
+*By: project owner (prepared with Claude)*
+
+- **index.html**, places:
+  - every place opens with **At a glance**: Market, Danger, Quests and People tiles, each jumping to its tab;
+  - below them come today's events, who is in charge, tracked residents and the DM's notes;
+  - the editing fields move into a fold-out **Edit this place**.
+- **index.html**, the World page: it starts with **Today** (the biggest events) and **Jump back to** (the party, tracked people, recently opened places and people).
+- **index.html**, the side panel: its top is tighter, with search and sections on one row. On a laptop that row folds away as you read down.
+- **index.html**, the map: zoomed out, monster groups gather into one marker with a count; tap it to zoom in.
+- **index.html**, on phones:
+  - pages open at their own header;
+  - the map tools are icons that fit;
+  - the seed line no longer overlaps the buttons.
+- **source/**: updated modules and the new `tests/flow.js`.
+- **docs/world-atlas.md**: notes for v26.
+- **backups/index_2026-10-13_v26.html**: a copy of this version.
+- Tests: 267 automated checks pass.
+
 ## 2026-10-13 — v25: the eight-point check
 *By: project owner (prepared with Claude)*
 

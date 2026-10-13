@@ -985,6 +985,58 @@ body.player .sections { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 861px) and (max-height: 700px) { #frame .maptools .tool span { display: none !important; } #frame .maptools .tool { width: 40px; padding: 7px 0; } }
 
+/* v26 a tighter top: search and sections share a row, and the top folds away while you read */
+#side .side-row2 { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: stretch; min-width: 0; }
+#side .side-row2 .sections { display: flex; }
+#side .side-row2 .tool.sec { flex-direction: column; gap: 1px; width: 62px; padding: 4px 2px 3px; }
+#side .side-row2 .tool.sec svg { width: 16px; height: 16px; }
+#side .side-row2 .tool.sec span { font-size: 10.5px; letter-spacing: .05em; }
+#side .plate .meta-line { overflow: hidden; text-overflow: ellipsis; }
+#side .side-row2 > * { order: 0; }
+@media (max-width: 860px) {
+  #side .side-row2 .search { width: auto; flex: none; }
+  #side .side-row2 .tool.sec { width: 62px; }
+  #side .side-row2 .tool.sec span { font-size: 10px; letter-spacing: .02em; }
+  #frame .maptools .tool span { display: none !important; }
+  #frame .maptools .tool { width: 33px; padding: 8px 0; }
+  #side .plate .meta-line { display: none; }
+}
+@media (min-width: 861px) {
+  #side.scrolled .side-row2, #side.scrolled .calbar .cal-d small { display: none; }
+  #side.scrolled .side-top { gap: 6px; padding-bottom: 6px; }
+}
+.ph-row .grow { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
+.ph-row .grow .eyebrow { order: 2; margin: 0; }
+.ph-row .grow h2, .ph-row .grow .title-in { order: 1; max-width: 100%; }
+.ph-row .grow .title-in { flex: 0 1 auto; field-sizing: content; min-width: 5ch; }
+/* v26 At a glance (a place) and Today (the world) */
+.glance { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 10px; display: grid; gap: 8px; }
+.glance > h3 { margin: 0; border: 0; padding: 0; }
+.gl-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(78px, 1fr)); gap: 6px; }
+.gl-t { display: grid; gap: 1px; text-align: left; padding: 7px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; min-width: 0; }
+.gl-t:hover, .gl-t:focus-visible { border-color: var(--brass); }
+.gl-t span { font: 400 10.5px var(--f-display); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.gl-t b { font: 600 17px/1.15 var(--f-ui); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gl-t small { color: var(--muted); font-size: 11.5px; line-height: 1.25; overflow-wrap: anywhere; }
+.gl-t.ok b { color: #8fd18a; } .gl-t.warn b { color: var(--brass-hi); } .gl-t.bad b { color: #ff8f80; }
+.glance .evlist { margin: 0; }
+.gl-who, .gl-note, .gl-calm { margin: 0; font-size: 13.5px; line-height: 1.5; }
+.gl-who small { color: var(--muted); }
+.gl-who .lab, .gl-note .lab, .gl-recent .lab { display: inline-block; margin-right: 6px; font-size: 10.5px; }
+.gl-note { color: var(--muted); }
+details.editbox { border: 1px dashed var(--line); border-radius: 10px; padding: 0 10px; }
+details.editbox[open] { padding-bottom: 10px; }
+details.editbox > summary { cursor: pointer; padding: 10px 0; font: 500 13px var(--f-display); letter-spacing: .05em; color: var(--brass-hi); list-style-position: inside; }
+details.editbox > summary small { font: 400 12px var(--f-ui); letter-spacing: 0; color: var(--muted); margin-left: 6px; }
+details.editbox > * + * { margin-top: 10px; }
+.today { display: grid; gap: 8px; }
+.today .navgroup { margin: 4px 0 0; }
+.today .evlist { margin: 0; }
+.evlist button { font-family: var(--f-ui); }
+.today .link.sm { justify-self: start; font-size: 12.5px; }
+.gl-recent { display: grid; gap: 5px; }
+.gl-recent .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.gl-recent .chip { min-height: 30px; }
 /* v25 accessibility: skip links, a quiet announcer, and comfortable targets */
 .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--brass); color: var(--ink); font-weight: 700; padding: 10px 14px; border-radius: 8px; text-decoration: none; }
 .skip:focus { top: 8px; outline: 2px solid var(--text); }
@@ -1026,9 +1078,10 @@ body.player .sections { grid-template-columns: repeat(2, 1fr); }
         </div>
       </div>
       <div id="calBar" class="calbar" role="group" aria-label="Calendar"></div>
+      <div class="side-row2">
       <div class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-      <input id="search" type="search" placeholder="Find a place or person" autocomplete="off" aria-label="Find a place or person">
+      <input id="search" type="search" placeholder="Search the world" autocomplete="off" aria-label="Find a place or person">
       <div id="searchResults" class="results panel" hidden></div>
     </div>
       <nav class="sections" aria-label="Sections">
@@ -1036,6 +1089,7 @@ body.player .sections { grid-template-columns: repeat(2, 1fr); }
         <button type="button" class="tool sec" data-tool="heroes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.8l8 4.6v9.2l-8 4.6-8-4.6V7.4z"/><path d="M12 7.2l4.6 8H7.4z"/></svg><span>Heroes</span></button>
         <button type="button" class="tool sec" data-tool="monsters" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.5 4.5c1.5 4 1.6 9.5-.5 15M11.5 3.5c1 4.5.8 11-1.2 17M16.5 4.5c.6 4.5-.2 10-2.6 15"/><path d="M19 8.5c.6 3.4-.4 7-2.6 10"/></svg><span>Monsters</span></button>
       </nav>
+      </div>
     </div>
     <div id="inspector" class="inspector" role="region" aria-label="Atlas panel" tabindex="-1"></div>
   <div id="worldPop" class="pop panel" hidden><h2>World</h2><div id="worldBody"></div></div>
@@ -1043,7 +1097,7 @@ body.player .sections { grid-template-columns: repeat(2, 1fr); }
     <h2>Using the atlas</h2>
     <ol>
       <li><b>Zoom</b> with the mouse wheel, a pinch, or the ladder at bottom right. The world map becomes realms, then regions, then town streets, then a pixel-art battle map with 5-ft squares, drawn for every town, road, coast and forest.</li>
-      <li><b>The side panel</b> is your atlas: start at the world's realms, open a realm to list its capital, cities, towns and villages, then open a place. Every place has its own <b>Overview</b>, <b>Market</b>, <b>People</b> and <b>Guilds</b> tabs, and the breadcrumbs at the top take you back up. Tapping a town on the map opens it here too. Hide the panel with the button beside Help to give the map the whole window; on a phone, the handle under the map gives either more room.</li>
+      <li><b>The side panel</b> is your atlas: start at the world's realms, open a realm to list its capital, cities, towns and villages, then open a place. Every place has its own <b>Overview</b>, <b>Market</b>, <b>People</b> and <b>Guilds</b> tabs, and the breadcrumbs at the top take you back up. Tapping a town on the map opens it here too. Hide the panel with the button beside Help to give the map the whole window; on a phone, the handle under the map gives either more room. Each place opens with <b>At a glance</b>: its market, danger, quest board and people (tap one to jump to it), what is happening there today and who is in charge. The World page starts with <b>Today</b> and <b>Jump back to</b> the places and people you opened last.</li>
       <li><b>The calendar</b> sits at the top of the side panel: Play lets time run, or step a day or a week.</li>
       <li><b>Map tools</b> sit along the top of the map: <b>Select</b>, then <b>Settle</b>, <b>Road</b>, <b>Paint</b>, <b>Tiles</b>, <b>Label</b> and <b>Measure</b> add your own places, routes, terrain, battle maps and notes. Their options open in the side panel; press Done when finished.</li>
       <li><b>Tiles</b> paints the battle map square by square: ground, props such as tables, beds and campfires, and walls, doors, windows and fences along the grid lines. Fill a patch, or drag out a whole building. Players see your changes; undo works per stroke.</li>
@@ -1051,7 +1105,7 @@ body.player .sections { grid-template-columns: repeat(2, 1fr); }
       <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day.</li>
       <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town with a danger rating for your party, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for.</li>
       <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character.</li>
-      <li><b>Monsters</b> shows creature groups living in their natural habitats, plus rare wanderers and haunts. They appear and move on over the weeks, while lairs stay for months. Place your own from the Bestiary (all 334 SRD creatures with full stat blocks, or a custom one), track each creature's hit points and initiative, and mark them slain. Monsters near a town raise its danger, which brings more monster quests, bigger rewards and higher bounties on the Market's Bounties tab.</li>
+      <li><b>Monsters</b> shows creature groups living in their natural habitats, plus rare wanderers and haunts. They appear and move on over the weeks, while lairs stay for months. Place your own from the Bestiary (all 334 SRD creatures with full stat blocks, or a custom one), track each creature's hit points and initiative, and mark them slain. Monsters near a town raise its danger, which brings more monster quests, bigger rewards and higher bounties on the Market's Bounties tab. Zoomed out, nearby groups gather into one marker showing the most dangerous of them, with a count; tap it to zoom in.</li>
       <li><b>Links</b> Underlined names go somewhere: towns, realms, people, organisations and events all open their own page and move the map to them. Press the open tool again, a tab you are already on, or the – button to fold the panel into a slim bar; tap the bar to bring it back.</li><li><b>Measure</b> gives distance and overland travel time between any two points.</li>
       <li>Everything saves in this browser. Use <b>World → Copy map code</b> for a backup. Undo with Ctrl+Z. <b>World → Recent changes</b> shows who changed what; at a shared table it lists everyone's changes with their name.</li>
     </ol>
@@ -8114,8 +8168,10 @@ function monDetail(sp, day) {
   if (sp.kind === 'placed') h += '<div class="row2"><div class="field"><label class="lab" for="mo-pcount">Number</label><input id="mo-pcount" type="number" min="1" max="50" value="' + sp.count + '"></div><div class="field"><label class="lab" for="mo-pname">Name</label><input id="mo-pname" maxlength="60" value="' + esc(sp.name) + '"></div></div><div class="field"><label class="lab" for="mo-pnotes">Notes</label><textarea id="mo-pnotes" rows="2" maxlength="600" placeholder="Guarding the old mill; carries the stolen relic">' + esc(sp.placed.notes || '') + '</textarea></div>';
   return h + '</div>';
 }
+const MON_CLUSTER_S = 2.2;
 function openMonster(id, fly) {
   if (isPlayer()) { toast('Monster whereabouts are for the DM.'); return; }
+  if (id && id.startsWith('cl:')) { const [x, y] = id.slice(3).split(',').map(Number); flyTo(x, y, Math.max(MON_CLUSTER_S * 1.05, view.s * 2.6), 450); return; }
   if (tool !== 'monsters') setTool('monsters', true);
   panelMin = false;
   monUI.id = id; renderPanel();
@@ -8213,6 +8269,36 @@ function drawMonsters() {
   list = list.filter((sp) => (showCalm || !PEACEFUL.has(sp.name)) && (view.s >= 1.2 || sp.kind === 'placed' || (mt && monUI.id === sp.id) || (view.s >= 0.6 ? sp.kind === 'lair' || crNum(sp.cr) >= (mt ? 1 : 2) : sp.kind === 'lair' && (/dragon/.test(sp.name) || crNum(sp.cr) >= 9))));
   if (list.length > 500) list = list.sort((a, b) => spawnXP(b) - spawnXP(a)).slice(0, 500);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '700 9.5px "Atkinson Hyperlegible", system-ui, sans-serif';
+  // v26: zoomed out, nearby groups gather into one marker showing the most dangerous of them and how many groups there are,
+  // so towns and roads stay readable. Tapping it zooms in. Placed and chosen creatures always show on their own.
+  if (view.s < MON_CLUSTER_S) {
+    const cell = mt ? 72 : 110, cells = new Map(), solo = [];
+    for (const sp of list) {
+      if (sp.kind === 'placed' || (mt && monUI.id === sp.id)) { solo.push(sp); continue; }
+      const k = Math.floor(sp.x * view.s / cell) + ',' + Math.floor(sp.y * view.s / cell); // anchored to the world, so groups don't jump as you pan
+      const c = cells.get(k); if (c) c.push(sp); else cells.set(k, [sp]);
+    }
+    list = solo;
+    for (const g of cells.values()) {
+      if (g.length === 1) { list.push(g[0]); continue; }
+      let top = g[0], cx = 0, cy = 0;
+      for (const sp of g) { cx += sp.x; cy += sp.y; if (monTier(sp) > monTier(top) || (monTier(sp) === monTier(top) && spawnXP(sp) > spawnXP(top))) top = sp; }
+      cx /= g.length; cy /= g.length;
+      const X = sx(cx), Y = sy(cy), r = 10.5, tierN = PEACEFUL.has(top.name) ? 0 : monTier(top);
+      ctx.fillStyle = monCol(top); ctx.strokeStyle = 'rgba(20,16,10,.9)'; ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      if (tierN === 3) { const q = r * 1.25; ctx.moveTo(X, Y - q); ctx.lineTo(X + q, Y); ctx.lineTo(X, Y + q); ctx.lineTo(X - q, Y); ctx.closePath(); }
+      else if (tierN === 4) { const q = r * 1.15; for (let k = 0; k < 6; k++) { const an = Math.PI / 6 + k * Math.PI / 3; if (k) ctx.lineTo(X + q * Math.cos(an), Y + q * Math.sin(an)); else ctx.moveTo(X + q * Math.cos(an), Y + q * Math.sin(an)); } ctx.closePath(); }
+      else ctx.arc(X, Y, r, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = 'rgba(243,234,210,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(X, Y, r + 3.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.save(); ctx.translate(X, Y); ctx.scale(r / 7.5, r / 7.5); ctx.strokeStyle = '#fff7e6'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.stroke(CLAW); ctx.restore();
+      const txt = String(g.length), bw = Math.max(15, 7 + txt.length * 6), bx = X + r * 0.9, by = Y + r * 0.75;
+      ctx.fillStyle = '#e2c37a'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(bx - bw / 2, by - 7, bw, 14, 7); else ctx.rect(bx - bw / 2, by - 7, bw, 14); ctx.fill();
+      ctx.fillStyle = '#1a140c'; ctx.fillText(txt, bx, by + 0.5);
+      markers.push({ kind: 'mon', id: 'cl:' + cx.toFixed(2) + ',' + cy.toFixed(2), X, Y, r: r + 6 });
+    }
+  }
   for (const sp of list) {
     const X = sx(sp.x), Y = sy(sp.y);
     const calm = PEACEFUL.has(sp.name);
@@ -10611,7 +10697,7 @@ function activityTab(s, day) {
 
 // ================================================================ campaign: safe saving, backups, stable worlds, DM and player modes, merging (v20)
 const GEN_VERSION = 20;          // bump whenever generated content changes
-const APP_VERSION = 25;          // the release number shown to people (CHANGELOG.md)
+const APP_VERSION = 26;          // the release number shown to people (CHANGELOG.md)
 // what changed in generated content at each version, shown when an older world is opened
 const GEN_CHANGES = {
   13: 'Town layouts redrawn by terrain and culture.',
@@ -13440,6 +13526,7 @@ function homeHtml() {
   let pop = 0;
   for (const s of SET) pop += s.pop;
   let h = '<section><p class="meta">' + fmtInt(SET.length) + ' settlements and about ' + fmtInt(pop) + ' people in ' + REALMS.length + ' realm' + (REALMS.length === 1 ? '' : 's') + '. Pick a realm, then a place, or tap the map.</p></section>';
+  h += todayHtml();
   const wars = activeOn(day).filter((e) => e.type === 'war');
   h += '<section><div class="navgroup"><h3>Realms</h3><small>' + REALMS.length + '</small></div><ul class="navlist">' + REALMS.map((R) => {
     const st = realmStats(R), atWar = wars.some((e) => REALMS[e.ai] === R || REALMS[e.bi] === R);
@@ -13509,7 +13596,13 @@ function sideTitle(c) {
 }
 function afterShell() {
   const c = sideCtx(), t = sideTitle(c);
-  if (t !== lastTitle) { lastTitle = t; const a = $('srAnnounce'); if (a) a.textContent = t; }
+  if (c.kind === 'place') noteRecent(c.tab === 'people' && people.npc ? 'p:' + people.npc : c.s.id);
+  if (t !== lastTitle) {
+    lastTitle = t; const a = $('srAnnounce'); if (a) a.textContent = t;
+    // v26: on a phone the whole atlas scrolls, so a new page starts at its own header, with the world's search and calendar just above
+    const side = $('side'), box = $('inspector');
+    if (side && box && matchMedia('(max-width: 860px)').matches && !matchMedia('(orientation: landscape) and (max-height: 520px)').matches) side.scrollTop = c.kind === 'home' ? 0 : box.offsetTop;
+  }
   if (navFocus) {
     navFocus = false;
     const f = document.querySelector('#inspector .side-head h2') || document.querySelector('#inspector .crumbs b');
@@ -13561,6 +13654,15 @@ $('inspector').addEventListener('click', (e) => {
   else if (go === 'place') { if (tool === 'people' && people.sid === v && (people.npc || people.place)) { people.npc = null; people.place = null; renderPanel(); } else openPlace(v, 'overview', true); }
   else if (go === 'fly') { const s = SBY.get(v); if (s) { flyVis(s.x, s.y, view.s >= TOWN_ZOOM[s.tier] ? view.s : TOWN_ZOOM[s.tier]); pulseTown(s.id); } }
   else if (go === 'done') { setTool('explore'); }
+  else if (go === 'gl') {
+    const [sid, tab, sub] = v.split('|');
+    if (tab === 'market') market.tab = sub;
+    else if (tab === 'guilds') guildUI.tab = sub;
+    else if (tab === 'people') people.tab = sub;
+    openPlace(sid, tab, false);
+    if (tab === 'market' && market.tab !== sub) { market.tab = sub; renderPanel(); }
+  }
+  else if (go === 'person') { const p = npcById(v); if (p && SBY.get(p.sid)) { openPlace(p.sid, 'people', false); people.npc = p.id; renderPanel(); if (typeof flyToPerson === 'function') flyToPerson(p); } }
   else if (go === 'more') { navMore[v] = true; renderPanel(); }
   else if (go === 'sect') {
     sel = null;
@@ -13599,6 +13701,71 @@ $('btnSheet').addEventListener('click', () => {
   a.classList.remove('sheet-map', 'sheet-list');
   if (st) a.classList.add(st);
 });
+
+// v26: while you read down a long page, the search and section row fold away; scrolling back to the top brings them back
+{
+  const box = $('inspector'), side = $('side');
+  let folded = false;
+  if (box && side) box.addEventListener('scroll', () => {
+    const t = box.scrollTop;
+    if (!folded && t > 48) { folded = true; side.classList.add('scrolled'); }
+    else if (folded && t < 6) { folded = false; side.classList.remove('scrolled'); }
+  }, { passive: true });
+}
+
+// ---------------------------------------------------------------- v26: what a DM needs first, without hunting through tabs
+// A place's "At a glance": the market, the danger, the quest board and the people, each one tap from the tab that holds it,
+// then what is happening there today and who is in charge.
+function glanceHtml(s) {
+  const day = market.day, sid = esc(s.id);
+  const idx = basketIndex(s, day), iw = idx < 0.93 ? ['cheap', 'ok'] : idx > 1.35 ? ['very dear', 'bad'] : idx > 1.1 ? ['dear', 'warn'] : ['normal', ''];
+  const hall = hallFor(s), open = hall ? questsFor(hall, day).filter((q) => questState(q, day) === 'open').length : 0;
+  const tile = (tab, sub, k, b, sm, cls) => '<button type="button" class="gl-t ' + (cls || '') + '" data-nav="gl" data-v="' + sid + '|' + tab + '|' + sub + '"><span>' + k + '</span><b>' + b + '</b><small>' + sm + '</small></button>';
+  let t = tile('market', 'town', 'Market', Math.round(idx * 100) + '%', iw[0], iw[1]);
+  if (!isPlayer()) { const th = threatOf(s, day), wk = threatOf(s, day - 7), tw = threatWord(th); t += tile('market', 'bounties', 'Danger', tw[0], th > wk + 0.05 ? 'rising' : th < wk - 0.05 ? 'falling' : 'steady', tw[1]); }
+  t += tile('guilds', 'board', 'Quests', open ? String(open) : 'None', hall ? (hall === s ? 'posted here' : 'in ' + esc(hall.name)) : 'no guild near', '');
+  t += tile('people', 'residents', 'People', fmtInt(popNow(s, day)), sizeWord(s).toLowerCase(), '');
+  let h = '<section class="glance" aria-label="At a glance"><h3>At a glance</h3><div class="gl-tiles">' + t + '</div>';
+  const mods = modsFor(s, day);
+  if (mods.length) h += '<ul class="evlist compact">' + mods.slice().sort((a, b) => b[1] - a[1]).slice(0, 3).map(([, , e]) => evRow(e, day)).join('') + '</ul>';
+  else h += '<p class="meta gl-calm">A quiet day: nothing out of the ordinary is moving prices.</p>';
+  // who is in charge, and anyone the party cares about who lives here
+  const lead = townPeople(s, Math.min(2, LEADERS[s.tier].length)).list.map(withOv).filter((p) => !/dead/i.test(p.status || ''));
+  const R = hall === s ? roster(s) : null, gm = R ? withOv(R.list[0]) : null;
+  const who = lead.map((p) => pLink(p) + ' <small>' + esc(p.job) + '</small>').concat(gm ? [pLink(gm) + ' <small>Guildmaster</small>'] : []);
+  if (who.length) h += '<p class="gl-who"><span class="lab">In charge</span> ' + who.join(' · ') + '</p>';
+  const tr = Object.keys(edits.npc || {}).filter((id) => edits.npc[id].tracked).map(npcById).filter((p) => p && p.sid === s.id);
+  if (tr.length) h += '<p class="gl-who"><span class="lab">Tracked here</span> ' + tr.slice(0, 6).map((p) => pLink(withOv(p))).join(' · ') + (tr.length > 6 ? ' and ' + (tr.length - 6) + ' more' : '') + '</p>';
+  if (gst().party.at === s.id) h += '<p class="gl-who"><span class="pill on">The party is here</span></p>';
+  if (s.notes && !isPlayer()) h += '<p class="gl-note"><span class="lab">Your notes</span> ' + esc(s.notes.length > 180 ? s.notes.slice(0, 180) + '…' : s.notes) + '</p>';
+  return h + '</section>';
+}
+// the World page's "Today": what is happening, where the party is, and the places you opened lately
+let recentSeen = [];
+try { const r = JSON.parse(localStorage.getItem('atlas-recent') || '[]'); if (Array.isArray(r)) recentSeen = r.filter((x) => typeof x === 'string').slice(0, 8); } catch (e) { /* a private window: start empty */ }
+function noteRecent(key) {
+  if (!key || recentSeen[0] === key) return;
+  recentSeen = [key].concat(recentSeen.filter((k) => k !== key)).slice(0, 8);
+  try { localStorage.setItem('atlas-recent', JSON.stringify(recentSeen)); } catch (e) { /* not essential */ }
+}
+function todayHtml() {
+  const day = market.day;
+  const ev = sortEvents(activeOn(day));
+  let h = '<section class="today"><div class="navgroup"><h3>Today</h3><small>' + dateText(day) + '</small></div>';
+  h += ev.length ? '<ul class="evlist compact">' + ev.slice(0, 3).map((e) => evRow(e, day)).join('') + '</ul>' + (ev.length > 3 ? '<button type="button" class="link sm" data-nav="sect" data-v="events">All ' + ev.length + ' events</button>' : '') : '<p class="meta">The world is quiet today.</p>';
+  const P = gst().party, at = P.at && SBY.get(P.at);
+  const tr = Object.keys(edits.npc || {}).filter((id) => edits.npc[id].tracked).length;
+  const chips = [];
+  if (at) chips.push('<button type="button" class="chip" data-nav="place" data-v="' + esc(at.id) + '">Party in ' + esc(at.name) + '</button>');
+  if (tr) chips.push('<button type="button" class="chip" data-nav="sect" data-v="tracked">' + tr + ' tracked ' + (tr === 1 ? 'person' : 'people') + '</button>');
+  for (const k of recentSeen) {
+    if (chips.length >= 8) break;
+    if (k.startsWith('p:')) { const p = npcById(k.slice(2)); if (p && SBY.get(p.sid)) chips.push('<button type="button" class="chip" data-nav="person" data-v="' + esc(p.id) + '">' + esc(npcName(withOv(p))) + '</button>'); }
+    else { const s = SBY.get(k); if (s && !(at && at.id === s.id)) chips.push('<button type="button" class="chip" data-nav="place" data-v="' + esc(s.id) + '">' + esc(s.name) + '</button>'); }
+  }
+  if (chips.length) h += '<div class="gl-recent"><span class="lab">Jump back to</span><div class="chips">' + chips.join('') + '</div></div>';
+  return h + '</section>';
+}
 
 // ================================================================ tools & interaction state
 let tool = 'explore';
@@ -14228,16 +14395,26 @@ function minBar(html) {
 function head(title, sub, eyebrow) {
   return '<div class="ihead"><div>' + (eyebrow ? '<div class="eyebrow">' + eyebrow + '</div>' : '') + '<h2>' + esc(title) + '</h2></div><button type="button" class="x" data-act="close" aria-label="Close panel">×</button></div>' + (sub ? '<p class="sub">' + esc(sub) + '</p>' : '');
 }
+let placeEditOpen = false;
+document.addEventListener('toggle', (e) => { if (e.target && e.target.id === 'placeEdit') placeEditOpen = e.target.open; }, true);
 function settlePanel(s) {
   const P = profile(s);
   const realm = P.realm ? (s.tier === 4 && P.realm.cap.id === s.id ? 'Seat of ' + P.realm.name : P.realm.name) : '';
   let h = '<div class="ihead"><div class="grow"><div class="eyebrow">' + esc(P.tierName) + ' · ' + esc(T.NAMES[P.b]) + (P.coastal ? ' · coastal' : '') + '</div>' +
-    '<input id="f-name" class="title-in" value="' + esc(s.name) + '" aria-label="Settlement name" maxlength="40"' + (isPlayer() ? ' readonly' : '') + '></div><button type="button" class="x locate" data-act="locate" aria-label="Show on map" title="Show on map"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button type="button" class="x" data-act="close" aria-label="Close panel">×</button></div>';
+    '<input class="title-in" value="' + esc(s.name) + '" aria-hidden="true" tabindex="-1" maxlength="40" readonly></div><button type="button" class="x locate" data-act="locate" aria-label="Show on map" title="Show on map"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><circle cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button><button type="button" class="x" data-act="close" aria-label="Close panel">×</button></div>';
+  h += glanceHtml(s);
   if (realm) h += '<p class="sub">' + (s.tier === 4 && P.realm.cap.id === s.id ? 'Seat of ' + rLink(P.realm) : rLink(P.realm)) + '</p>';
   h += '<p class="meta orgline"><b>Organisations:</b> ' + orgsShown(s).map((k) => oLink(k, s.id, ORGS[k].short) + branchTag(s, k)).join(' · ') + (guildLevel(s, 'adventurers') < 1 && hallFor(s) ? ' · nearest guild hall in ' + tLink(hallFor(s)) : '') + '</p>';
+  if (!isPlayer()) h += '<div class="field"><label class="lab" for="f-notes">Notes</label><textarea id="f-notes" rows="2" placeholder="Rulers, rumours, quest hooks…">' + esc(s.notes || '') + '</textarea></div>';
+  if (!isPlayer()) h += '<details class="editbox" id="placeEdit"' + (placeEditOpen ? ' open' : '') + '><summary>Edit this place <small>size, population' + (s.tier === 4 ? ', realm name' : '') + ', wealth and defence</small></summary>';
   h += '<div class="row2 dm-only"><div class="field"><label class="lab" for="f-tier">Size</label><select id="f-tier">' + [1, 2, 3, 4].map((t) => '<option value="' + t + '"' + (t === s.tier ? ' selected' : '') + '>' + ['', 'Hamlet or village', 'Town', 'City', 'Capital (seat of a realm)'][t] + '</option>').join('') + '</select></div>' +
     '<div class="field"><label class="lab" for="f-pop">Population</label><input id="f-pop" type="number" inputmode="numeric" min="10" max="200000" step="10" value="' + s.pop + '"></div></div><p class="meta sizenote">Counts as a <b>' + sizeOf(s).name.toLowerCase() + '</b> (' + SIZE_RANGE[sizeOf(s).k] + ')' + (isCapital(s) ? ' and is the seat of its realm' : '') + '. Changing the population moves it between hamlet, village, town, city and metropolis.</p>';
-  if (s.tier === 4) h += '<div class="field"><label class="lab" for="f-realm">Realm name</label><input id="f-realm" value="' + esc(s.realm || '') + '" maxlength="60"></div>';
+  if (s.tier === 4 && !isPlayer()) h += '<div class="field"><label class="lab" for="f-realm">Realm name</label><input id="f-realm" value="' + esc(s.realm || '') + '" maxlength="60"></div>';
+  if (!isPlayer()) {
+    const opt = (cur, auto, names) => '<option value=""' + (cur == null ? ' selected' : '') + '>Auto (' + names[auto] + ')</option>' + names.map((n, i) => '<option value="' + i + '"' + (cur === i ? ' selected' : '') + '>' + n + '</option>').join('');
+    h += '<div class="row2"><div class="field"><label class="lab" for="f-wealth">Wealth</label><select id="f-wealth">' + opt(s.wealth, autoWealth(s), WEALTH_LV) + '</select></div><div class="field"><label class="lab" for="f-defence">Defence</label><select id="f-defence">' + opt(s.defence, autoDefence(s), DEFENCE_LV) + '</select></div></div>' +
+      '<p class="meta">Change how hard hard times hit: wealth softens famine and plague, defences soften war and bandits. Auto leaves the world as generated.</p></details>';
+  }
   if (popNow(s) !== s.pop) h += '<p class="meta"><b>' + fmtInt(popNow(s)) + ' people today</b> (usually ' + fmtInt(s.pop) + '; see History).</p>';
   h += '<dl class="stats">' +
     stat('Buildings', fmtInt(P.buildings)) + stat('Town area', fmtInt(P.acres) + ' acres') + stat('Farmland', (P.farm < 10 ? P.farm.toFixed(1) : fmtInt(P.farm)) + ' sq mi') +
@@ -14251,13 +14428,6 @@ function settlePanel(s) {
   h += layoutHtml(s);
   h += '<section><h3>Wildlife nearby</h3><ul class="fauna">' + P.fauna.map(([n, cr]) => '<li><span>' + monLink(n) + '</span><em class="r-' + rarity(cr) + '">' + rarity(cr) + '</em><b>CR ' + cr + '</b></li>').join('') + '</ul></section>';
   { const ld = townPeople(s, LEADERS[s.tier].length).list.map(withOv); const gmR = roster(s); if (gmR) ld.push(withOv(gmR.list[0])); h += '<section><h3>Notable people</h3><ul class="rels">' + ld.map((p) => '<li><i style="background:' + (GROUP_COL[p.group] || '#999') + '"></i><span><button type="button" class="link" data-pp="npc" data-v="' + esc(p.id) + '">' + esc(npcName(p)) + '</button><small>' + esc(p.job) + '</small></span><span></span></li>').join('') + '</ul></section>'; }
-  h += marketSummary(s);
-  if (!isPlayer()) {
-    const opt = (cur, auto, names) => '<option value=""' + (cur == null ? ' selected' : '') + '>Auto (' + names[auto] + ')</option>' + names.map((n, i) => '<option value="' + i + '"' + (cur === i ? ' selected' : '') + '>' + n + '</option>').join('');
-    h += '<div class="row2"><div class="field"><label class="lab" for="f-wealth">Wealth</label><select id="f-wealth">' + opt(s.wealth, autoWealth(s), WEALTH_LV) + '</select></div><div class="field"><label class="lab" for="f-defence">Defence</label><select id="f-defence">' + opt(s.defence, autoDefence(s), DEFENCE_LV) + '</select></div></div>' +
-      '<p class="meta">Change how hard hard times hit: wealth softens famine and plague, defences soften war and bandits. Auto leaves the world as generated.</p>';
-  }
-  if (!isPlayer()) h += '<div class="field"><label class="lab" for="f-notes">Notes</label><textarea id="f-notes" rows="3" placeholder="Rulers, rumours, quest hooks…">' + esc(s.notes || '') + '</textarea></div>';
   h += '<div class="actions"><button type="button" class="btn primary" data-act="zoomto">View streets</button><button type="button" class="btn" data-act="openpeople">Residents</button>' + (gst().party.at === s.id ? '<span class="pill on">The party is here</span>' : '<button type="button" class="btn" data-party="' + esc(s.id) + '">Move the party here</button>') + '' + (isPlayer() ? '' : '<button type="button" class="btn danger" data-act="delete">Delete</button>') + '</div>';
   h += '<p class="hint">' + (tool === 'settle' ? 'Drag the marker to move it. Tap empty land to deselect, then tap again to found a new settlement.' : 'To move it, open the Settle tool and drag it there.') + ' Shop counts follow medieval support values: one shoemaker per 150 people, one bookseller per 6,300.</p>';
   return h;

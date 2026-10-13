@@ -197,6 +197,19 @@ Relative-neighbourhood graph per tier: highways between cities/capitals (within 
 - **shellWrap(html):** adds a sticky header with breadcrumbs, and for a place its name (an editable title for the DM), size and population, a "show on map" button, and the Overview, Market, People and Guilds tabs. Inside a place, the tool panels' own titles and calendars are hidden.
 - **realmStats:** groups every settlement by realmOf() in one pass, cached per mkVer.
 
+## Finding things (v26)
+- **Place Overview** starts with `glanceHtml(s)`. Its tiles are:
+  - **Market:** `basketIndex`;
+  - **Danger:** `threatOf` and its trend against a week ago (DM only);
+  - **Quests:** the open quests at `hallFor(s)`;
+  - **People:** `popNow`.
+
+  Each tile's `data-nav="gl"` opens `place › tab › subtab`. Under the tiles come `modsFor` events (the top 3), the leaders and guildmaster, tracked residents, the party, and the DM's notes.
+- The DM edit fields sit in `details#placeEdit`; its open state survives redraws.
+- **World page:** `todayHtml()` shows `sortEvents(activeOn(day))` (the top 3) and the **Jump back to** chips. The chips are the party's town, the tracked count, and `recentSeen`: the last 8 places or people (`p:<id>`) opened, saved in localStorage `atlas-recent`.
+- **Panel top:** search and the sections share `.side-row2`. On desktop, `#side.scrolled` hides it once the inspector scrolls past 48 px, and shows it again below 6 px. On phones, `afterShell` scrolls `#side` to the inspector whenever the page changes, except on the World page.
+- **Monster clusters:** below `view.s` 2.2, spawns group by world-anchored screen cells (110 px, or 72 px in the Monsters tool). Each group draws its most dangerous member at r 10.5 with a gold count. The hit id is `cl:x,y`, and `openMonster` flies in by ×2.6.
+
 ## Version 25 checks
 - **Live sharing:**
   - writes that fail are kept in `share.unsent` and re-sent by `shareResync()` when the browser comes back online, every 60 s, or from **Try again now**;

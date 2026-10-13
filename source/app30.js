@@ -74,6 +74,7 @@ function homeHtml() {
   let pop = 0;
   for (const s of SET) pop += s.pop;
   let h = '<section><p class="meta">' + fmtInt(SET.length) + ' settlements and about ' + fmtInt(pop) + ' people in ' + REALMS.length + ' realm' + (REALMS.length === 1 ? '' : 's') + '. Pick a realm, then a place, or tap the map.</p></section>';
+  h += todayHtml();
   const wars = activeOn(day).filter((e) => e.type === 'war');
   h += '<section><div class="navgroup"><h3>Realms</h3><small>' + REALMS.length + '</small></div><ul class="navlist">' + REALMS.map((R) => {
     const st = realmStats(R), atWar = wars.some((e) => REALMS[e.ai] === R || REALMS[e.bi] === R);
@@ -143,7 +144,13 @@ function sideTitle(c) {
 }
 function afterShell() {
   const c = sideCtx(), t = sideTitle(c);
-  if (t !== lastTitle) { lastTitle = t; const a = $('srAnnounce'); if (a) a.textContent = t; }
+  if (c.kind === 'place') noteRecent(c.tab === 'people' && people.npc ? 'p:' + people.npc : c.s.id);
+  if (t !== lastTitle) {
+    lastTitle = t; const a = $('srAnnounce'); if (a) a.textContent = t;
+    // v26: on a phone the whole atlas scrolls, so a new page starts at its own header, with the world's search and calendar just above
+    const side = $('side'), box = $('inspector');
+    if (side && box && matchMedia('(max-width: 860px)').matches && !matchMedia('(orientation: landscape) and (max-height: 520px)').matches) side.scrollTop = c.kind === 'home' ? 0 : box.offsetTop;
+  }
   if (navFocus) {
     navFocus = false;
     const f = document.querySelector('#inspector .side-head h2') || document.querySelector('#inspector .crumbs b');
@@ -195,6 +202,15 @@ $('inspector').addEventListener('click', (e) => {
   else if (go === 'place') { if (tool === 'people' && people.sid === v && (people.npc || people.place)) { people.npc = null; people.place = null; renderPanel(); } else openPlace(v, 'overview', true); }
   else if (go === 'fly') { const s = SBY.get(v); if (s) { flyVis(s.x, s.y, view.s >= TOWN_ZOOM[s.tier] ? view.s : TOWN_ZOOM[s.tier]); pulseTown(s.id); } }
   else if (go === 'done') { setTool('explore'); }
+  else if (go === 'gl') {
+    const [sid, tab, sub] = v.split('|');
+    if (tab === 'market') market.tab = sub;
+    else if (tab === 'guilds') guildUI.tab = sub;
+    else if (tab === 'people') people.tab = sub;
+    openPlace(sid, tab, false);
+    if (tab === 'market' && market.tab !== sub) { market.tab = sub; renderPanel(); }
+  }
+  else if (go === 'person') { const p = npcById(v); if (p && SBY.get(p.sid)) { openPlace(p.sid, 'people', false); people.npc = p.id; renderPanel(); if (typeof flyToPerson === 'function') flyToPerson(p); } }
   else if (go === 'more') { navMore[v] = true; renderPanel(); }
   else if (go === 'sect') {
     sel = null;
@@ -233,3 +249,68 @@ $('btnSheet').addEventListener('click', () => {
   a.classList.remove('sheet-map', 'sheet-list');
   if (st) a.classList.add(st);
 });
+
+// v26: while you read down a long page, the search and section row fold away; scrolling back to the top brings them back
+{
+  const box = $('inspector'), side = $('side');
+  let folded = false;
+  if (box && side) box.addEventListener('scroll', () => {
+    const t = box.scrollTop;
+    if (!folded && t > 48) { folded = true; side.classList.add('scrolled'); }
+    else if (folded && t < 6) { folded = false; side.classList.remove('scrolled'); }
+  }, { passive: true });
+}
+
+// ---------------------------------------------------------------- v26: what a DM needs first, without hunting through tabs
+// A place's "At a glance": the market, the danger, the quest board and the people, each one tap from the tab that holds it,
+// then what is happening there today and who is in charge.
+function glanceHtml(s) {
+  const day = market.day, sid = esc(s.id);
+  const idx = basketIndex(s, day), iw = idx < 0.93 ? ['cheap', 'ok'] : idx > 1.35 ? ['very dear', 'bad'] : idx > 1.1 ? ['dear', 'warn'] : ['normal', ''];
+  const hall = hallFor(s), open = hall ? questsFor(hall, day).filter((q) => questState(q, day) === 'open').length : 0;
+  const tile = (tab, sub, k, b, sm, cls) => '<button type="button" class="gl-t ' + (cls || '') + '" data-nav="gl" data-v="' + sid + '|' + tab + '|' + sub + '"><span>' + k + '</span><b>' + b + '</b><small>' + sm + '</small></button>';
+  let t = tile('market', 'town', 'Market', Math.round(idx * 100) + '%', iw[0], iw[1]);
+  if (!isPlayer()) { const th = threatOf(s, day), wk = threatOf(s, day - 7), tw = threatWord(th); t += tile('market', 'bounties', 'Danger', tw[0], th > wk + 0.05 ? 'rising' : th < wk - 0.05 ? 'falling' : 'steady', tw[1]); }
+  t += tile('guilds', 'board', 'Quests', open ? String(open) : 'None', hall ? (hall === s ? 'posted here' : 'in ' + esc(hall.name)) : 'no guild near', '');
+  t += tile('people', 'residents', 'People', fmtInt(popNow(s, day)), sizeWord(s).toLowerCase(), '');
+  let h = '<section class="glance" aria-label="At a glance"><h3>At a glance</h3><div class="gl-tiles">' + t + '</div>';
+  const mods = modsFor(s, day);
+  if (mods.length) h += '<ul class="evlist compact">' + mods.slice().sort((a, b) => b[1] - a[1]).slice(0, 3).map(([, , e]) => evRow(e, day)).join('') + '</ul>';
+  else h += '<p class="meta gl-calm">A quiet day: nothing out of the ordinary is moving prices.</p>';
+  // who is in charge, and anyone the party cares about who lives here
+  const lead = townPeople(s, Math.min(2, LEADERS[s.tier].length)).list.map(withOv).filter((p) => !/dead/i.test(p.status || ''));
+  const R = hall === s ? roster(s) : null, gm = R ? withOv(R.list[0]) : null;
+  const who = lead.map((p) => pLink(p) + ' <small>' + esc(p.job) + '</small>').concat(gm ? [pLink(gm) + ' <small>Guildmaster</small>'] : []);
+  if (who.length) h += '<p class="gl-who"><span class="lab">In charge</span> ' + who.join(' · ') + '</p>';
+  const tr = Object.keys(edits.npc || {}).filter((id) => edits.npc[id].tracked).map(npcById).filter((p) => p && p.sid === s.id);
+  if (tr.length) h += '<p class="gl-who"><span class="lab">Tracked here</span> ' + tr.slice(0, 6).map((p) => pLink(withOv(p))).join(' · ') + (tr.length > 6 ? ' and ' + (tr.length - 6) + ' more' : '') + '</p>';
+  if (gst().party.at === s.id) h += '<p class="gl-who"><span class="pill on">The party is here</span></p>';
+  if (s.notes && !isPlayer()) h += '<p class="gl-note"><span class="lab">Your notes</span> ' + esc(s.notes.length > 180 ? s.notes.slice(0, 180) + '…' : s.notes) + '</p>';
+  return h + '</section>';
+}
+// the World page's "Today": what is happening, where the party is, and the places you opened lately
+let recentSeen = [];
+try { const r = JSON.parse(localStorage.getItem('atlas-recent') || '[]'); if (Array.isArray(r)) recentSeen = r.filter((x) => typeof x === 'string').slice(0, 8); } catch (e) { /* a private window: start empty */ }
+function noteRecent(key) {
+  if (!key || recentSeen[0] === key) return;
+  recentSeen = [key].concat(recentSeen.filter((k) => k !== key)).slice(0, 8);
+  try { localStorage.setItem('atlas-recent', JSON.stringify(recentSeen)); } catch (e) { /* not essential */ }
+}
+function todayHtml() {
+  const day = market.day;
+  const ev = sortEvents(activeOn(day));
+  let h = '<section class="today"><div class="navgroup"><h3>Today</h3><small>' + dateText(day) + '</small></div>';
+  h += ev.length ? '<ul class="evlist compact">' + ev.slice(0, 3).map((e) => evRow(e, day)).join('') + '</ul>' + (ev.length > 3 ? '<button type="button" class="link sm" data-nav="sect" data-v="events">All ' + ev.length + ' events</button>' : '') : '<p class="meta">The world is quiet today.</p>';
+  const P = gst().party, at = P.at && SBY.get(P.at);
+  const tr = Object.keys(edits.npc || {}).filter((id) => edits.npc[id].tracked).length;
+  const chips = [];
+  if (at) chips.push('<button type="button" class="chip" data-nav="place" data-v="' + esc(at.id) + '">Party in ' + esc(at.name) + '</button>');
+  if (tr) chips.push('<button type="button" class="chip" data-nav="sect" data-v="tracked">' + tr + ' tracked ' + (tr === 1 ? 'person' : 'people') + '</button>');
+  for (const k of recentSeen) {
+    if (chips.length >= 8) break;
+    if (k.startsWith('p:')) { const p = npcById(k.slice(2)); if (p && SBY.get(p.sid)) chips.push('<button type="button" class="chip" data-nav="person" data-v="' + esc(p.id) + '">' + esc(npcName(withOv(p))) + '</button>'); }
+    else { const s = SBY.get(k); if (s && !(at && at.id === s.id)) chips.push('<button type="button" class="chip" data-nav="place" data-v="' + esc(s.id) + '">' + esc(s.name) + '</button>'); }
+  }
+  if (chips.length) h += '<div class="gl-recent"><span class="lab">Jump back to</span><div class="chips">' + chips.join('') + '</div></div>';
+  return h + '</section>';
+}

@@ -271,8 +271,10 @@ function monDetail(sp, day) {
   if (sp.kind === 'placed') h += '<div class="row2"><div class="field"><label class="lab" for="mo-pcount">Number</label><input id="mo-pcount" type="number" min="1" max="50" value="' + sp.count + '"></div><div class="field"><label class="lab" for="mo-pname">Name</label><input id="mo-pname" maxlength="60" value="' + esc(sp.name) + '"></div></div><div class="field"><label class="lab" for="mo-pnotes">Notes</label><textarea id="mo-pnotes" rows="2" maxlength="600" placeholder="Guarding the old mill; carries the stolen relic">' + esc(sp.placed.notes || '') + '</textarea></div>';
   return h + '</div>';
 }
+const MON_CLUSTER_S = 2.2;
 function openMonster(id, fly) {
   if (isPlayer()) { toast('Monster whereabouts are for the DM.'); return; }
+  if (id && id.startsWith('cl:')) { const [x, y] = id.slice(3).split(',').map(Number); flyTo(x, y, Math.max(MON_CLUSTER_S * 1.05, view.s * 2.6), 450); return; }
   if (tool !== 'monsters') setTool('monsters', true);
   panelMin = false;
   monUI.id = id; renderPanel();
@@ -370,6 +372,36 @@ function drawMonsters() {
   list = list.filter((sp) => (showCalm || !PEACEFUL.has(sp.name)) && (view.s >= 1.2 || sp.kind === 'placed' || (mt && monUI.id === sp.id) || (view.s >= 0.6 ? sp.kind === 'lair' || crNum(sp.cr) >= (mt ? 1 : 2) : sp.kind === 'lair' && (/dragon/.test(sp.name) || crNum(sp.cr) >= 9))));
   if (list.length > 500) list = list.sort((a, b) => spawnXP(b) - spawnXP(a)).slice(0, 500);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '700 9.5px "Atkinson Hyperlegible", system-ui, sans-serif';
+  // v26: zoomed out, nearby groups gather into one marker showing the most dangerous of them and how many groups there are,
+  // so towns and roads stay readable. Tapping it zooms in. Placed and chosen creatures always show on their own.
+  if (view.s < MON_CLUSTER_S) {
+    const cell = mt ? 72 : 110, cells = new Map(), solo = [];
+    for (const sp of list) {
+      if (sp.kind === 'placed' || (mt && monUI.id === sp.id)) { solo.push(sp); continue; }
+      const k = Math.floor(sp.x * view.s / cell) + ',' + Math.floor(sp.y * view.s / cell); // anchored to the world, so groups don't jump as you pan
+      const c = cells.get(k); if (c) c.push(sp); else cells.set(k, [sp]);
+    }
+    list = solo;
+    for (const g of cells.values()) {
+      if (g.length === 1) { list.push(g[0]); continue; }
+      let top = g[0], cx = 0, cy = 0;
+      for (const sp of g) { cx += sp.x; cy += sp.y; if (monTier(sp) > monTier(top) || (monTier(sp) === monTier(top) && spawnXP(sp) > spawnXP(top))) top = sp; }
+      cx /= g.length; cy /= g.length;
+      const X = sx(cx), Y = sy(cy), r = 10.5, tierN = PEACEFUL.has(top.name) ? 0 : monTier(top);
+      ctx.fillStyle = monCol(top); ctx.strokeStyle = 'rgba(20,16,10,.9)'; ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      if (tierN === 3) { const q = r * 1.25; ctx.moveTo(X, Y - q); ctx.lineTo(X + q, Y); ctx.lineTo(X, Y + q); ctx.lineTo(X - q, Y); ctx.closePath(); }
+      else if (tierN === 4) { const q = r * 1.15; for (let k = 0; k < 6; k++) { const an = Math.PI / 6 + k * Math.PI / 3; if (k) ctx.lineTo(X + q * Math.cos(an), Y + q * Math.sin(an)); else ctx.moveTo(X + q * Math.cos(an), Y + q * Math.sin(an)); } ctx.closePath(); }
+      else ctx.arc(X, Y, r, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = 'rgba(243,234,210,.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(X, Y, r + 3.5, 0, Math.PI * 2); ctx.stroke();
+      ctx.save(); ctx.translate(X, Y); ctx.scale(r / 7.5, r / 7.5); ctx.strokeStyle = '#fff7e6'; ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.stroke(CLAW); ctx.restore();
+      const txt = String(g.length), bw = Math.max(15, 7 + txt.length * 6), bx = X + r * 0.9, by = Y + r * 0.75;
+      ctx.fillStyle = '#e2c37a'; ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(bx - bw / 2, by - 7, bw, 14, 7); else ctx.rect(bx - bw / 2, by - 7, bw, 14); ctx.fill();
+      ctx.fillStyle = '#1a140c'; ctx.fillText(txt, bx, by + 0.5);
+      markers.push({ kind: 'mon', id: 'cl:' + cx.toFixed(2) + ',' + cy.toFixed(2), X, Y, r: r + 6 });
+    }
+  }
   for (const sp of list) {
     const X = sx(sp.x), Y = sy(sp.y);
     const calm = PEACEFUL.has(sp.name);
