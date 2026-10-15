@@ -55,6 +55,7 @@ The build joins the modules in the order listed in `build.py`. Each one starts w
 | `app33.js` | What's happening at each place, hour by hour |
 | `app34.js` | The 2024 spell lists (SRD 5.2) and the 26 spells new in it |
 | `app35.js` | Downtime: crafting, working, training, research, carousing, temple service and rest |
+| `app36.js` | Trading: shopkeepers, hero prices, haggling, weekly stock, the black market, trade caravans and the watch list |
 
 ## Rules for changes
 

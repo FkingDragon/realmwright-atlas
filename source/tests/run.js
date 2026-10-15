@@ -6,7 +6,7 @@ const { execFileSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const root = path.join(__dirname, '..');
-const ORDER = ['shell', 'ledger', 'tiles', 'srd', 'saving', 'stability', 'share', 'hist', 'r24', 'phone', 'camp', 'merge', 'places', 'civic', 'gui', 'guilds', 'inter', 'move', 'persist', 'realmbug', 'e1', 'monkey', 'pan', 'a11y', 'flow', 'gjoin', 'scene', 'downtime'];
+const ORDER = ['shell', 'ledger', 'tiles', 'srd', 'saving', 'stability', 'share', 'hist', 'r24', 'phone', 'camp', 'merge', 'places', 'civic', 'gui', 'guilds', 'inter', 'move', 'persist', 'realmbug', 'e1', 'monkey', 'pan', 'a11y', 'flow', 'gjoin', 'scene', 'downtime', 'trade'];
 const want = process.argv.slice(2);
 const list = (want.length ? want : ORDER).filter((n) => fs.existsSync(path.join(__dirname, n + '.js')));
 

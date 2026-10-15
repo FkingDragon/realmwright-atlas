@@ -1,7 +1,7 @@
 
 // ================================================================ campaign: safe saving, backups, stable worlds, DM and player modes, merging (v20)
 const GEN_VERSION = 20;          // bump whenever generated content changes
-const APP_VERSION = 28;          // the release number shown to people (CHANGELOG.md)
+const APP_VERSION = 29;          // the release number shown to people (CHANGELOG.md)
 // what changed in generated content at each version, shown when an older world is opened
 const GEN_CHANGES = {
   13: 'Town layouts redrawn by terrain and culture.',

@@ -6,6 +6,25 @@ Format: `## Date — short title`, then bullet points saying **what** changed, *
 
 ---
 
+## 2026-10-15 — v29: trading in the Market
+*By: project owner (prepared with Claude)*
+
+- **index.html**, Market Shop tab: pick a hero to buy and sell for them, at prices that show every reason.
+  - Each kind of goods has a real seller in the town, whose feelings about the party move the price (or stop the sale).
+  - A Persuasion haggle once a day per seller.
+  - A week's stock, shared by all heroes, that runs out, with prices rising as it does.
+- **index.html**, black market: Thieves' Guild members (and the DM) find poisons and goods the town doesn't sell openly.
+- **index.html**, trade caravans on the Town tab:
+  - fund a wagon of goods to a neighbouring town, with risk from monsters, bandits and war;
+  - optional guards;
+  - a plain profit-or-loss estimate.
+- **index.html**, watch list: star a good and its prices show on the World page's Today.
+- **index.html**: "Why prices are moving" lists only real causes.
+- **source/**: new `app36.js` (trading) and the test `trade.js`.
+- **docs/world-atlas.md**: notes for v29.
+- **backups/index_2026-10-15_v29.html**: a copy of this version.
+- Tests: 326 automated checks pass.
+
 ## 2026-10-13 — v28: downtime, 2024 spell lists, guilds that reach further
 *By: project owner (prepared with Claude)*
 

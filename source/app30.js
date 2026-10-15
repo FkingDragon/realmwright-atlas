@@ -308,6 +308,7 @@ function todayHtml() {
     if (k.startsWith('p:')) { const p = npcById(k.slice(2)); if (p && SBY.get(p.sid)) chips.push('<button type="button" class="chip" data-nav="person" data-v="' + esc(p.id) + '">' + esc(npcName(withOv(p))) + '</button>'); }
     else { const s = SBY.get(k); if (s && !(at && at.id === s.id)) chips.push('<button type="button" class="chip" data-nav="place" data-v="' + esc(s.id) + '">' + esc(s.name) + '</button>'); }
   }
+  h += watchTodayHtml();
   const gch = guildTodayChips();
   if (gch.length) h += '<div class="gl-recent"><span class="lab">Guild business</span><div class="chips">' + gch.join('') + '</div></div>';
   if (chips.length) h += '<div class="gl-recent"><span class="lab">Jump back to</span><div class="chips">' + chips.join('') + '</div></div>';

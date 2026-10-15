@@ -138,8 +138,8 @@ function shopListHtml(s, day) {
     const r = shopItem(it, s, day), open = market.shop.open === it.id;
     const nm = it.cat === 'Magic items' ? extLink(AID.item(it.name), it.name) : esc(it.name);
     h += '<tr class="item' + (r.ok ? '' : ' na') + '" data-shop="open" data-v="' + esc(it.id) + '" tabindex="0" aria-expanded="' + open + '"><td>' + nm + (it.unit ? ' <small>(' + esc(it.unit) + ')</small>' : '') + (it.rarity ? ' <em class="rar rr-' + it.rarity.replace(/\s/g, '') + '">' + esc(it.rarity) + '</em>' : '') +
-      (open ? '<small class="note">' + esc(it.type ? fixType(it.type) + '. ' : '') + esc(it.desc) + '</small>' : '') + '</td>' +
-      '<td class="num">' + (it.base ? coinHtml(it.base) : '—') + '</td><td class="num">' + (r.ok ? memberCell(it, s, r.gp) : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
+      (open ? '<small class="note">' + esc(it.type ? fixType(it.type) + '. ' : '') + esc(it.desc) + '</small>' + itemSellerHtml(shopHero(), s, it) : '') + '</td>' +
+      '<td class="num">' + (it.base ? coinHtml(it.base) : '—') + '</td><td class="num">' + (shopHero() ? heroPriceCell(shopHero(), s, it) : r.ok ? memberCell(it, s, r.gp) : '<small>' + esc(r.why) + '</small>') + '</td></tr>';
   }
   return h + '</tbody></table>';
 }
@@ -179,7 +179,7 @@ function shopTab(day) {
   const F = market.inn, sel1 = (id, cur) => '<select id="' + id + '" data-inn="' + id + '">' + INN_Q.map((q, i) => '<option value="' + q + '"' + (q === cur ? ' selected' : '') + (s.tier < INN_TIER[i] ? ' class="rare"' : '') + '>' + q + '</option>').join('') + '</select>';
   const num = (id, v, max, lab) => '<div class="field"><label class="lab" for="' + id + '">' + lab + '</label><input id="' + id + '" data-inn="' + id + '" type="number" min="0" max="' + max + '" value="' + v + '"></div>';
   let h = '<div class="town-h"><div><div class="eyebrow">' + TIERS[s.tier].name + ' · shops and inn</div><h3 class="town-name">' + tLink(s) + '</h3></div></div>';
-  h += shopHeroHtml(s);
+  h += shopHeroHtml(s) + shopHeroPanel(shopHero(), s);
   h += '<section><h3>At the inn</h3><div class="row2"><div class="field"><label class="lab" for="inn-l">Lodging</label>' + sel1('inn-l', F.lodge) + '</div><div class="field"><label class="lab" for="inn-m">Meals</label>' + sel1('inn-m', F.meal) + '</div></div>' +
     '<div class="row3">' + num('inn-n', F.nights, 365, 'Nights') + num('inn-g', F.guests, 50, 'Guests') + num('inn-h', F.horses, 50, 'Horses') + '</div><div id="innOut">' + innHtml(s, day) + '</div>' +
     '<p class="hint">Player\'s Handbook lifestyle prices for an inn stay and a day\'s meals, at this town\'s prices today. Stabling is 5 sp a day before local costs.</p></section>';
@@ -187,6 +187,7 @@ function shopTab(day) {
     '<div class="chips">' + SHOP_CATS.map(([k, l]) => '<button type="button" class="chip' + (market.shop.cat === k ? ' on' : '') + '" data-shop="cat" data-v="' + esc(k) + '">' + l + '</button>').join('') + '</div>' +
     '<div id="shopList">' + shopListHtml(s, day) + '</div>' +
     '<p class="hint">Rulebook prices from the System Reference Document 5.1, with food, drink, lodging, services and wages from the old Market Ledger\'s list, all moved by this town\'s supply, season and events like the goods on the Town tab. Magic items without a rulebook price are estimates inside the Dungeon Master\'s Guide rarity bands; legendary items and artifacts are never sold. Tap an item for its description.</p></section>';
+  h += blackMarketHtml(shopHero(), s);
   return h;
 }
 $('inspector').addEventListener('click', (ev) => {

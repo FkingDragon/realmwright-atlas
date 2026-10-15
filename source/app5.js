@@ -541,7 +541,7 @@ function townTab(day) {
     for (const g of gs) {
       const ok = inStock(s, g, day);
       if (!ok) { h += '<tr class="na"><td>' + (g.cat === 'magic' ? extLink(AID.item(g.name), g.name) : esc(g.name)) + (g.rarity ? ' <em class="rar">' + g.rarity + '</em>' : '') + '</td><td colspan="3">' + (s.tier < g.minTier ? 'Needs a larger market' : 'None in stock this week') + '</td></tr>'; continue; }
-      h += '<tr class="prow' + (market.why === g.i ? ' on' : '') + '"><td><button type="button" class="link whyb" data-mk="why" data-v="' + g.i + '" aria-expanded="' + (market.why === g.i) + '" title="Why this price?">' + esc(g.name) + '</button>' + (g.cat === 'magic' ? ' ' + extLink(AID.item(g.name), 'AideDD') : '') + (g.rarity ? ' <em class="rar">' + g.rarity + '</em>' : '') + '</td><td class="num">' + coinHtml(here[g.i]) + '</td><td>' + changeTag(here[g.i] / hist[23][g.i] - 1) + '</td><td>' + spark(hist.map((p) => p[g.i])) + '</td></tr>' + (market.why === g.i ? '<tr class="whyrow"><td colspan="4">' + whyHtml(s, g, day) + '</td></tr>' : '');
+      h += '<tr class="prow' + (market.why === g.i ? ' on' : '') + '"><td><button type="button" class="link whyb" data-mk="why" data-v="' + g.i + '" aria-expanded="' + (market.why === g.i) + '" title="Why this price?">' + esc(g.name) + '</button>' + watchStar(g) + (g.cat === 'magic' ? ' ' + extLink(AID.item(g.name), 'AideDD') : '') + (g.rarity ? ' <em class="rar">' + g.rarity + '</em>' : '') + '</td><td class="num">' + coinHtml(here[g.i]) + '</td><td>' + changeTag(here[g.i] / hist[23][g.i] - 1) + '</td><td>' + spark(hist.map((p) => p[g.i])) + '</td></tr>' + (market.why === g.i ? '<tr class="whyrow"><td colspan="4">' + whyHtml(s, g, day) + '</td></tr>' : '');
     }
     h += '</tbody></table></details>';
   }
@@ -563,6 +563,7 @@ function townTab(day) {
   const bo = best(opps), bc = best(cheaper);
   h += '<section><h3>Trade runs</h3>' + (bo.length ? '<p class="meta">Profit after carriage costs (about 0.4% per mile by wagon).</p><ul class="routes">' + bo.map((o) => route(o, true)).join('') + '</ul>' : '<p class="meta">No neighbour pays enough more to make a trade run worthwhile today.</p>') +
     (bc.length ? '<h4>Cheaper nearby</h4><ul class="routes">' + bc.map((o) => route(o, false)).join('') + '</ul>' : '') + '</section>';
+  h += caravanHtml(s, day);
   h += '<p class="hint">Base prices are from the Player\'s Handbook; magic items use the Dungeon Master\'s Guide rarity price bands. Local supply, season, distance from a city and events move them.</p>';
   h += '<div class="actions"><button type="button" class="btn" data-mk="profile">Settlement profile</button><button type="button" class="btn" data-act="openpeople">Residents</button><button type="button" class="btn" data-mk="declare">Declare an event here</button></div>';
   return h;

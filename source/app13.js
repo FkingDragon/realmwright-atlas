@@ -196,16 +196,25 @@ function whyHtml(s, g, day) {
 }
 // a plain-language summary of what is moving prices in a town this week
 function moversHtml(s, day) {
-  const picks = BASKET.map((gi) => GOODS[gi]).map((g) => [pricesFor(s, day)[g.i] / pricesFor(s, day - 7)[g.i], g]).filter(([r]) => Math.abs(r - 1) > 0.02).sort((a, b) => Math.abs(Math.log(b[0])) - Math.abs(Math.log(a[0]))).slice(0, 3);
-  if (!picks.length) return '<p class="meta"><b>This week:</b> prices are steady.</p>';
-  return '<section class="movers-why"><h3>Why prices are moving</h3><ul>' + picks.map(([r, g]) => {
+  // the week's biggest real moves, each with its main cause; day-to-day trading swings ("market mood") are folded away
+  const picks = BASKET.map((gi) => GOODS[gi]).map((g) => [pricesFor(s, day)[g.i] / pricesFor(s, day - 7)[g.i], g]).filter(([r]) => Math.abs(r - 1) > 0.02).sort((a, b) => Math.abs(Math.log(b[0])) - Math.abs(Math.log(a[0])));
+  const why = (r, g) => {
     const F = priceFactors(s, g, day), F7 = new Map(priceFactors(s, g, day - 7).map((f) => [f.k, f]));
     let best = null, bv = 0;
-    for (const f of F) { const m0 = F7.has(f.k) ? F7.get(f.k).m : 1; const v = Math.log(f.m / m0); if (Math.sign(v) === Math.sign(Math.log(r)) && Math.abs(v) > bv) { bv = Math.abs(v); best = [f, F7.has(f.k) ? '' : ' began']; } }
-    for (const [k, f] of F7) if (!F.some((x) => x.k === k)) { const v = -Math.log(f.m); if (Math.sign(v) === Math.sign(Math.log(r)) && Math.abs(v) > bv) { bv = Math.abs(v); best = [f, ' ended']; } }
-    const why = best ? (best[0].eid ? eLink(findEvent(best[0].eid), best[0].txt) : esc(best[0].txt)) + best[1] : 'market mood';
-    return '<li><button type="button" class="link" data-mk="why" data-v="' + g.i + '">' + esc(g.name) + '</button> <span class="' + (r > 1 ? 'up' : 'dn') + '">' + pctTxt(r) + '</span><small>mainly: ' + why + '</small></li>';
-  }).join('') + '</ul><p class="hint">Tap any item on the board below to see everything behind its price.</p></section>';
+    for (const f of F) { if (f.k === 'mood') continue; const m0 = F7.has(f.k) ? F7.get(f.k).m : 1; const v = Math.log(f.m / m0); if (Math.sign(v) === Math.sign(Math.log(r)) && Math.abs(v) > bv) { bv = Math.abs(v); best = [f, F7.has(f.k) ? '' : ' began']; } }
+    for (const [k, f] of F7) if (k !== 'mood' && !F.some((x) => x.k === k)) { const v = -Math.log(f.m); if (Math.sign(v) === Math.sign(Math.log(r)) && Math.abs(v) > bv) { bv = Math.abs(v); best = [f, ' ended']; } }
+    return best && bv > 0.01 ? best : null;
+  };
+  const real = [], noise = [];
+  for (const [r, g] of picks) { const b = why(r, g); if (b) real.push([r, g, b]); else noise.push([r, g]); if (real.length >= 3) break; }
+  if (!real.length) return '<p class="meta"><b>This week:</b> only small day-to-day swings; nothing big is moving prices here.' + (noise.length ? ' The largest: ' + noise.slice(0, 2).map(([r, g]) => esc(g.name) + ' ' + pctTxt(r)).join(', ') + '.' : '') + '</p>';
+  // group the moves by their cause
+  const groups = new Map();
+  for (const [r, g, b] of real) { const k = b[0].k + b[1]; if (!groups.has(k)) groups.set(k, { b, list: [] }); groups.get(k).list.push([r, g]); }
+  return '<section class="movers-why"><h3>Why prices are moving</h3><ul>' + [...groups.values()].map(({ b, list }) => {
+    const cause = (b[0].eid ? eLink(findEvent(b[0].eid), b[0].txt) : esc(b[0].txt)) + b[1];
+    return '<li><span class="cause">' + cause + '</span><span class="what">' + list.map(([r, g]) => '<button type="button" class="link" data-mk="why" data-v="' + g.i + '">' + esc(g.name) + '</button> <span class="' + (r > 1 ? 'up' : 'dn') + '">' + pctTxt(r) + '</span>').join(' · ') + '</span></li>';
+  }).join('') + '</ul>' + (noise.length ? '<p class="hint">Smaller day-to-day swings are left out. </p>' : '') + '<p class="hint">Tap any item on the board below to see everything behind its price.</p></section>';
 }
 
 // ---------------------------------------------------------------- the party chronicle and where the party is

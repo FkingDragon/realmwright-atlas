@@ -197,6 +197,30 @@ Relative-neighbourhood graph per tier: highways between cities/capitals (within 
 - **shellWrap(html):** adds a sticky header with breadcrumbs, and for a place its name (an editable title for the DM), size and population, a "show on map" button, and the Overview, Market, People and Guilds tabs. Inside a place, the tool panels' own titles and calendars are hidden.
 - **realmStats:** groups every settlement by realmOf() in one pass, cached per mkVer.
 
+## Trading in the Market (v29)
+- **Sellers (`app36.js`):** `KEEPER_JOBS` maps each shop category to job patterns (first choice, then fallback) among the town's living adults; the result is cached per town and market version. Without a match the seller is a generic stall ("the market stalls", "the taverns").
+- **Seller mood:** from `dispShown` (including guild kinship). ≤ −70 refuses; ≤ −35 ×1.15; ≥ 35 ×0.95.
+- **Stock per week (`stockOf`):** Food, Drink, Lodging, Services and Wages are unlimited.
+  - Magic items: common 2–4, uncommon 1–2, rarer 1.
+  - Weapons: 3 × tier. Gear and tools: 5 × tier. Armour and mounts: 2 × tier, or 1 for anything costing 400 gp (armour) or 1,000 gp (mounts) or more.
+  - Each is × 0.6–1.4 from `T.hash(town|item, week)`.
+  - `usedOf` sums every hero's `h.buys` for that town, item and week.
+- **Hero price:** town price × (1 − member discount) × mood × haggle × demand, where demand = 1 + 0.5 × used ÷ stock.
+- **Haggle:** d20 + Persuasion against DC 10 + 2 × tier (+5 hostile, −3 friendly). A natural 20 or beating the DC by 5+ gives ×0.8; beating it gives ×0.9; failing by 5+ or a natural 1 gives ×1.1. One per seller per day, kept in `h.hag`.
+- **Selling:** town price × `sellRate(h)` (0.5, more for merchants).
+- **Black market:** open where the Thieves' Guild is present, to members with dues paid (and always for the DM).
+  - Poisons cost the SRD price × gear price level × 0.9–1.2, each available with chance 0.35 + 0.15 × guild level per week.
+  - Items the town doesn't stock openly cost ×1.5, with a 25% chance each, never legendary or artifact.
+- **Caravans:**
+  - Risk `p = clamp(0.03 + 0.08 × min(2, threat) + 0.35 × bandits + 0.2 × war, 0.03, 0.75)`; guards cost +10% and halve it.
+  - Travel is 24 miles a day.
+  - The sale is units × the destination's price on arrival × (1 − 0.004 × miles) × saturation, where saturation = 1 ÷ (1 + 0.6 × gp ÷ max(10, pop × 0.08)).
+  - The outcome comes from `T.hash(id, arrival day)`: below p/2 everything is lost, below p half is lost.
+  - Villages are not offered goods costing 1 gp or more.
+  - The form picks the destination with the best expected return, compares it with the outlay including guards, and says when no road pays.
+- **Watch list:** goods starred in this browser (`atlas-watch`). Today shows the price in the party's town (else the market town, else a hero's home), the cheapest of its neighbours, and swings of ±10% or more.
+- **Price reasons:** `moversHtml` skips the noise factor ("mood") and groups the remaining causes by source.
+
 ## Downtime, spell lists and guild reach (v28)
 - **Downtime (`app35.js`).**
   - Living cost per day is `(INN_STAY[q] × lodging + INN_MEAL[q] × meal)` at the town's price levels; `memberLodging` makes it free where a guild covers that quality.

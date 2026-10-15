@@ -1073,6 +1073,28 @@ s.was { opacity: .6; }
 .scene-around { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13.5px; }
 .scene-around small { color: var(--muted); margin-left: 4px; }
 @media (max-width: 420px) { .scene-t { grid-template-columns: repeat(3, 1fr); } }
+/* v29 trading in the Market */
+.mk-purse { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); padding: 8px 10px; }
+.mk-sell > summary { cursor: pointer; padding: 8px 0; font: 500 13px var(--f-display); color: var(--brass-hi); }
+.mk-sell > summary small { font: 400 12px var(--f-ui); color: var(--muted); margin-left: 6px; }
+.shop-t td.num .btn.mkbuy { margin-top: 3px; padding: 2px 8px; min-height: 26px; }
+.shop-t td.num small.stock { display: block; color: var(--muted); font-size: 11px; }
+.shop-t td.num small.stock.low { color: #e8b75a; }
+.note.seller { display: block; margin-top: 4px; color: #cfc8b6; }
+.note.seller .btn { margin-left: 6px; }
+.gj-join .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bm { border: 1px dashed #7b8794; border-radius: 10px; padding: 10px; }
+.wstar { background: none; border: 0; padding: 0 4px; margin-left: 2px; cursor: pointer; color: var(--muted); font-size: 14px; line-height: 1; min-height: 24px; min-width: 24px; }
+.wstar[aria-pressed="true"] { color: var(--brass-hi); }
+ul.watch { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+ul.watch li { display: grid; grid-template-columns: 1fr auto; gap: 0 8px; font-size: 13.5px; border-bottom: 1px solid var(--line); padding: 3px 0; }
+ul.watch li small { grid-column: 1 / -1; color: var(--muted); }
+ul.watch em.up { color: #ff8f80; font-style: normal; } ul.watch em.dn { color: #8fd18a; font-style: normal; }
+.movers-why li { display: grid; gap: 2px; }
+.movers-why .cause { font-size: 13px; color: var(--muted); }
+.caravan { border: 1px solid var(--line); border-radius: 10px; padding: 10px; background: var(--panel); }
+.caravan .vgain { color: #7cc48a; } .caravan .vloss { color: #ec7a62; }
+
 /* v25 accessibility: skip links, a quiet announcer, and comfortable targets */
 .skip { position: absolute; left: 8px; top: -60px; z-index: 100; background: var(--brass); color: var(--ink); font-weight: 700; padding: 10px 14px; border-radius: 8px; text-decoration: none; }
 .skip:focus { top: 8px; outline: 2px solid var(--text); }
@@ -1137,7 +1159,7 @@ s.was { opacity: .6; }
       <li><b>The calendar</b> sits at the top of the side panel: Play lets time run, or step a day or a week.</li>
       <li><b>Map tools</b> sit along the top of the map: <b>Select</b>, then <b>Settle</b>, <b>Road</b>, <b>Paint</b>, <b>Tiles</b>, <b>Label</b> and <b>Measure</b> add your own places, routes, terrain, battle maps and notes. Their options open in the side panel; press Done when finished.</li>
       <li><b>Tiles</b> paints the battle map square by square: ground, props such as tables, beds and campfires, and walls, doors, windows and fences along the grid lines. Fill a patch, or drag out a whole building. Players see your changes; undo works per stroke.</li>
-      <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill. On the Shop tab, pick a hero under <b>Prices for</b> to see their guild member prices and free lodging in the inn bill.</li>
+      <li><b>Market</b> runs a live calendar. Every town prices real Player's Handbook goods, mounts and magic items, and wars, bandits, famine, plague, trade booms, festivals and feasts push prices around. Press Play to let time run. The <b>Shop</b> tab prices all 588 SRD items for the town, and works out the inn bill. On the Shop tab, pick a hero under <b>Prices for</b> to buy and sell for them: each kind of goods has a real seller whose feelings about the party move the price, the hero can haggle with each seller once a day, and shops hold a week's stock that runs out. Thieves' Guild members find a black market at the bottom. On the Town tab, star a good to watch it on the World page, and fund <b>trade caravans</b> to neighbouring towns.</li>
       <li><b>People</b> shows each town's notable residents: jobs, families, rivalries, secrets, motivations and what they are doing today. Log the party's dealings with them and track the ones that matter. Group them by household, see where everyone is at any hour (Activity → Around town now), and read each town's Chronicle, written day by day. Every named place, from the palace to a cobbler's shop, shows <b>what's happening</b> there at dawn, morning, midday, afternoon, evening or night: who is in, the town's events, the season, something overheard, and the places around it.</li>
       <li><b>Guilds</b> runs the Adventurers' Guild: quest boards in every town with a danger rating for your party, NPC companies, and ranks from Copper to Adamantine for your party. It also shows how the town's organisations get on, and what its powerful people are pushing for. <b>Heroes can join</b> any organisation in a town, from their sheet or the organisation's page: each has a fee, monthly dues, four ranks and benefits that fit it, such as member prices on the Gear step, better selling prices, lodging, healing, authority or a fence.</li>
       <li><b>Heroes</b> builds play-ready characters from the System Reference Document 5.1: race, class, background, scores, skills, gear bought at your hometown's live prices, and spells. The sheet rolls anything you tap and tracks hit points, slots, rests and level-ups; register a hero with the Adventurers' Guild to take quests. Tap Quick build for a complete level 1 character. The sheet's <b>Downtime</b> section spends days crafting, working, training, researching, carousing, serving a temple or recuperating, at the town's prices and with your guilds' help. Heroes using the 2024 rules choose from the SRD 5.2 spell lists.</li>
